@@ -27,7 +27,7 @@ public class AdminDAOImpl implements AdminDAO {
     @Override
     public DefaultTableModel fetchAll() {
         try {
-            String sql = "SELECT u.user_id, u.fname, u.lname, u.email, a.username "
+            String sql = "SELECT u.user_id AS 'ID', u.fname AS 'First Name', u.mname AS 'M', u.lname, u.email, a.username "
                     + "FROM user u "
                     + "JOIN auth a ON u.user_id = a.user_id "
                     + "WHERE u.role = 'admin'";
