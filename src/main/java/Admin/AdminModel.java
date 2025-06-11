@@ -11,6 +11,7 @@ public class AdminModel {
     private String stMname;
     private String stLname;
 //    private String position;
+    private String sx;
     private String conNum;
     private String email;
     private Date bday;
@@ -114,5 +115,13 @@ public class AdminModel {
 
     public void setCollge(String collge) {
         this.collge = collge;
+    }
+
+    public String getSx() {
+        return sx;
+    }
+
+    public void setSx(String sx) {
+        this.sx = sx;
     }
 }

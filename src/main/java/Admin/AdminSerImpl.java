@@ -2,12 +2,14 @@ package Admin;
 
 import Admin.Views.*;
 import Utilities.QuickSearch;
+import Utilities.QuickSearchList;
 import java.awt.CardLayout;
 import java.awt.Dialog;
 import java.sql.ResultSet;
 import java.util.Arrays;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import net.proteanit.sql.DbUtils;
 
@@ -27,15 +29,9 @@ public class AdminSerImpl implements AdminService {
 
     @Override
     public void setTableData() {
-        ResultSet rs = dao.fetchAll();
-        adminPanel.jTable1.setModel(DbUtils.resultSetToTableModel(rs));
-        for (Class c : Arrays.asList(Object.class, Number.class, Boolean.class)) {
-            TableCellEditor ce = adminPanel.jTable1.getDefaultEditor(c);
-            if (ce instanceof DefaultCellEditor) {
-                ((DefaultCellEditor) ce).setClickCountToStart(Integer.MAX_VALUE);
-            }
-        }
-        new QuickSearch(adminPanel, adminPanel.jTable1, adminPanel.srchtxtfld, rs);
+        DefaultTableModel model = dao.fetchAll();
+        adminPanel.jTable1.setModel(model);
+//        new QuickSearchList(adminPanel, adminPanel.jTable1, adminPanel.srchtxtfld, model);
     }
 
     @Override
@@ -131,5 +127,15 @@ public class AdminSerImpl implements AdminService {
         adminPanel.jPanel2.add(addPanel, "AddAdmin");
         cl.show(adminPanel.jPanel2, "AddAdmin");
         System.out.println("AddButtonClicked");
+    }
+
+    @Override
+    public void selectImage() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void scanFinger() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
