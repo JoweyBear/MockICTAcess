@@ -25,7 +25,7 @@ public class LoginDAOImpl implements LoginDAO {
         AdminModel admin = null;
         try {
             if (user != null && !user.isEmpty() && pass != null && !pass.isEmpty()) {
-                String sql = "SELECT a.user_id, a.hash, u.fname, u.mname, u.lname "
+                String sql = "SELECT a.user_id, a.hash, u.fname, u.mname, u.contact_num, u.email, u.sex, u.birthdate, u.image, u.college, u.lname "
                         + "FROM auth a JOIN user u ON a.user_id = u.user_id "
                         + "WHERE a.username = ? AND u.role = 'admin'";
                 PreparedStatement stmt = conn.prepareStatement(sql);

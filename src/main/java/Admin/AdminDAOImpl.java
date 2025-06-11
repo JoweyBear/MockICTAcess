@@ -37,13 +37,12 @@ public class AdminDAOImpl implements AdminDAO {
             ResultSetMetaData md = (ResultSetMetaData) rs.getMetaData();
             int columnCount = md.getColumnCount();
 
-            // Build column headers
+
             Vector<String> columnNames = new Vector<>();
             for (int i = 1; i <= columnCount; i++) {
                 columnNames.add(md.getColumnLabel(i));
             }
 
-            // Build rows, decrypting on the fly
             Vector<Vector<Object>> data = new Vector<>();
             while (rs.next()) {
                 Vector<Object> row = new Vector<>();

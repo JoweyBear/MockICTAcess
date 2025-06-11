@@ -25,7 +25,8 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
     public SimpleHeaderData getSimpleHeaderData() {
         return new SimpleHeaderData()
                 .setIcon(new AvatarIcon(getClass().getResource("/Images/BlckFingerprint1.png"), 100, 100, 999))
-                .setTitle("Attendance Monitoring System") //                .setDescription("")
+                .setTitle("ASmart ISUFST TouchPass") 
+                .setDescription("ISUFST Fingerprint Smart Access System for Students")
                 ;
     }
 
@@ -34,7 +35,7 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
         String menus[][] = {
             {"Dashboard"},
             {"Manage", "Admin", "Student"},
-            {"Reports"},
+            {"Reports", "Analytics"},
             {"Logout"}
         };
 
@@ -102,7 +103,7 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
 
     @Override
     public int getDrawerWidth() {
-        return 275;
+        return 500;
     }
 
 }

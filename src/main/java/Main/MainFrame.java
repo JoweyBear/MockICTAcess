@@ -11,8 +11,8 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
-        jLabel1.setFont(RegisterFont.getFont("jost", 60));
-        time.setFont(RegisterFont.getFont("jack", 40));
+        jLabel1.setFont(RegisterFont.getFont("jost", 70));
+        time.setFont(RegisterFont.getFont("jack", 50));
         jLabel5.setFont(RegisterFont.getFont("jost", 40));
         jLabel6.setFont(RegisterFont.getFont("jost", 40));
         jLabel4.setFont(RegisterFont.getFont("jost", 40));
@@ -45,39 +45,39 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Welcome!");
-        jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 130, 350, 70));
+        jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 480, 70));
 
         time.setFont(new java.awt.Font("JackInput", 0, 45)); // NOI18N
         time.setForeground(new java.awt.Color(255, 255, 255));
         time.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jPanel4.add(time, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 220, 340, 70));
+        jPanel4.add(time, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 260, 480, 70));
 
         date.setFont(new java.awt.Font("Tahoma", 0, 50)); // NOI18N
         date.setForeground(new java.awt.Color(255, 255, 255));
         date.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jPanel4.add(date, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 280, 340, 80));
+        jPanel4.add(date, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 330, 480, 80));
 
         jLabel4.setFont(new java.awt.Font("Jost", 1, 40)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText(" to proceed. ");
-        jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 470, 330, 60));
+        jPanel4.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 530, 470, 60));
 
         jLabel5.setFont(new java.awt.Font("Jost", 1, 40)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel5.setText("Please scan your ");
-        jPanel4.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 370, 350, 60));
+        jPanel4.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 430, 480, 60));
 
         jLabel6.setFont(new java.awt.Font("Jost", 1, 40)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel6.setText(" fingerprint ");
-        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 420, 330, 60));
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 480, 470, 60));
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/TrF1.png"))); // NOI18N
-        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 550, -1, -1));
+        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 640, -1, -1));
 
         lgn.setBackground(new java.awt.Color(13, 27, 42));
         lgn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/usericon1.png"))); // NOI18N
@@ -89,13 +89,13 @@ public class MainFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(1, 1, 1)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 796, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 821, Short.MAX_VALUE)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 925, Short.MAX_VALUE)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 

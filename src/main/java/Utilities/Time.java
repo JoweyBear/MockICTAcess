@@ -7,12 +7,13 @@ import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class Time {
 
     MainFrame frame;
-    DateFormat df = new SimpleDateFormat("dd/MM/yy");
-    DateFormat tf = new SimpleDateFormat("hh:mm:ss a");
+    DateFormat df = new SimpleDateFormat("MMM. dd, yyyy", Locale.ENGLISH);
+    DateFormat tf = new SimpleDateFormat("hh:mm:ss a", Locale.ENGLISH);
 
     public Time(MainFrame frame) {
         this.frame = frame;
