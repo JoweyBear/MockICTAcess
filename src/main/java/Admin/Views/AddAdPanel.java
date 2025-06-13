@@ -5,9 +5,9 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import javax.swing.UIManager;
 
-public class AddPanel extends javax.swing.JPanel {
+public class AddAdPanel extends javax.swing.JPanel {
 
-    public AddPanel() {
+    public AddAdPanel() {
         UIManager.put("TextField.background", Color.white);
         initComponents();
 
@@ -103,6 +103,8 @@ public class AddPanel extends javax.swing.JPanel {
         chssmg.setText("Choose Image");
 
         sx.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Sex", "Female", "Male" }));
+
+        bdy.setToolTipText("Birthday");
 
         usrnm.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 

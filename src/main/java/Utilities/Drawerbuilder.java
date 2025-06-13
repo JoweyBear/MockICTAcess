@@ -3,6 +3,7 @@ package Utilities;
 import Admin.AdminController;
 import Admin.Views.*;
 import AdminDashboard.Dashboard;
+import Student.Views.StudentPanel;
 import java.awt.CardLayout;
 import raven.drawer.component.SimpleDrawerBuilder;
 import raven.drawer.component.footer.SimpleFooterData;
@@ -25,16 +26,15 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
     public SimpleHeaderData getSimpleHeaderData() {
         return new SimpleHeaderData()
                 .setIcon(new AvatarIcon(getClass().getResource("/Images/BlckFingerprint1.png"), 100, 100, 999))
-                .setTitle("ASmart ISUFST TouchPass") 
-                .setDescription("ISUFST Fingerprint Smart Access System for Students")
-                ;
+                .setTitle("ASmart ISUFST TouchPass")
+                .setDescription("ISUFST Fingerprint Smart Access System for Students");
     }
 
     @Override
     public SimpleMenuOption getSimpleMenuOption() {
         String menus[][] = {
             {"Dashboard"},
-            {"Manage", "Admin", "Student"},
+            {"Manage", "Admin", "Student", "Faculty"},
             {"Reports", "Analytics"},
             {"Logout"}
         };
@@ -58,16 +58,35 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
 //                                CardLayout cl = (CardLayout) (jPanel1.getLayout());
 //                                jPanel1.add(aPanel, "Appointment Panel");
 //                                cl.show(jPanel1, "Appointment Panel");
-                                DisplayPanel display = new DisplayPanel();
-                                AdminPanel adminPanel = new AdminPanel(display);
-                                AddPanel addPanel = new AddPanel();
-                                EditPanel editPanel = new EditPanel();
-                                new AdminController(adminPanel, addPanel, editPanel);
-                                CardLayout cl = (CardLayout) (dashboard.jPanel2.getLayout());
-                                dashboard.jPanel2.add(adminPanel, "Appointment Panel");
-                                cl.show(dashboard.jPanel2, "Appointment Panel");
-//                                adminPanel.setVisible(true);
-                                System.out.println("AdminPanel Clicked");
+//                                DisplayPanel aDisplay = new DisplayPanel();
+//                                AdminPanel adminPanel = new AdminPanel(aDisplay);
+//                                AddAdPanel aAddPanel = new AddAdPanel();
+//                                EditPanel sEditPanel = new EditPanel();
+//                                new AdminController(adminPanel, aAddPanel, sEditPanel);
+//                                CardLayout cl = (CardLayout) (dashboard.jPanel2.getLayout());
+//                                dashboard.jPanel2.add(adminPanel, "Appointment Panel");
+//                                cl.show(dashboard.jPanel2, "Appointment Panel");
+////                                adminPanel.setVisible(true);
+//                                System.out.println("AdminPanel Clicked");
+                            }
+                            if (subIndex == 2) {
+//                                AppointmentPanel aPanel = new AppointmentPanel();
+//                                AddAppointment aAdd = new AddAppointment();
+//                                UpdateAppointment aUpdate = new UpdateAppointment();
+//                                new AppointmentController(aPanel, aAdd, aUpdate);
+//                                CardLayout cl = (CardLayout) (jPanel1.getLayout());
+//                                jPanel1.add(aPanel, "Appointment Panel");
+//                                cl.show(jPanel1, "Appointment Panel");
+//                                DisplayPanel sdisplay = new DisplayPanel();
+//                                StudentPanel studentPanel = new StudentPanel(sdisplay);
+//                                AddPanel addPanel = new AddPanel();
+//                                EditPanel editPanel = new EditPanel();
+//                                new AdminController(adminPanel, addPanel, editPanel);
+//                                CardLayout cl = (CardLayout) (dashboard.jPanel2.getLayout());
+//                                dashboard.jPanel2.add(adminPanel, "Appointment Panel");
+//                                cl.show(dashboard.jPanel2, "Appointment Panel");
+////                                adminPanel.setVisible(true);
+//                                System.out.println("AdminPanel Clicked");
                             }
 //                            Main.main.login();
                         }

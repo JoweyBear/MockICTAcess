@@ -7,11 +7,11 @@ import java.awt.event.ActionListener;
 public class AdminController {
 
     AdminPanel adminPanel;
-    AddPanel addPanel;
-    EditPanel editPanel;
+    AddAdPanel addPanel;
+    EditAdPanel editPanel;
     AdminService service;
 
-    public AdminController(AdminPanel adminPanel, AddPanel addPanel, EditPanel editPanel) {
+    public AdminController(AdminPanel adminPanel, AddAdPanel addPanel, EditAdPanel editPanel) {
         this.adminPanel = adminPanel;
         this.addPanel = addPanel;
         this.editPanel = editPanel;

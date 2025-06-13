@@ -5,9 +5,9 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import javax.swing.UIManager;
 
-public class EditPanel extends javax.swing.JPanel {
+public class EditAdPanel extends javax.swing.JPanel {
 
-    public EditPanel() {
+    public EditAdPanel() {
         UIManager.put("TextField.background", Color.white);
         initComponents();
 

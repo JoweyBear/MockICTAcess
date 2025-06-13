@@ -1,4 +1,4 @@
-package Admin.Views;
+package Faculty.Views;
 
 import Utilities.RegisterFont;
 import com.formdev.flatlaf.FlatLaf;
@@ -7,11 +7,11 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import javax.swing.UIManager;
 
-public class AdminPanel extends javax.swing.JPanel {
+public class FacultyPanel extends javax.swing.JPanel {
 
-    AdDisplayPanel display;
+    DisplayPanel display;
 
-    public AdminPanel(AdDisplayPanel display) {
+    public FacultyPanel(DisplayPanel display) {
         this.display = display;
         UIManager.put("Button.foreground", Color.white);
         FlatLaf.updateUI();

@@ -17,10 +17,10 @@ public class AdminSerImpl implements AdminService {
 
     AdminDAO dao = new AdminDAOImpl();
     AdminPanel adminPanel;
-    AddPanel addPanel;
-    EditPanel editPanel;
+    AddAdPanel addPanel;
+    EditAdPanel editPanel;
 
-    public AdminSerImpl(AdminPanel adminPanel, AddPanel addPanel, EditPanel editPanel) {
+    public AdminSerImpl(AdminPanel adminPanel, AddAdPanel addPanel, EditAdPanel editPanel) {
         this.adminPanel = adminPanel;
         this.addPanel = addPanel;
         this.editPanel = editPanel;
