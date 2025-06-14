@@ -5,9 +5,9 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import javax.swing.UIManager;
 
-public class EditPanel extends javax.swing.JPanel {
+public class AddStudPanel extends javax.swing.JPanel {
 
-    public EditPanel() {
+    public AddStudPanel() {
         UIManager.put("TextField.background", Color.white);
         initComponents();
 
@@ -25,7 +25,7 @@ public class EditPanel extends javax.swing.JPanel {
         jLabelfinger.setText("");
         chssmg.setFont(RegisterFont.getFont("nstr", 14));
         scn.setFont(RegisterFont.getFont("nstr", 14));
-        pdt.setFont(RegisterFont.getFont("nstr", 14));
+        sv.setFont(RegisterFont.getFont("nstr", 14));
         clr.setFont(RegisterFont.getFont("nstr", 14));
 
     }
@@ -43,7 +43,7 @@ public class EditPanel extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         student_id = new javax.swing.JTextField();
         jLabelimage = new javax.swing.JLabel();
-        pdt = new javax.swing.JButton();
+        sv = new javax.swing.JButton();
         scn = new javax.swing.JButton();
         clr = new javax.swing.JButton();
         nmbr = new javax.swing.JTextField();
@@ -75,8 +75,8 @@ public class EditPanel extends javax.swing.JPanel {
 
         jLabelimage.setText("jLabel3");
 
-        pdt.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
-        pdt.setText("update");
+        sv.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
+        sv.setText("save");
 
         scn.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
         scn.setText("Scan");
@@ -141,7 +141,7 @@ public class EditPanel extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(105, 105, 105)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pdt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(sv, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(clr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(110, 110, 110))
         );
@@ -181,7 +181,7 @@ public class EditPanel extends javax.swing.JPanel {
                     .addComponent(scn)
                     .addComponent(chssmg))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(pdt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(sv, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(4, 4, 4)
                 .addComponent(clr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18))
@@ -216,7 +216,7 @@ public class EditPanel extends javax.swing.JPanel {
         jLabelfinger.setText("");
     }//GEN-LAST:event_clrActionPerformed
     public void buttonListener(ActionListener a) {
-        pdt.addActionListener(a);
+        sv.addActionListener(a);
         scn.addActionListener(a);
         chssmg.addActionListener(a);
     }
@@ -237,10 +237,10 @@ public class EditPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel1;
     public javax.swing.JTextField ml;
     public javax.swing.JTextField nmbr;
-    public javax.swing.JButton pdt;
     public javax.swing.JButton scn;
     public javax.swing.JComboBox<String> sctn;
     public javax.swing.JTextField student_id;
+    public javax.swing.JButton sv;
     public javax.swing.JComboBox<String> sx;
     public javax.swing.JComboBox<String> yr;
     // End of variables declaration//GEN-END:variables

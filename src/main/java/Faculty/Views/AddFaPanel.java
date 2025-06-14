@@ -1,15 +1,14 @@
 package Faculty.Views;
 
-import Admin.Views.*;
 import Utilities.RegisterFont;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.util.Date;
 import javax.swing.UIManager;
 
-public class AddPanel extends javax.swing.JPanel {
+public class AddFaPanel extends javax.swing.JPanel {
 
-    public AddPanel() {
+    public AddFaPanel() {
         UIManager.put("TextField.background", Color.white);
         initComponents();
 

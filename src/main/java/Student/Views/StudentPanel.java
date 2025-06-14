@@ -9,9 +9,9 @@ import javax.swing.UIManager;
 
 public class StudentPanel extends javax.swing.JPanel {
 
-    DisplayPanel display;
+    DisplayStudPanel display;
 
-    public StudentPanel(DisplayPanel display) {
+    public StudentPanel(DisplayStudPanel display) {
         this.display = display;
         UIManager.put("Button.foreground", Color.white);
         FlatLaf.updateUI();

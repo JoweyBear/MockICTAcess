@@ -9,9 +9,9 @@ import javax.swing.UIManager;
 
 public class AdminPanel extends javax.swing.JPanel {
 
-    AdDisplayPanel display;
+    DisplayAdPanel display;
 
-    public AdminPanel(AdDisplayPanel display) {
+    public AdminPanel(DisplayAdPanel display) {
         this.display = display;
         UIManager.put("Button.foreground", Color.white);
         FlatLaf.updateUI();

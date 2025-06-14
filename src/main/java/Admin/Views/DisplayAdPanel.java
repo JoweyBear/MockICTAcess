@@ -1,12 +1,10 @@
 
-package Faculty.Views;
+package Admin.Views;
 
-import Admin.Views.*;
-
-public class DisplayPanel extends javax.swing.JPanel {
+public class DisplayAdPanel extends javax.swing.JPanel {
 
 
-    public DisplayPanel() {
+    public DisplayAdPanel() {
         initComponents();
     }
 
@@ -20,7 +18,7 @@ public class DisplayPanel extends javax.swing.JPanel {
 
         jPanel2.setBackground(new java.awt.Color(62, 92, 118));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ManageFaculty.png"))); // NOI18N
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ManageAdmin.png"))); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
