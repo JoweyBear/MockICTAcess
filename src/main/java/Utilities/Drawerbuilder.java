@@ -3,6 +3,8 @@ package Utilities;
 import Admin.AdminController;
 import Admin.Views.*;
 import AdminDashboard.Dashboard;
+import Attendance.AttendanceController;
+import Attendance.Views.*;
 import Faculty.FacultyController;
 import Faculty.Views.*;
 import Login.LoginFrame;
@@ -32,14 +34,14 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
         return new SimpleHeaderData()
                 .setIcon(new AvatarIcon(getClass().getResource("/Images/BlckFingerprint1.png"), 100, 100, 999))
                 .setTitle("ASmart ISUFST TouchPass")
-                .setDescription("ISUFST Fingerprint Smart Access System for Students");
+                .setDescription("<html>ISUFST Fingerprint Smart<br>Access System for Students</html>");
     }
 
     @Override
     public SimpleMenuOption getSimpleMenuOption() {
         String menus[][] = {
             {"Dashboard"},
-            {"Manage", "Admin", "Student", "Faculty"},
+            {"Manage", "Admin", "Student", "Faculty", "Attendance"},
             {"Reports", "Analytics"},
             {"Logout"}
         };
@@ -94,6 +96,20 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
 //                                adminPanel.setVisible(true);
                                 System.out.println("AdminPanel Clicked");
                             }
+                            if (subIndex == 4) {
+                                DisplayAttPanel atdisplay = new DisplayAttPanel();
+                                AttendancePanel attPanel = new AttendancePanel(atdisplay);
+                                AddRmPanel rmaddPanel = new AddRmPanel();
+                                AddCSPanel csaddPanel = new AddCSPanel();
+                                EditRmPanel rmeditPanel = new EditRmPanel();
+                                EditCSPanel cseditPanel = new EditCSPanel();
+                                new AttendanceController(rmaddPanel, csaddPanel, rmeditPanel, cseditPanel, attPanel);
+                                CardLayout cl = (CardLayout) (dashboard.jPanel2.getLayout());
+                                dashboard.jPanel2.add(attPanel, "Appointment Panel");
+                                cl.show(dashboard.jPanel2, "Appointment Panel");
+//                                adminPanel.setVisible(true);
+                                System.out.println("AdminPanel Clicked");
+                            }
 //                            Main.main.login();
                         }
                         System.out.println("Menu selected " + index + " " + subIndex);
@@ -119,16 +135,12 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
                 .setTitle(GlobalVar.loggedInAdmin.getStFname()
                         + " " + GlobalVar.loggedInAdmin.getStLname())
                 .setDescription(GlobalVar.loggedInAdmin.getCollge());
-//        return new SimpleFooterData()
-//                .setTitle(GlobalVar.loggedInAdmin.getStFname()
-//                        + " " + GlobalVar.loggedInAdmin.getStLname())
-//                .setDescription(GlobalVar.loggedInAdmin.getPosition());
 
     }
 
-    @Override
-    public int getDrawerWidth() {
-        return 500;
-    }
+//    @Override
+//    public int getDrawerWidth() {
+//        return 350;
+//    }
 
 }
