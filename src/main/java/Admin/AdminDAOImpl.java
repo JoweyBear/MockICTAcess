@@ -1,9 +1,11 @@
 package Admin;
 
 import Connection.Ticket;
+import Utilities.FingerprintCapture;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.sql.ResultSet;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
@@ -27,7 +29,9 @@ public class AdminDAOImpl implements AdminDAO {
     @Override
     public DefaultTableModel fetchAll() {
         try {
-            String sql = "SELECT u.user_id AS 'ID', u.fname AS 'First Name', u.mname AS 'M', u.lname, u.email, a.username "
+            String sql = "SELECT u.user_id AS 'ID', u.fname AS 'First Name', u.mname AS 'Middle Name', "
+                    + "u.lname AS 'Last Name', u.email AS 'Email', a.username AS 'Username', "
+                    + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS 'Status' "
                     + "FROM user u "
                     + "JOIN auth a ON u.user_id = a.user_id "
                     + "WHERE u.role = 'admin'";
@@ -36,7 +40,6 @@ public class AdminDAOImpl implements AdminDAO {
             rs = stmt.executeQuery(sql);
             ResultSetMetaData md = (ResultSetMetaData) rs.getMetaData();
             int columnCount = md.getColumnCount();
-
 
             Vector<String> columnNames = new Vector<>();
             for (int i = 1; i <= columnCount; i++) {
@@ -47,12 +50,7 @@ public class AdminDAOImpl implements AdminDAO {
             while (rs.next()) {
                 Vector<Object> row = new Vector<>();
                 for (int i = 1; i <= columnCount; i++) {
-                    String col = md.getColumnLabel(i);
-                    Object val = rs.getObject(i);
-//                    if (val != null && ("First Name".equals(col) || "Middle Name".equals(col) || "Last Name".equals(col) || "Health Condition".equals(col) || "Contact #".equals(col))) {
-//                        val = de.decrypt(val.toString());
-//                    }
-                    row.add(val);
+                    row.add(rs.getObject(i));
                 }
                 data.add(row);
             }
@@ -61,49 +59,53 @@ public class AdminDAOImpl implements AdminDAO {
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Vector<String> columns = new Vector<>(List.of("ID", "First Name", "Middle Name", "Last Name", "Sex",
-                "Date of Birth", "Brgy", "Code", "4Ps", "Indigent", "Highest Educ Att", "Ethnicity", "Net Income",
-                "Occupation", "Health Condition", "House Status", "House Condition", "Contact #", "Latitude", "Longitude"));
-        return new DefaultTableModel(new Vector<>(), columns);
 
+        // Return empty default if something fails
+        Vector<String> columns = new Vector<>(List.of("ID", "First Name", "Middle Name", "Last Name", "Email", "Username", "Status"));
+        return new DefaultTableModel(new Vector<>(), columns);
     }
 
     @Override
     public void save(AdminModel admin) {
         try {
-            // Step 1: Insert into user table
-            String userSql = "INSERT INTO user (role, fname, mname, lname, contact_num, email, sex, birthdate, college) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement userPs = conn.prepareStatement(userSql, Statement.RETURN_GENERATED_KEYS);
-            userPs.setString(1, "admin");
-            userPs.setString(2, "Anna");
-            userPs.setString(3, "M.");
-            userPs.setString(4, "Lopez");
-            userPs.setString(5, "09981234567");
-            userPs.setString(6, "anna.admin@email.com");
-            userPs.setString(7, "Female");
-            userPs.setDate(8, java.sql.Date.valueOf("1990-03-15"));
-            userPs.setString(9, "Management");
+            String userSql = "INSERT INTO user (user_id, role, fname, mname, lname, contact_num, email, sex, birthdate, image, college) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement userPs = conn.prepareStatement(userSql);
+            userPs.setString(1, admin.getStaff_id());
+            userPs.setString(2, "admin");
+            userPs.setString(3, admin.getStFname());
+            userPs.setString(4, admin.getStMname());
+            userPs.setString(5, admin.getStLname());
+            userPs.setString(6, admin.getConNum());
+            userPs.setString(7, admin.getEmail());
+            userPs.setString(8, admin.getSx());
+            userPs.setDate(9, new java.sql.Date(admin.getBday().getTime()));
+            userPs.setBytes(10, admin.getImage());
+            userPs.setString(11, admin.getCollge());
             userPs.executeUpdate();
 
-            // Get the generated user_id
-            ResultSet rs = userPs.getGeneratedKeys();
-            int userId = -1;
-            if (rs.next()) {
-                userId = rs.getInt(1);
-            }
-
-// Step 2: Insert into auth table
-            String username = "admin_anna";
-            String plainPassword = "adminpass123"; // You'll hash this before storing
-            String passwordHash = plainPassword; // Implement your hash function
-
-            String authSql = "INSERT INTO auth (user_id, username, password_hash) VALUES (?, ?, ?)";
+            String authSql = "INSERT INTO auth (user_id, username, hash) VALUES (?, ?, ?)";
             PreparedStatement authPs = conn.prepareStatement(authSql);
-            authPs.setInt(1, userId);
-            authPs.setString(2, username);
-            authPs.setString(3, passwordHash);
+            authPs.setString(1, admin.getStaff_id());
+            authPs.setString(2, admin.getUsername());
+            authPs.setString(3, admin.getPass());
             authPs.executeUpdate();
+
+            // Save fingerprint
+//        DPFPTemplate template = fingerprintCapture.getTemplate();
+//        if (template != null) {
+//            byte[] fingerprintData = template.serialize();
+//
+            String updateFingerprintSql = "INSERT into identification (user_id, finger_template) VALUES (?, ?)";
+            PreparedStatement fingerprintPs = conn.prepareStatement(updateFingerprintSql);
+            fingerprintPs.setString(1, admin.getStaff_id());
+            fingerprintPs.setBytes(2, admin.getFingerprint());
+            fingerprintPs.executeUpdate();
+//
+//            System.out.println("Fingerprint saved successfully.");
+//        } else {
+//            System.out.println("No fingerprint template captured.");
+//        }
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -111,37 +113,65 @@ public class AdminDAOImpl implements AdminDAO {
 
     @Override
     public void update(AdminModel admin) {
-        int userId = 1;
         try {
-// Update user table
-            String updateUserSql = "UPDATE user SET fname = ?, lname = ?, email = ?, contact_num = ? WHERE user_id = ?";
-            PreparedStatement updateUserPs = conn.prepareStatement(updateUserSql);
-            updateUserPs.setString(1, "UpdatedFirstName");
-            updateUserPs.setString(2, "UpdatedLastName");
-            updateUserPs.setString(3, "updated@email.com");
-            updateUserPs.setString(4, "09998887777");
-            updateUserPs.setInt(5, userId);  // use the correct user_id
-            updateUserPs.executeUpdate();
+            String userSql = "UPDATE user SET fname = ?, mname = ?, lname = ?, contact_num = ?, email = ?, sex = ?, birthdate = ?, image = ?, college = ? WHERE user_id = ?";
+            PreparedStatement userPs = conn.prepareStatement(userSql);
+            userPs.setString(1, admin.getStFname());
+            userPs.setString(2, admin.getStMname());
+            userPs.setString(3, admin.getStLname());
+            userPs.setString(4, admin.getConNum());
+            userPs.setString(5, admin.getEmail());
+            userPs.setString(6, admin.getSx());
+            userPs.setDate(7, new java.sql.Date(admin.getBday().getTime()));
+            userPs.setBytes(8, admin.getImage());
+            userPs.setString(9, admin.getCollge());
+            userPs.setString(10, admin.getStaff_id());
+            userPs.executeUpdate();
 
-// Update auth table (username)
-            String updateAuthSql = "UPDATE auth SET username = ? WHERE user_id = ?";
-            PreparedStatement updateAuthPs = conn.prepareStatement(updateAuthSql);
-            updateAuthPs.setString(1, "updatedUsername");
-            updateAuthPs.setInt(2, userId);  // same user_id
-            updateAuthPs.executeUpdate();
+            String authSql = "UPDATE auth SET username = ?, hash = ? WHERE user_id = ?";
+            PreparedStatement authPs = conn.prepareStatement(authSql);
+            authPs.setString(1, admin.getUsername());
+            authPs.setString(2, admin.getPass());
+            authPs.setString(3, admin.getStaff_id());
+            authPs.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Admin Information Updated!");
-
+//        // Step 3: Update or insert fingerprint
+//        DPFPTemplate template = fingerprintCapture.getTemplate();
+//        if (template != null) {
+//            byte[] fingerprintData = template.serialize();
+//
+            String checkSql = "SELECT id FROM identification WHERE user_id = ?";
+            PreparedStatement checkPs = conn.prepareStatement(checkSql);
+            checkPs.setString(1, admin.getStaff_id());
+            ResultSet rs = checkPs.executeQuery();
+//
+            if (rs.next()) {
+                String updateFingerprintSql = "UPDATE identification SET fingerprint_template = ? WHERE user_id = ?";
+                PreparedStatement updateFpPs = conn.prepareStatement(updateFingerprintSql);
+                updateFpPs.setBytes(1, admin.getFingerprint());
+                updateFpPs.setString(2, admin.getStaff_id());
+                updateFpPs.executeUpdate();
+                System.out.println("Fingerprint updated.");
+            } else {
+                String insertFpSql = "INSERT INTO identification (user_id, fingerprint_template) VALUES (?, ?)";
+                PreparedStatement insertFpPs = conn.prepareStatement(insertFpSql);
+                insertFpPs.setString(1, admin.getStaff_id());
+                insertFpPs.setBytes(2, admin.getFingerprint());
+                insertFpPs.executeUpdate();
+                System.out.println("Fingerprint inserted.");
+            }
+//        } else {
+//            System.out.println("No fingerprint template captured.");
+//        }
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, ex);
         }
     }
 
     @Override
     public void delete(String admin_id) {
         try {
-            String sql = "Delete from admin where staff_id = ?";
+            String sql = "UPDATE user SET is_active = 0 WHERE user_id = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, admin_id);
             stmt.execute();
@@ -153,8 +183,4 @@ public class AdminDAOImpl implements AdminDAO {
 
     }
 
-    @Override
-    public void fecthFingerprint() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 }

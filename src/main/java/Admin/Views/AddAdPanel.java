@@ -3,6 +3,8 @@ package Admin.Views;
 import Utilities.RegisterFont;
 import java.awt.Color;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.swing.UIManager;
 
 public class AddAdPanel extends javax.swing.JPanel {
@@ -220,7 +222,8 @@ public class AddAdPanel extends javax.swing.JPanel {
         adlname.setText("");
         nmbr.setText("");
         ml.setText("");
-        sx.setSelectedIndex(-1);
+        sx.setSelectedIndex(0);
+        bdy.setDate(new java.util.Date());
         usrnm.setText("");
         psswrd.setText("");
         cnfrm.setText("");
@@ -238,7 +241,7 @@ public class AddAdPanel extends javax.swing.JPanel {
     public javax.swing.JTextField adlname;
     public javax.swing.JTextField admin_id;
     public javax.swing.JTextField admname;
-    private com.toedter.calendar.JDateChooser bdy;
+    public com.toedter.calendar.JDateChooser bdy;
     public javax.swing.JButton chssmg;
     public javax.swing.JButton clr;
     public javax.swing.JTextField cnfrm;
@@ -247,7 +250,7 @@ public class AddAdPanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     public javax.swing.JLabel jLabelfinger;
     public javax.swing.JLabel jLabelimage;
-    private javax.swing.JPanel jPanel1;
+    public javax.swing.JPanel jPanel1;
     public javax.swing.JTextField ml;
     public javax.swing.JTextField nmbr;
     public javax.swing.JTextField psswrd;

@@ -1,6 +1,8 @@
 package Admin;
 
 import Admin.Views.*;
+import Utilities.FingerprintCapture;
+import Utilities.ImageUploader;
 import Utilities.QuickSearch;
 import Utilities.QuickSearchList;
 import java.awt.CardLayout;
@@ -8,6 +10,8 @@ import java.awt.Dialog;
 import java.sql.ResultSet;
 import java.util.Arrays;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
@@ -19,6 +23,11 @@ public class AdminSerImpl implements AdminService {
     AdminPanel adminPanel;
     AddAdPanel addPanel;
     EditAdPanel editPanel;
+    private final ImageUploader imageUploader = new ImageUploader();
+    private byte[] uploadedImageForAdd;
+    private byte[] uploadedImageForEdit;
+    private FingerprintCapture fingerprintCapture;
+//    private DPFPTemplate fingerprintTemplate;
 
     public AdminSerImpl(AdminPanel adminPanel, AddAdPanel addPanel, EditAdPanel editPanel) {
         this.adminPanel = adminPanel;
@@ -40,15 +49,38 @@ public class AdminSerImpl implements AdminService {
                 || addPanel.adfname.getText().trim().equals("")
                 || addPanel.admname.getText().trim().equals("")
                 || addPanel.adlname.getText().trim().equals("")
-                || addPanel.pstn.getText().trim().equals("")) {
+                || addPanel.pstn.getText().trim().equals("")
+                || addPanel.nmbr.getText().trim().equals("")
+                || addPanel.ml.getText().trim().equals("")
+                || addPanel.sx.getSelectedItem().equals("Sex")
+                || addPanel.usrnm.getText().trim().equals("")
+                || addPanel.cnfrm.getText().trim().equals("")
+                || addPanel.psswrd.getText().trim().equals("")) {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             AdminModel admin = new AdminModel();
-            admin.setStaff_id(addPanel.admin_id.getText());
-            admin.setStFname(addPanel.adfname.getText());
-            admin.setStMname(addPanel.admname.getText());
-            admin.setStLname(addPanel.adlname.getText());
-//            admin.setPosition(addPanel.pstn.getText());
+            admin.setStaff_id(addPanel.admin_id.getText().trim());
+            admin.setStFname(addPanel.adfname.getText().trim());
+            admin.setStMname(addPanel.admname.getText().trim());
+            admin.setStLname(addPanel.adlname.getText().trim());
+//            admin.setPosition(addPanel.pstn.getText()); 
+            admin.setConNum(addPanel.nmbr.getText().trim());
+            admin.setEmail(addPanel.ml.getText().trim());
+            admin.setSx(addPanel.sx.getSelectedItem().toString());
+            admin.setBday(addPanel.bdy.getDate());
+            admin.setUsername(addPanel.usrnm.getText().trim());
+            admin.setPass(addPanel.cnfrm.getText().trim());
+            admin.setImage(uploadedImageForAdd);
+            //            DPFPTemplate template = fingerprintCapture.getTemplate();
+//            if (template != null) {
+//                byte[] fingerprintData = template.serialize();
+//                admin.setFingerprint(fingerprintData);
+            System.out.println("Fingerprint saved successfully.");
+//            } 
+            //        } else {
+            //            System.out.println("No fingerprint template captured.");
+            //        }
+            
             dao.save(admin);
             setTableData();
             addPanel.admin_id.setText("");
@@ -56,7 +88,15 @@ public class AdminSerImpl implements AdminService {
             addPanel.adfname.setText("");
             addPanel.admname.setText("");
             addPanel.adlname.setText("");
+            addPanel.nmbr.setText("");
+            addPanel.ml.setText("");
+            addPanel.sx.setSelectedIndex(0);
+            addPanel.bdy.setDate(new java.util.Date());
+            addPanel.usrnm.setText("");
+            addPanel.psswrd.setText("");
+            addPanel.cnfrm.setText("");
             addPanel.jLabelimage.setText("");
+            addPanel.jLabelfinger.setText("");
 
         }
     }
@@ -78,11 +118,17 @@ public class AdminSerImpl implements AdminService {
 
     @Override
     public void update() {
-        if ((editPanel.admin_id.getText().trim().equals("")
+        if (editPanel.admin_id.getText().trim().equals("")
                 || editPanel.adfname.getText().trim().equals("")
                 || editPanel.admname.getText().trim().equals("")
                 || editPanel.adlname.getText().trim().equals("")
-                || editPanel.pstn.getText().trim().equals(""))) {
+                || editPanel.pstn.getText().trim().equals("")
+                || editPanel.nmbr.getText().trim().equals("")
+                || editPanel.ml.getText().trim().equals("")
+                || editPanel.sx.getSelectedItem().equals("Sex")
+                || editPanel.usrnm.getText().trim().equals("")
+                || editPanel.cnfrm.getText().trim().equals("")
+                || editPanel.psswrd.getText().trim().equals("")) {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             AdminModel admin = new AdminModel();
@@ -91,7 +137,23 @@ public class AdminSerImpl implements AdminService {
             admin.setStFname(editPanel.adfname.getText());
             admin.setStMname(editPanel.admname.getText());
             admin.setStLname(editPanel.adlname.getText());
-//            admin.setPosition(editPanel.pstn.getText());
+            admin.setConNum(editPanel.nmbr.getText().trim());
+            admin.setEmail(editPanel.ml.getText().trim());
+            admin.setSx(editPanel.sx.getSelectedItem().toString());
+            admin.setBday(editPanel.bdy.getDate());
+            admin.setUsername(editPanel.usrnm.getText().trim());
+            admin.setPass(editPanel.cnfrm.getText().trim());
+            admin.setImage(uploadedImageForEdit);
+            //            DPFPTemplate template = fingerprintCapture.getTemplate();
+//            if (template != null) {
+//                byte[] fingerprintData = template.serialize();
+//                admin.setFingerprint(fingerprintData);
+            System.out.println("Fingerprint saved successfully.");
+//            } 
+            //        } else {
+            //            System.out.println("No fingerprint template captured.");
+            //        }
+            
             dao.update(admin);
             setTableData();
             editPanel.admin_id.setText("");
@@ -130,12 +192,33 @@ public class AdminSerImpl implements AdminService {
     }
 
     @Override
-    public void selectImage() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void selectImageForAdd() {
+        ImageUploader uploader = new ImageUploader();
+        uploadedImageForAdd = uploader.pickImage(addPanel, addPanel.jLabelimage);
+    }
+
+    @Override
+    public void selectImageForEdit() {
+        ImageUploader uploader = new ImageUploader();
+        uploadedImageForEdit = uploader.pickImage(editPanel, editPanel.jLabelimage);
     }
 
     @Override
     public void scanFinger() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+//        fingerprintCapture = new FingerprintCapture(addPanel.jLabelfinger); 
+//        fingerprintCapture.startCapture();
+//
+//        JOptionPane.showMessageDialog(null, "Place your finger on the scanner.");
+//
+//        fingerprintTemplate = fingerprintCapture.getTemplate();  
+//
+//        if (fingerprintTemplate == null) {
+//            JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
+//        } else {
+//            JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
+//        }
+//
+//        fingerprintCapture.stopCapture(); 
     }
+
 }

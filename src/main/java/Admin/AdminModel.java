@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class AdminModel {
 
-//    fingerprint
+    private byte[] fingerprint;
     private String staff_id;
     private String stFname;
     private String stMname;
@@ -15,11 +15,18 @@ public class AdminModel {
     private String conNum;
     private String email;
     private Date bday;
-    private Blob image;
+    private byte[] image;
     private String collge;
     private String username;
     private String pass;
-    
+
+    public byte[] getFingerprint() {
+        return fingerprint;
+    }
+
+    public void setFingerprint(byte[] fingerprint) {
+        this.fingerprint = fingerprint;
+    }
 
     public String getStaff_id() {
         return staff_id;
@@ -60,7 +67,6 @@ public class AdminModel {
 //    public void setPosition(String position) {
 //        this.position = position;
 //    }
-
     public String getUsername() {
         return username;
     }
@@ -101,14 +107,6 @@ public class AdminModel {
         this.bday = bday;
     }
 
-    public Blob getImage() {
-        return image;
-    }
-
-    public void setImage(Blob image) {
-        this.image = image;
-    }
-
     public String getCollge() {
         return collge;
     }
@@ -123,5 +121,13 @@ public class AdminModel {
 
     public void setSx(String sx) {
         this.sx = sx;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 }

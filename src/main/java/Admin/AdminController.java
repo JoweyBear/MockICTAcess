@@ -32,13 +32,17 @@ public class AdminController {
             } else if (e.getSource() == adminPanel.dlt) {
                 service.delete();
             } else if (e.getSource() == addPanel.scn) {
-
+                service.scanFinger();
             } else if (e.getSource() == addPanel.sv) {
                 service.save();
             } else if (e.getSource() == editPanel.scn) {
-
+                service.scanFinger();
             } else if (e.getSource() == editPanel.pdt) {
                 service.update();
+            }else if(e.getSource() == addPanel.chssmg){
+                service.selectImageForAdd();
+            }else if(e.getSource() == editPanel.chssmg){
+                service.selectImageForEdit();
             }
 
         }

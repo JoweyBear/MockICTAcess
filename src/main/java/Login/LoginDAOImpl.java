@@ -42,7 +42,7 @@ public class LoginDAOImpl implements LoginDAO {
                     String email = rs.getString("email");
                     String sx = rs.getString("sex");
                     Date bday = rs.getDate("birthdate");
-                    Blob image = rs.getBlob("image");
+                    byte[] image = rs.getBytes("image");
                     String coll = rs.getString("college");
                     if (storedHash.equals(pass)) {
                         admin = new AdminModel();

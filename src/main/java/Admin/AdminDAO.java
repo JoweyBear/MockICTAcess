@@ -1,5 +1,6 @@
 package Admin;
 
+import Utilities.FingerprintCapture;
 import java.sql.ResultSet;
 import javax.swing.table.DefaultTableModel;
 
@@ -9,5 +10,4 @@ public interface AdminDAO {
     void save(AdminModel admin);
     void update(AdminModel admin);
     void delete(String admin_id);
-    void fecthFingerprint();
 }

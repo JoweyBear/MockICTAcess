@@ -240,7 +240,7 @@ public class EditAdPanel extends javax.swing.JPanel {
     public javax.swing.JTextField adlname;
     public javax.swing.JTextField admin_id;
     public javax.swing.JTextField admname;
-    private com.toedter.calendar.JDateChooser bdy;
+    public com.toedter.calendar.JDateChooser bdy;
     public javax.swing.JButton chssmg;
     public javax.swing.JButton clr;
     public javax.swing.JTextField cnfrm;
