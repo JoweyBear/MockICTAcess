@@ -55,10 +55,8 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
                     @Override
                     public void selected(MenuAction action, int index, int subIndex) {
                         if (index == 0) {
-                            LoginFrame frame = new LoginFrame();
-                            Dashboard dashboard = new Dashboard();
-                            dashboard.setVisible(true);
-                            frame.setVisible(false);
+//                            Dashboard dashboard = new Dashboard();
+//                            dashboard.setVisible(true);
                         } else if (index == 1) {
                             if (subIndex == 1) {
                                 DisplayAdPanel aDisplay = new DisplayAdPanel();

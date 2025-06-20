@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class AdminDAOImpl implements AdminDAO {
 
@@ -84,11 +85,13 @@ public class AdminDAOImpl implements AdminDAO {
             userPs.setString(11, admin.getCollge());
             userPs.executeUpdate();
 
+            String orgPass = admin.getPass();
+            String hash = BCrypt.hashpw(orgPass, BCrypt.gensalt());
             String authSql = "INSERT INTO auth (user_id, username, hash) VALUES (?, ?, ?)";
             PreparedStatement authPs = conn.prepareStatement(authSql);
             authPs.setString(1, admin.getStaff_id());
             authPs.setString(2, admin.getUsername());
-            authPs.setString(3, admin.getPass());
+            authPs.setString(3, hash);
             authPs.executeUpdate();
 
             // Save fingerprint

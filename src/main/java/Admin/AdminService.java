@@ -1,7 +1,9 @@
 package Admin;
 
+import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.event.PopupMenuListener;
 
 public interface AdminService {
 
@@ -22,5 +24,9 @@ public interface AdminService {
     void selectImageForEdit();
 
     void scanFinger();
+
+    void adminPopupMenu();
+
+    void adminMouseEvent(MouseEvent e);
 //    void editButton();
 }

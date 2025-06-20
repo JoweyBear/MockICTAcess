@@ -5,12 +5,18 @@ import com.formdev.flatlaf.FlatLaf;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import javax.swing.UIManager;
+import javax.swing.event.PopupMenuListener;
 
 public class AdminPanel extends javax.swing.JPanel {
 
     DisplayAdPanel display;
 
+    /**
+     *
+     * @param display
+     */
     public AdminPanel(DisplayAdPanel display) {
         this.display = display;
         UIManager.put("Button.foreground", Color.white);
@@ -31,6 +37,8 @@ public class AdminPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        adminPopUp = new javax.swing.JPopupMenu();
+        deleteAdminMenu = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -39,6 +47,9 @@ public class AdminPanel extends javax.swing.JPanel {
         dlt = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         srchtxtfld = new javax.swing.JTextField();
+
+        deleteAdminMenu.setText("jMenuItem1");
+        adminPopUp.add(deleteAdminMenu);
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));
 
@@ -73,7 +84,7 @@ public class AdminPanel extends javax.swing.JPanel {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGap(35, 35, 35)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 471, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 471, Short.MAX_VALUE)
                 .addGap(36, 36, 36)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
@@ -119,7 +130,11 @@ public class AdminPanel extends javax.swing.JPanel {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
-    public void buttonListener(ActionListener a) {
+
+    public void buttonListener(ActionListener a, PopupMenuListener c, MouseListener b) {
+        adminPopUp.addPopupMenuListener(c);
+        jTable1.addMouseListener(b);
+        deleteAdminMenu.addActionListener(a);
         dd.addActionListener(a);
         dt.addActionListener(a);
         dlt.addActionListener(a);
@@ -127,7 +142,9 @@ public class AdminPanel extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JPopupMenu adminPopUp;
     public javax.swing.JButton dd;
+    public javax.swing.JMenuItem deleteAdminMenu;
     public javax.swing.JButton dlt;
     public javax.swing.JButton dt;
     private javax.swing.JPanel jPanel1;

@@ -7,12 +7,18 @@ import Utilities.QuickSearch;
 import Utilities.QuickSearchList;
 import java.awt.CardLayout;
 import java.awt.Dialog;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import net.proteanit.sql.DbUtils;
@@ -40,7 +46,7 @@ public class AdminSerImpl implements AdminService {
     public void setTableData() {
         DefaultTableModel model = dao.fetchAll();
         adminPanel.jTable1.setModel(model);
-//        new QuickSearchList(adminPanel, adminPanel.jTable1, adminPanel.srchtxtfld, model);
+        new QuickSearchList(adminPanel, adminPanel.jTable1, adminPanel.srchtxtfld, (List<List<String>>) model);
     }
 
     @Override
@@ -80,7 +86,7 @@ public class AdminSerImpl implements AdminService {
             //        } else {
             //            System.out.println("No fingerprint template captured.");
             //        }
-            
+
             dao.save(admin);
             setTableData();
             addPanel.admin_id.setText("");
@@ -153,7 +159,7 @@ public class AdminSerImpl implements AdminService {
             //        } else {
             //            System.out.println("No fingerprint template captured.");
             //        }
-            
+
             dao.update(admin);
             setTableData();
             editPanel.admin_id.setText("");
@@ -219,6 +225,32 @@ public class AdminSerImpl implements AdminService {
 //        }
 //
 //        fingerprintCapture.stopCapture(); 
+    }
+
+    @Override
+    public void adminPopupMenu() {
+        SwingUtilities.invokeLater(() -> {
+            int rowAtPoint = adminPanel.jTable1.rowAtPoint(SwingUtilities.
+                    convertPoint(adminPanel.adminPopUp, new Point(0, 0), adminPanel.jTable1));
+            if (rowAtPoint > -1) {
+                adminPanel.jTable1.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+            }
+        });
+    }
+
+    @Override
+    public void adminMouseEvent(MouseEvent e) {
+        int r = adminPanel.jTable1.rowAtPoint(e.getPoint());
+        if (r >= 0 && r < adminPanel.jTable1.getRowCount()) {
+            adminPanel.jTable1.setRowSelectionInterval(r, r);
+        } else {
+            adminPanel.jTable1.clearSelection();
+        }
+
+        if (e.isPopupTrigger() && e.getComponent() instanceof JTable) {
+            adminPanel.adminPopUp.show(e.getComponent(), e.getX(), e.getY());
+        }
+
     }
 
 }

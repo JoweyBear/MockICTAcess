@@ -7,8 +7,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.swing.UIManager;
 
+/**
+ *
+ * @author Administrator
+ */
 public class AddAdPanel extends javax.swing.JPanel {
 
+    /**
+     *
+     */
     public AddAdPanel() {
         UIManager.put("TextField.background", Color.white);
         initComponents();
@@ -230,6 +237,11 @@ public class AddAdPanel extends javax.swing.JPanel {
         jLabelimage.setText("");
         jLabelfinger.setText("");
     }//GEN-LAST:event_clrActionPerformed
+
+    /**
+     *
+     * @param a
+     */
     public void buttonListener(ActionListener a) {
         sv.addActionListener(a);
         scn.addActionListener(a);
