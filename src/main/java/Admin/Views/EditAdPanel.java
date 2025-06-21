@@ -59,6 +59,8 @@ public class EditAdPanel extends javax.swing.JPanel {
         psswrd = new javax.swing.JTextField();
         cnfrm = new javax.swing.JTextField();
         ml = new javax.swing.JTextField();
+        brgy = new javax.swing.JTextField();
+        mncplty = new javax.swing.JTextField();
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(13, 27, 42), 2, true), "Edit Admin", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("SansSerif", 1, 36))); // NOI18N
@@ -112,6 +114,10 @@ public class EditAdPanel extends javax.swing.JPanel {
 
         ml.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        brgy.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        mncplty.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -127,8 +133,10 @@ public class EditAdPanel extends javax.swing.JPanel {
                             .addComponent(adlname, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(nmbr, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(ml, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(bdy, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(bdy, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(mncplty, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(brgy, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addContainerGap(25, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(usrnm, javax.swing.GroupLayout.Alignment.LEADING)
@@ -158,33 +166,37 @@ public class EditAdPanel extends javax.swing.JPanel {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(14, 14, 14)
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
-                .addComponent(admin_id, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addComponent(admin_id)
                 .addGap(10, 10, 10)
-                .addComponent(pstn, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addComponent(pstn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
-                .addComponent(adfname, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addComponent(adfname)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(admname, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addComponent(admname)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(adlname, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addComponent(adlname)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nmbr, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addComponent(nmbr)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ml, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addComponent(ml)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(brgy)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mncplty)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bdy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(usrnm, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addComponent(usrnm)
                 .addGap(12, 12, 12)
-                .addComponent(psswrd, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addComponent(psswrd)
                 .addGap(12, 12, 12)
-                .addComponent(cnfrm, javax.swing.GroupLayout.DEFAULT_SIZE, 25, Short.MAX_VALUE)
+                .addComponent(cnfrm)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelfinger, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -241,6 +253,7 @@ public class EditAdPanel extends javax.swing.JPanel {
     public javax.swing.JTextField admin_id;
     public javax.swing.JTextField admname;
     public com.toedter.calendar.JDateChooser bdy;
+    public javax.swing.JTextField brgy;
     public javax.swing.JButton chssmg;
     public javax.swing.JButton clr;
     public javax.swing.JTextField cnfrm;
@@ -251,6 +264,7 @@ public class EditAdPanel extends javax.swing.JPanel {
     public javax.swing.JLabel jLabelimage;
     private javax.swing.JPanel jPanel1;
     public javax.swing.JTextField ml;
+    public javax.swing.JTextField mncplty;
     public javax.swing.JTextField nmbr;
     public javax.swing.JButton pdt;
     public javax.swing.JTextField psswrd;

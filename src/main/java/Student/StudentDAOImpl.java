@@ -23,11 +23,12 @@ public class StudentDAOImpl implements StudentDAO{
     public DefaultTableModel fetchAll() {
         try {
             String sql = "SELECT u.user_id AS 'ID', u.fname AS 'First Name', u.mname AS 'Middle Name', "
-                    + "u.lname AS 'Last Name', u.email AS 'Email', a.username AS 'Username', "
+                    + "u.lname AS 'Last Name', u.email AS 'Email', u.barangay AS 'Barangay', u.municipality AS 'Municipality',"
+                    + "s.year AS 'Year', s.section AS 'Section', "
                     + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS 'Status' "
                     + "FROM user u "
-                    + "JOIN auth a ON u.user_id = a.user_id "
-                    + "WHERE u.role = 'admin'";
+                    + "JOIN student_info s ON u.user_id = a.user_id "
+                    + "WHERE u.role = 'student'";
 
             Statement stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);

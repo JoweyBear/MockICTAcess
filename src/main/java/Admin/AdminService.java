@@ -13,6 +13,12 @@ public interface AdminService {
 
     void editView();
 
+    void viewAdmin();
+
+    void clearAdd();
+
+    void clearEdit();
+
     void update();
 
     void delete();
@@ -23,7 +29,9 @@ public interface AdminService {
 
     void selectImageForEdit();
 
-    void scanFinger();
+    void scanFingerAdd();
+
+    void scanFingerEdit();
 
     void adminPopupMenu();
 

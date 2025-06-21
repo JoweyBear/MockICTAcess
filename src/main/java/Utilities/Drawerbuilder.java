@@ -63,7 +63,8 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
                                 AdminPanel adminPanel = new AdminPanel(aDisplay);
                                 AddAdPanel aAddPanel = new AddAdPanel();
                                 EditAdPanel sEditPanel = new EditAdPanel();
-                                new AdminController(adminPanel, aAddPanel, sEditPanel);
+                                ViewAdminDialog vDialog = new ViewAdminDialog();
+                                new AdminController(adminPanel, aAddPanel, sEditPanel, vDialog);
                                 CardLayout cl = (CardLayout) (dashboard.jPanel2.getLayout());
                                 dashboard.jPanel2.add(adminPanel, "Admin Panel");
                                 cl.show(dashboard.jPanel2, "Admin Panel");

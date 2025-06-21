@@ -7,18 +7,25 @@ import Utilities.QuickSearch;
 import Utilities.QuickSearchList;
 import java.awt.CardLayout;
 import java.awt.Dialog;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.DefaultCellEditor;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import net.proteanit.sql.DbUtils;
@@ -29,16 +36,18 @@ public class AdminSerImpl implements AdminService {
     AdminPanel adminPanel;
     AddAdPanel addPanel;
     EditAdPanel editPanel;
+    ViewAdminDialog viewDialog;
     private final ImageUploader imageUploader = new ImageUploader();
     private byte[] uploadedImageForAdd;
     private byte[] uploadedImageForEdit;
     private FingerprintCapture fingerprintCapture;
 //    private DPFPTemplate fingerprintTemplate;
 
-    public AdminSerImpl(AdminPanel adminPanel, AddAdPanel addPanel, EditAdPanel editPanel) {
+    public AdminSerImpl(AdminPanel adminPanel, AddAdPanel addPanel, EditAdPanel editPanel, ViewAdminDialog viewDialog) {
         this.adminPanel = adminPanel;
         this.addPanel = addPanel;
         this.editPanel = editPanel;
+        this.viewDialog = viewDialog;
 
     }
 
@@ -77,49 +86,52 @@ public class AdminSerImpl implements AdminService {
             admin.setUsername(addPanel.usrnm.getText().trim());
             admin.setPass(addPanel.cnfrm.getText().trim());
             admin.setImage(uploadedImageForAdd);
-            //            DPFPTemplate template = fingerprintCapture.getTemplate();
-//            if (template != null) {
-//                byte[] fingerprintData = template.serialize();
-//                admin.setFingerprint(fingerprintData);
-            System.out.println("Fingerprint saved successfully.");
-//            } 
-            //        } else {
-            //            System.out.println("No fingerprint template captured.");
-            //        }
 
+//            
+//            DPFPTemplate template = fingerprintCapture.getTemplate();
+//            if (template != null) {
+//                admin.setFingerprint(template.serialize());
+//
+//                // Convert fingerprint sample to image byte[]
+//                Image img = DPFPGlobal.getSampleConversionFactory().createImage(fingerprintCapture.getSample());  
+//                BufferedImage bufferedImg = new BufferedImage(
+//                        img.getWidth(null),
+//                        img.getHeight(null),
+//                        BufferedImage.TYPE_INT_RGB
+//                );
+//
+//                Graphics2D g2 = bufferedImg.createGraphics();
+//                g2.drawImage(img, 0, 0, null);
+//                g2.dispose();
+//
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                ImageIO.write(bufferedImg, "png", baos);
+//                admin.setFingerprintImage(baos.toByteArray());
+//            } else {
+//                System.out.println("No fingerprint template captured.");
+//            }
             dao.save(admin);
             setTableData();
-            addPanel.admin_id.setText("");
-            addPanel.pstn.setText("");
-            addPanel.adfname.setText("");
-            addPanel.admname.setText("");
-            addPanel.adlname.setText("");
-            addPanel.nmbr.setText("");
-            addPanel.ml.setText("");
-            addPanel.sx.setSelectedIndex(0);
-            addPanel.bdy.setDate(new java.util.Date());
-            addPanel.usrnm.setText("");
-            addPanel.psswrd.setText("");
-            addPanel.cnfrm.setText("");
-            addPanel.jLabelimage.setText("");
-            addPanel.jLabelfinger.setText("");
+            clearAdd();
 
         }
     }
 
     @Override
     public void editView() {
-        int dataRow = adminPanel.jTable1.getSelectedRow();
-        if (dataRow >= 0) {
-            String admin_id = adminPanel.jTable1.getValueAt(dataRow, 0) + "";
-            editPanel.admin_id.setText(admin_id);
-            editPanel.adfname.setText((String) adminPanel.jTable1.getValueAt(dataRow, 1));
-            editPanel.admname.setText((String) adminPanel.jTable1.getValueAt(dataRow, 2));
-            editPanel.adlname.setText((String) adminPanel.jTable1.getValueAt(dataRow, 3));
-            editPanel.pstn.setText((String) adminPanel.jTable1.getValueAt(dataRow, 4));
-        } else {
-            JOptionPane.showMessageDialog(null, "Please select admin to update.");
-        }
+        editPanel.admin_id.setText(viewDialog.adminID.getText().trim());
+        editPanel.pstn.setText(viewDialog.college.getText().trim());
+        editPanel.adfname.setText(viewDialog.fName.getText().trim());
+        editPanel.admname.setText(viewDialog.mName.getText().trim());
+        editPanel.nmbr.setText(viewDialog.cntctNumber.getText().trim());
+        editPanel.ml.setText(viewDialog.email.getText().trim());
+        editPanel.sx.setSelectedItem(viewDialog.sex.getText());
+        editPanel.brgy.setText(viewDialog.brgy.getText().trim());
+        editPanel.mncplty.setText(viewDialog.municipal.getText().trim());
+        editPanel.bdy.setDateFormatString(viewDialog.bDay.getText());
+        editPanel.usrnm.setText(viewDialog.usrName.getText().trim());
+        editPanel.jLabelimage.setIcon(viewDialog.image.getIcon());
+        editPanel.jLabelfinger.setIcon(viewDialog.fngrprnt.getIcon());
     }
 
     @Override
@@ -150,24 +162,32 @@ public class AdminSerImpl implements AdminService {
             admin.setUsername(editPanel.usrnm.getText().trim());
             admin.setPass(editPanel.cnfrm.getText().trim());
             admin.setImage(uploadedImageForEdit);
-            //            DPFPTemplate template = fingerprintCapture.getTemplate();
-//            if (template != null) {
-//                byte[] fingerprintData = template.serialize();
-//                admin.setFingerprint(fingerprintData);
-            System.out.println("Fingerprint saved successfully.");
-//            } 
-            //        } else {
-            //            System.out.println("No fingerprint template captured.");
-            //        }
 
+//            DPFPTemplate template = fingerprintCapture.getTemplate();
+//            if (template != null) {
+//                admin.setFingerprint(template.serialize());
+//
+//                // Convert fingerprint sample to image byte[]
+//                Image img = DPFPGlobal.getSampleConversionFactory().createImage(fingerprintCapture.getLastSample());  
+//                BufferedImage bufferedImg = new BufferedImage(
+//                        img.getWidth(null),
+//                        img.getHeight(null),
+//                        BufferedImage.TYPE_INT_RGB
+//                );
+//
+//                Graphics2D g2 = bufferedImg.createGraphics();
+//                g2.drawImage(img, 0, 0, null);
+//                g2.dispose();
+//
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                ImageIO.write(bufferedImg, "png", baos);
+//                admin.setFingerprintImage(baos.toByteArray());
+//            } else {
+//                System.out.println("No fingerprint template captured.");
+//            }
             dao.update(admin);
             setTableData();
-            editPanel.admin_id.setText("");
-            editPanel.pstn.setText("");
-            editPanel.adfname.setText("");
-            editPanel.admname.setText("");
-            editPanel.adlname.setText("");
-//            editPanel.jLabel3.setText("");
+            clearEdit();
 
         }
     }
@@ -210,7 +230,7 @@ public class AdminSerImpl implements AdminService {
     }
 
     @Override
-    public void scanFinger() {
+    public void scanFingerAdd() {
 //        fingerprintCapture = new FingerprintCapture(addPanel.jLabelfinger); 
 //        fingerprintCapture.startCapture();
 //
@@ -228,6 +248,24 @@ public class AdminSerImpl implements AdminService {
     }
 
     @Override
+    public void scanFingerEdit() {
+//        fingerprintCapture = new FingerprintCapture(editPanel.jLabelfinger); 
+//        fingerprintCapture.startCapture();
+//
+//        JOptionPane.showMessageDialog(null, "Place your finger on the scanner.");
+//
+//        fingerprintTemplate = fingerprintCapture.getTemplate();  
+//
+//        if (fingerprintTemplate == null) {
+//            JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
+//        } else {
+//            JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
+//        }
+//
+//        fingerprintCapture.stopCapture();
+    }
+
+    @Override
     public void adminPopupMenu() {
         SwingUtilities.invokeLater(() -> {
             int rowAtPoint = adminPanel.jTable1.rowAtPoint(SwingUtilities.
@@ -239,7 +277,8 @@ public class AdminSerImpl implements AdminService {
     }
 
     @Override
-    public void adminMouseEvent(MouseEvent e) {
+    public void adminMouseEvent(MouseEvent e
+    ) {
         int r = adminPanel.jTable1.rowAtPoint(e.getPoint());
         if (r >= 0 && r < adminPanel.jTable1.getRowCount()) {
             adminPanel.jTable1.setRowSelectionInterval(r, r);
@@ -251,6 +290,126 @@ public class AdminSerImpl implements AdminService {
             adminPanel.adminPopUp.show(e.getComponent(), e.getX(), e.getY());
         }
 
+    }
+
+    @Override
+    public void viewAdmin() {
+        int dataRow = adminPanel.jTable1.getSelectedRow();
+        if (dataRow >= 0) {
+            String admin_id = adminPanel.jTable1.getValueAt(dataRow, 0).toString();
+
+            JDialog progressDialog = new JDialog((JFrame) null, "Loading", true);
+            JProgressBar progressBar = new JProgressBar();
+            progressBar.setIndeterminate(true);
+            progressBar.setString("Fetching admin data...");
+            progressBar.setStringPainted(true);
+            progressDialog.add(progressBar);
+            progressDialog.setSize(300, 75);
+            progressDialog.setLocationRelativeTo(null);
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.submit(() -> {
+                try {
+                    AdminModel admin = dao.view(admin_id);
+
+                    SwingUtilities.invokeLater(() -> {
+                        progressDialog.dispose();
+
+                        viewDialog.adminID.setText(admin_id);
+                        viewDialog.college.setText(adminPanel.jTable1.getValueAt(dataRow, 1).toString());
+                        viewDialog.fName.setText(adminPanel.jTable1.getValueAt(dataRow, 2).toString());
+                        viewDialog.mName.setText(adminPanel.jTable1.getValueAt(dataRow, 3).toString());
+                        viewDialog.lName.setText(adminPanel.jTable1.getValueAt(dataRow, 4).toString());
+                        viewDialog.sex.setText(adminPanel.jTable1.getValueAt(dataRow, 5).toString());
+                        viewDialog.bDay.setText(adminPanel.jTable1.getValueAt(dataRow, 6).toString());
+                        viewDialog.cntctNumber.setText(adminPanel.jTable1.getValueAt(dataRow, 7).toString());
+                        viewDialog.email.setText(adminPanel.jTable1.getValueAt(dataRow, 8).toString());
+                        viewDialog.brgy.setText(adminPanel.jTable1.getValueAt(dataRow, 9).toString());
+                        viewDialog.municipal.setText(adminPanel.jTable1.getValueAt(dataRow, 10).toString());
+                        viewDialog.usrName.setText(adminPanel.jTable1.getValueAt(dataRow, 11).toString());
+
+                        if (admin.getImage() != null) {
+                            ImageIcon icon = new ImageIcon(admin.getImage());
+                            Image scaledImage = icon.getImage().getScaledInstance(
+                                    viewDialog.image.getWidth(),
+                                    viewDialog.image.getHeight(),
+                                    Image.SCALE_SMOOTH
+                            );
+                            viewDialog.image.setIcon(new ImageIcon(scaledImage));
+                        } else {
+                            viewDialog.image.setText("No Image");
+                        }
+
+                        if (admin.getFingerprintImage() != null) {
+                            ImageIcon fingerprintIcon = new ImageIcon(admin.getFingerprintImage());
+                            Image scaledFingerprint = fingerprintIcon.getImage().getScaledInstance(
+                                    viewDialog.fngrprnt.getWidth(),
+                                    viewDialog.fngrprnt.getHeight(),
+                                    Image.SCALE_SMOOTH
+                            );
+                            viewDialog.fngrprnt.setIcon(new ImageIcon(scaledFingerprint));
+                        } else {
+                            viewDialog.fngrprnt.setText("No fingerprint");
+                        }
+
+                        viewDialog.setLocationRelativeTo(null);
+                        viewDialog.setVisible(true);
+                    });
+                } catch (Exception ex) {
+                    SwingUtilities.invokeLater(() -> {
+                        progressDialog.dispose();
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error fetching admin data: " + ex.getMessage());
+                    });
+                } finally {
+                    executor.shutdown();
+                }
+            });
+
+            progressDialog.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select admin to update.");
+        }
+    }
+
+    @Override
+    public void clearAdd() {
+        addPanel.admin_id.setText("");
+        addPanel.pstn.setText("");
+        addPanel.adfname.setText("");
+        addPanel.admname.setText("");
+        addPanel.adlname.setText("");
+        addPanel.nmbr.setText("");
+        addPanel.ml.setText("");
+        addPanel.sx.setSelectedIndex(0);
+        addPanel.bdy.setDate(new java.util.Date());
+        addPanel.usrnm.setText("");
+        addPanel.psswrd.setText("");
+        addPanel.cnfrm.setText("");
+        addPanel.jLabelimage.setText("");
+        addPanel.jLabelfinger.setText("");
+        addPanel.brgy.setText("");
+        addPanel.mncplty.setText("");
+    }
+
+    @Override
+    public void clearEdit() {
+        editPanel.admin_id.setText("");
+        editPanel.pstn.setText("");
+        editPanel.adfname.setText("");
+        editPanel.admname.setText("");
+        editPanel.adlname.setText("");
+        editPanel.nmbr.setText("");
+        editPanel.ml.setText("");
+        editPanel.sx.setSelectedIndex(0);
+        editPanel.bdy.setDate(new java.util.Date());
+        editPanel.usrnm.setText("");
+        editPanel.psswrd.setText("");
+        editPanel.cnfrm.setText("");
+        editPanel.jLabelimage.setText("");
+        editPanel.jLabelfinger.setText("");
+        editPanel.brgy.setText("");
+        editPanel.mncplty.setText("");
     }
 
 }

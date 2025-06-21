@@ -10,4 +10,5 @@ public interface AdminDAO {
     void save(AdminModel admin);
     void update(AdminModel admin);
     void delete(String admin_id);
+    AdminModel view(String admin_id);
 }

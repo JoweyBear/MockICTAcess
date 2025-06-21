@@ -1,11 +1,11 @@
 package Admin;
 
-import java.sql.Blob;
 import java.util.Date;
 
 public class AdminModel {
 
     private byte[] fingerprint;
+    private byte[] fingerprintImage;
     private String staff_id;
     private String stFname;
     private String stMname;
@@ -14,11 +14,25 @@ public class AdminModel {
     private String sx;
     private String conNum;
     private String email;
+    private String barangay;
+    private String municipal;
     private Date bday;
     private byte[] image;
     private String collge;
     private String username;
     private String pass;
+
+    private byte[] imageData;
+    private byte[] fingerprintData;
+    private byte[] fngrprntImageData;
+
+    public byte[] getFingerprintImage() {
+        return fingerprintImage;
+    }
+
+    public void setFingerprintImage(byte[] fingerprintImage) {
+        this.fingerprintImage = fingerprintImage;
+    }
 
     public byte[] getFingerprint() {
         return fingerprint;
@@ -129,5 +143,45 @@ public class AdminModel {
 
     public void setImage(byte[] image) {
         this.image = image;
+    }
+
+    public String getBarangay() {
+        return barangay;
+    }
+
+    public void setBarangay(String barangay) {
+        this.barangay = barangay;
+    }
+
+    public String getMunicipal() {
+        return municipal;
+    }
+
+    public void setMunicipal(String municipal) {
+        this.municipal = municipal;
+    }
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
+    }
+
+    public byte[] getFingerprintData() {
+        return fingerprintData;
+    }
+
+    public void setFingerprintData(byte[] fingerprintData) {
+        this.fingerprintData = fingerprintData;
+    }
+
+    public byte[] getFngrprntImageData() {
+        return fngrprntImageData;
+    }
+
+    public void setFngrprntImageData(byte[] fngrprntImageData) {
+        this.fngrprntImageData = fngrprntImageData;
     }
 }
