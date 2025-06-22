@@ -1,15 +1,15 @@
-package Student.Views;
+package Faculty.Views;
 
 import java.awt.event.ActionListener;
 
-public class ViewStudentDialog extends javax.swing.JDialog {
+public class ViewFacultyDialog extends javax.swing.JDialog {
 
-    public ViewStudentDialog() {
+    public ViewFacultyDialog() {
         initComponents();
         setModal(true);
         setLocationRelativeTo(null);
 
-        studentID.setText("");
+        facultyID.setText("");
         college.setText("");
         fName.setText("");
         mName.setText("");
@@ -20,10 +20,9 @@ public class ViewStudentDialog extends javax.swing.JDialog {
         municipal.setText("");
         sex.setText("");
         bDay.setText("");
-        year.setText("");
+        pstn.setText("");
         image.setText("");
         fngrprnt.setText("");
-        section.setText("");
     }
 
     @SuppressWarnings("unchecked")
@@ -46,7 +45,7 @@ public class ViewStudentDialog extends javax.swing.JDialog {
         jLabel21 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
-        studentID = new javax.swing.JLabel();
+        facultyID = new javax.swing.JLabel();
         college = new javax.swing.JLabel();
         fName = new javax.swing.JLabel();
         mName = new javax.swing.JLabel();
@@ -56,16 +55,14 @@ public class ViewStudentDialog extends javax.swing.JDialog {
         email = new javax.swing.JLabel();
         brgy = new javax.swing.JLabel();
         municipal = new javax.swing.JLabel();
-        year = new javax.swing.JLabel();
+        pstn = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         bDay = new javax.swing.JLabel();
-        jLabel24 = new javax.swing.JLabel();
-        section = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         fngrprnt = new javax.swing.JLabel();
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "View Student", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 1, 36))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "View Faculty", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 1, 36))); // NOI18N
 
         dt.setText("Edit");
 
@@ -107,7 +104,7 @@ public class ViewStudentDialog extends javax.swing.JDialog {
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Student ID:");
+        jLabel1.setText("Faculty ID:");
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
@@ -147,11 +144,11 @@ public class ViewStudentDialog extends javax.swing.JDialog {
         jLabel23.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel23.setForeground(new java.awt.Color(255, 255, 255));
         jLabel23.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel23.setText("Year:");
+        jLabel23.setText("Position:");
 
-        studentID.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        studentID.setForeground(new java.awt.Color(255, 255, 255));
-        studentID.setText("jLabel1");
+        facultyID.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        facultyID.setForeground(new java.awt.Color(255, 255, 255));
+        facultyID.setText("jLabel1");
 
         college.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         college.setForeground(new java.awt.Color(255, 255, 255));
@@ -189,9 +186,9 @@ public class ViewStudentDialog extends javax.swing.JDialog {
         municipal.setForeground(new java.awt.Color(255, 255, 255));
         municipal.setText("jLabel1");
 
-        year.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        year.setForeground(new java.awt.Color(255, 255, 255));
-        year.setText("jLabel1");
+        pstn.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        pstn.setForeground(new java.awt.Color(255, 255, 255));
+        pstn.setText("jLabel1");
 
         jLabel12.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(255, 255, 255));
@@ -201,15 +198,6 @@ public class ViewStudentDialog extends javax.swing.JDialog {
         bDay.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         bDay.setForeground(new java.awt.Color(255, 255, 255));
         bDay.setText("jLabel1");
-
-        jLabel24.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel24.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel24.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel24.setText("Section:");
-
-        section.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        section.setForeground(new java.awt.Color(255, 255, 255));
-        section.setText("jLabel1");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -224,13 +212,13 @@ public class ViewStudentDialog extends javax.swing.JDialog {
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(studentID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(facultyID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(college, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(30, 30, 30)
                         .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(year, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(pstn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -260,12 +248,7 @@ public class ViewStudentDialog extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(brgy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(municipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(section, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                    .addComponent(municipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -274,7 +257,7 @@ public class ViewStudentDialog extends javax.swing.JDialog {
                 .addGap(30, 30, 30)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(studentID))
+                    .addComponent(facultyID))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
@@ -282,12 +265,8 @@ public class ViewStudentDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(year))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(section))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(pstn))
+                .addGap(38, 38, 38)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(fName))
@@ -395,7 +374,7 @@ public class ViewStudentDialog extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    public void buttonListener(ActionListener a) {
+    public void buttonListener(ActionListener a){
         dt.addActionListener(a);
     }
 
@@ -407,6 +386,7 @@ public class ViewStudentDialog extends javax.swing.JDialog {
     public javax.swing.JButton dt;
     public javax.swing.JLabel email;
     public javax.swing.JLabel fName;
+    public javax.swing.JLabel facultyID;
     public javax.swing.JLabel fngrprnt;
     public javax.swing.JLabel image;
     private javax.swing.JLabel jLabel1;
@@ -418,7 +398,6 @@ public class ViewStudentDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
@@ -429,9 +408,7 @@ public class ViewStudentDialog extends javax.swing.JDialog {
     public javax.swing.JLabel lName;
     public javax.swing.JLabel mName;
     public javax.swing.JLabel municipal;
-    public javax.swing.JLabel section;
+    public javax.swing.JLabel pstn;
     public javax.swing.JLabel sex;
-    public javax.swing.JLabel studentID;
-    public javax.swing.JLabel year;
     // End of variables declaration//GEN-END:variables
 }

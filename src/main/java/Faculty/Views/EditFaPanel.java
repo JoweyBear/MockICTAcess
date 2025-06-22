@@ -20,6 +20,8 @@ public class EditFaPanel extends javax.swing.JPanel {
         adlname.putClientProperty("JTextField.placeholderText", "Last Name");
         nmbr.putClientProperty("JTextField.placeholderText", "Contact Number");
         ml.putClientProperty("JTextField.placeholderText", "Email");
+        brgy.putClientProperty("JTextField.placeholderText", "Email");
+        municipal.putClientProperty("JTextField.placeholderText", "Email");
         sx.putClientProperty("JComboBox.placeholderText", "Sex");
         bdy.putClientProperty("JDateChooser.placeholderText", "Birthday");
 
@@ -57,9 +59,11 @@ public class EditFaPanel extends javax.swing.JPanel {
         bdy = new com.toedter.calendar.JDateChooser();
         ml = new javax.swing.JTextField();
         cllg = new javax.swing.JComboBox<>();
+        brgy = new javax.swing.JTextField();
+        municipal = new javax.swing.JTextField();
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(13, 27, 42), 2, true), "Add Faculty", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("SansSerif", 1, 36))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(13, 27, 42), 2, true), "Edit Faculty", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("SansSerif", 1, 36))); // NOI18N
 
         adlname.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -108,6 +112,10 @@ public class EditFaPanel extends javax.swing.JPanel {
 
         cllg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "College", "CICT", "CHM", "COED" }));
 
+        brgy.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        municipal.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -136,7 +144,9 @@ public class EditFaPanel extends javax.swing.JPanel {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelimage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(chssmg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(ml))
+                    .addComponent(ml)
+                    .addComponent(brgy)
+                    .addComponent(municipal))
                 .addGap(36, 36, 36))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(105, 105, 105)
@@ -148,25 +158,29 @@ public class EditFaPanel extends javax.swing.JPanel {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
-                .addComponent(admin_id, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                .addComponent(admin_id, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(pstn, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                    .addComponent(pstn, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                     .addComponent(cllg))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
-                .addComponent(adfname, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                .addComponent(adfname, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(admname, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                .addComponent(admname, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(adlname, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                .addComponent(adlname, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nmbr, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                .addComponent(nmbr, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ml, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
+                .addComponent(ml, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(brgy, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(municipal, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sx, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -180,9 +194,9 @@ public class EditFaPanel extends javax.swing.JPanel {
                     .addComponent(scn)
                     .addComponent(chssmg))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(pdt, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+                .addComponent(pdt, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
                 .addGap(4, 4, 4)
-                .addComponent(clr, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+                .addComponent(clr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18))
         );
 
@@ -215,6 +229,8 @@ public class EditFaPanel extends javax.swing.JPanel {
         bdy.setDate(date);
         jLabelimage.setText("");
         jLabelfinger.setText("");
+        brgy.setText("");
+        municipal.setText("");
     }//GEN-LAST:event_clrActionPerformed
     public void buttonListener(ActionListener a) {
         pdt.addActionListener(a);
@@ -227,7 +243,8 @@ public class EditFaPanel extends javax.swing.JPanel {
     public javax.swing.JTextField adlname;
     public javax.swing.JTextField admin_id;
     public javax.swing.JTextField admname;
-    private com.toedter.calendar.JDateChooser bdy;
+    public com.toedter.calendar.JDateChooser bdy;
+    public javax.swing.JTextField brgy;
     public javax.swing.JButton chssmg;
     public javax.swing.JComboBox<String> cllg;
     public javax.swing.JButton clr;
@@ -238,6 +255,7 @@ public class EditFaPanel extends javax.swing.JPanel {
     public javax.swing.JLabel jLabelimage;
     private javax.swing.JPanel jPanel1;
     public javax.swing.JTextField ml;
+    public javax.swing.JTextField municipal;
     public javax.swing.JTextField nmbr;
     public javax.swing.JButton pdt;
     public javax.swing.JTextField pstn;

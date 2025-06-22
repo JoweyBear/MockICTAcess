@@ -120,6 +120,7 @@ public class StudentPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
     public void buttonListener(ActionListener a, PopupMenuListener b, MouseListener c) {
         dd.addActionListener(a);
+        jTable1.addMouseListener(c);
         studentPopup.addPopupMenuListener(b);
         viewStudentMI.addActionListener(a);
         deleteStudentMI.addActionListener(a);
