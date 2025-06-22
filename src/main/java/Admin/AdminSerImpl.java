@@ -3,32 +3,22 @@ package Admin;
 import Admin.Views.*;
 import Utilities.FingerprintCapture;
 import Utilities.ImageUploader;
-import Utilities.QuickSearch;
 import Utilities.QuickSearchList;
 import java.awt.CardLayout;
-import java.awt.Dialog;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.sql.ResultSet;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.swing.DefaultCellEditor;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
-import net.proteanit.sql.DbUtils;
 
 public class AdminSerImpl implements AdminService {
 
@@ -70,7 +60,9 @@ public class AdminSerImpl implements AdminService {
                 || addPanel.sx.getSelectedItem().equals("Sex")
                 || addPanel.usrnm.getText().trim().equals("")
                 || addPanel.cnfrm.getText().trim().equals("")
-                || addPanel.psswrd.getText().trim().equals("")) {
+                || addPanel.psswrd.getText().trim().equals("")
+                || addPanel.brgy.getText().trim().equals("")
+                || addPanel.mncplty.getText().trim().equals("")) {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             AdminModel admin = new AdminModel();
@@ -86,6 +78,8 @@ public class AdminSerImpl implements AdminService {
             admin.setUsername(addPanel.usrnm.getText().trim());
             admin.setPass(addPanel.cnfrm.getText().trim());
             admin.setImage(uploadedImageForAdd);
+            admin.setBarangay(addPanel.brgy.getText().trim());
+            admin.setMunicipal(addPanel.mncplty.getText().trim());
 
 //            
 //            DPFPTemplate template = fingerprintCapture.getTemplate();
@@ -146,7 +140,9 @@ public class AdminSerImpl implements AdminService {
                 || editPanel.sx.getSelectedItem().equals("Sex")
                 || editPanel.usrnm.getText().trim().equals("")
                 || editPanel.cnfrm.getText().trim().equals("")
-                || editPanel.psswrd.getText().trim().equals("")) {
+                || editPanel.psswrd.getText().trim().equals("")
+                || editPanel.brgy.getText().trim().equals("")
+                || editPanel.mncplty.getText().trim().equals("")) {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             AdminModel admin = new AdminModel();
@@ -162,6 +158,8 @@ public class AdminSerImpl implements AdminService {
             admin.setUsername(editPanel.usrnm.getText().trim());
             admin.setPass(editPanel.cnfrm.getText().trim());
             admin.setImage(uploadedImageForEdit);
+            admin.setBarangay(addPanel.brgy.getText().trim());
+            admin.setMunicipal(addPanel.mncplty.getText().trim());
 
 //            DPFPTemplate template = fingerprintCapture.getTemplate();
 //            if (template != null) {

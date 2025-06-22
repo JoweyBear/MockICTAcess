@@ -7,4 +7,5 @@ public interface StudentDAO {
     void save(StudentModel student);
     void update(StudentModel student);
     void delete(String stud_id);
+    StudentModel studentView(String stud_id);
 }

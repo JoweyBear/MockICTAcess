@@ -4,6 +4,7 @@ import Admin.Views.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
@@ -13,7 +14,7 @@ public class AdminController {
     AddAdPanel addPanel;
     EditAdPanel editPanel;
     AdminService service;
-    ViewAdminDialog viewDialog; 
+    ViewAdminDialog viewDialog;
 
     public AdminController(AdminPanel adminPanel, AddAdPanel addPanel, EditAdPanel editPanel, ViewAdminDialog viewDialog) {
         this.adminPanel = adminPanel;
@@ -53,7 +54,7 @@ public class AdminController {
                 service.delete();
             } else if (e.getSource() == adminPanel.viewAdmin) {
                 service.viewAdmin();
-            }else if(e.getSource() == viewDialog.dt){
+            } else if (e.getSource() == viewDialog.dt) {
                 service.editView();
             }
 
@@ -64,18 +65,21 @@ public class AdminController {
     class PopUpEvent extends MouseAdapter implements PopupMenuListener {
 
         @Override
+        public void mouseReleased(MouseEvent e) {
+            service.adminMouseEvent(e);
+        }
+
+        @Override
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            service.adminPopupMenu();
         }
 
         @Override
         public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
 
         @Override
         public void popupMenuCanceled(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
     }
 }

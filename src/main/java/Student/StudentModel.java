@@ -5,6 +5,7 @@ import java.sql.Date;
 public class StudentModel {
 
     private byte[] fingerprint;
+    private byte[] fingerprintImage;
     private byte[] image;
     private String stud_id;
     private String fname;
@@ -20,6 +21,9 @@ public class StudentModel {
     private String program;
     private String year;
     private String section;
+    private byte[] imageData;
+    private byte[] fingerprintData;
+    private byte[] fngrprntImageData;
 
     public byte[] getFingerprint() {
         return fingerprint;
@@ -148,7 +152,37 @@ public class StudentModel {
     public void setSection(String section) {
         this.section = section;
     }
-    
-    
+
+    public byte[] getFingerprintImage() {
+        return fingerprintImage;
+    }
+
+    public void setFingerprintImage(byte[] fingerprintImage) {
+        this.fingerprintImage = fingerprintImage;
+    }
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
+    }
+
+    public byte[] getFingerprintData() {
+        return fingerprintData;
+    }
+
+    public void setFingerprintData(byte[] fingerprintData) {
+        this.fingerprintData = fingerprintData;
+    }
+
+    public byte[] getFngrprntImageData() {
+        return fngrprntImageData;
+    }
+
+    public void setFngrprntImageData(byte[] fngrprntImageData) {
+        this.fngrprntImageData = fngrprntImageData;
+    }
 
 }

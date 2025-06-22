@@ -17,6 +17,8 @@ public class AddStudPanel extends javax.swing.JPanel {
         adlname.putClientProperty("JTextField.placeholderText", "Last Name");
         nmbr.putClientProperty("JTextField.placeholderText", "Contact Number");
         ml.putClientProperty("JTextField.placeholderText", "Email");
+        brgy.putClientProperty("JTextField.placeholderText", "Barangay");
+        municipal.putClientProperty("JTextField.placeholderText", "Municipality");
 //        sx.putClientProperty("JTextField.placeholderText", "SSHHH");
 //        bdy.putClientProperty("JDateChooser.placeholderText", "Birthday");
 
@@ -55,6 +57,8 @@ public class AddStudPanel extends javax.swing.JPanel {
         cllg = new javax.swing.JComboBox<>();
         yr = new javax.swing.JComboBox<>();
         sctn = new javax.swing.JComboBox<>();
+        brgy = new javax.swing.JTextField();
+        municipal = new javax.swing.JTextField();
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(13, 27, 42), 2, true), "Add Student", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("SansSerif", 1, 36))); // NOI18N
@@ -106,6 +110,10 @@ public class AddStudPanel extends javax.swing.JPanel {
 
         sctn.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Section", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L" }));
 
+        brgy.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        municipal.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -136,7 +144,9 @@ public class AddStudPanel extends javax.swing.JPanel {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelimage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(chssmg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(ml))
+                    .addComponent(ml)
+                    .addComponent(brgy)
+                    .addComponent(municipal))
                 .addGap(36, 36, 36))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(105, 105, 105)
@@ -168,6 +178,10 @@ public class AddStudPanel extends javax.swing.JPanel {
                 .addComponent(nmbr)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ml)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(brgy)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(municipal)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -208,12 +222,14 @@ public class AddStudPanel extends javax.swing.JPanel {
         adlname.setText("");
         nmbr.setText("");
         ml.setText("");
-        sx.setSelectedIndex(-1);
-        cllg.setSelectedIndex(-1);
-        yr.setSelectedIndex(-1);
-        sctn.setSelectedIndex(-1);
+        sx.setSelectedIndex(0);
+        cllg.setSelectedIndex(0);
+        yr.setSelectedIndex(0);
+        sctn.setSelectedIndex(0);
         jLabelimage.setText("");
         jLabelfinger.setText("");
+        brgy.setText("");
+        municipal.setText("");
     }//GEN-LAST:event_clrActionPerformed
     public void buttonListener(ActionListener a) {
         sv.addActionListener(a);
@@ -225,7 +241,8 @@ public class AddStudPanel extends javax.swing.JPanel {
     public javax.swing.JTextField adfname;
     public javax.swing.JTextField adlname;
     public javax.swing.JTextField admname;
-    private com.toedter.calendar.JDateChooser bdy;
+    public com.toedter.calendar.JDateChooser bdy;
+    public javax.swing.JTextField brgy;
     public javax.swing.JButton chssmg;
     public javax.swing.JComboBox<String> cllg;
     public javax.swing.JButton clr;
@@ -236,6 +253,7 @@ public class AddStudPanel extends javax.swing.JPanel {
     public javax.swing.JLabel jLabelimage;
     private javax.swing.JPanel jPanel1;
     public javax.swing.JTextField ml;
+    public javax.swing.JTextField municipal;
     public javax.swing.JTextField nmbr;
     public javax.swing.JButton scn;
     public javax.swing.JComboBox<String> sctn;
