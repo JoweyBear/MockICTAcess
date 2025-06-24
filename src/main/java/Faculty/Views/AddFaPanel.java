@@ -12,7 +12,7 @@ public class AddFaPanel extends javax.swing.JPanel {
         UIManager.put("TextField.background", Color.white);
         initComponents();
 
-        admin_id.putClientProperty("JTextField.placeholderText", "Admin ID");
+        faculty_id.putClientProperty("JTextField.placeholderText", "Admin ID");
         pstn.putClientProperty("JTextField.placeholderText", "Position");
         adfname.putClientProperty("JTextField.placeholderText", "First Name");
         admname.putClientProperty("JTextField.placeholderText", "Middle Name");
@@ -44,7 +44,7 @@ public class AddFaPanel extends javax.swing.JPanel {
         adfname = new javax.swing.JTextField();
         admname = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        admin_id = new javax.swing.JTextField();
+        faculty_id = new javax.swing.JTextField();
         pstn = new javax.swing.JTextField();
         jLabelimage = new javax.swing.JLabel();
         sv = new javax.swing.JButton();
@@ -75,7 +75,7 @@ public class AddFaPanel extends javax.swing.JPanel {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("University Information");
 
-        admin_id.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        faculty_id.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         pstn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
@@ -129,7 +129,7 @@ public class AddFaPanel extends javax.swing.JPanel {
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(adfname)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(admin_id)
+                    .addComponent(faculty_id)
                     .addComponent(bdy, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(sx, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(adlname)
@@ -158,7 +158,7 @@ public class AddFaPanel extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
-                .addComponent(admin_id, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
+                .addComponent(faculty_id, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
                 .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(pstn)
@@ -215,7 +215,7 @@ public class AddFaPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void clrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clrActionPerformed
-        admin_id.setText("");
+        faculty_id.setText("");
         pstn.setText("");
         adfname.setText("");
         admname.setText("");
@@ -227,6 +227,8 @@ public class AddFaPanel extends javax.swing.JPanel {
         bdy.setDate(date);
         jLabelimage.setText("");
         jLabelfinger.setText("");
+        brgy.setText("");
+        municipal.setText("");
     }//GEN-LAST:event_clrActionPerformed
     public void buttonListener(ActionListener a) {
         sv.addActionListener(a);
@@ -237,13 +239,13 @@ public class AddFaPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JTextField adfname;
     public javax.swing.JTextField adlname;
-    public javax.swing.JTextField admin_id;
     public javax.swing.JTextField admname;
     public com.toedter.calendar.JDateChooser bdy;
     public javax.swing.JTextField brgy;
     public javax.swing.JButton chssmg;
     public javax.swing.JComboBox<String> cllg;
     public javax.swing.JButton clr;
+    public javax.swing.JTextField faculty_id;
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
