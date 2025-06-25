@@ -1,8 +1,9 @@
 package Attendance.Views;
 
-import Utilities.RegisterFont;
+import Utilities.*;
 import java.awt.Color;
 import java.awt.event.ActionListener;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 public class AddCSPanel extends javax.swing.JPanel {
@@ -11,10 +12,17 @@ public class AddCSPanel extends javax.swing.JPanel {
         UIManager.put("TextField.background", Color.white);
         initComponents();
 
-        crsID.putClientProperty("JTextField.placeholderText", "Course ID");        
+        crsID.putClientProperty("JTextField.placeholderText", "Course ID");
 
         dd.setFont(RegisterFont.getFont("nstr", 14));
         clr.setFont(RegisterFont.getFont("nstr", 14));
+
+        cmbFclty.setEditable(true);
+        cmbFclty.getEditor().getEditorComponent().addKeyListener(new FacultyCBHandler(cmbFclty));
+        
+        rmID.setEditable(true);
+        rmID.getEditor().getEditorComponent().addKeyListener(new RoomCBHandler(rmID));
+
     }
 
     @SuppressWarnings("unchecked")
@@ -64,6 +72,8 @@ public class AddCSPanel extends javax.swing.JPanel {
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("-");
+
+        cmbFclty.setEditable(true);
 
         crsID.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -134,13 +144,13 @@ public class AddCSPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void clrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clrActionPerformed
-    time1.setTimeToNow();
-    time2.setTimeToNow();
-    cmbFclty.setSelectedIndex(0);
-    crsID.setText("");
+        time1.setTimeToNow();
+        time2.setTimeToNow();
+        cmbFclty.setSelectedIndex(0);
+        crsID.setText("");
     }//GEN-LAST:event_clrActionPerformed
-    
-    public void buttonListener(ActionListener a){
+
+    public void buttonListener(ActionListener a) {
         dd.addActionListener(a);
     }
 
