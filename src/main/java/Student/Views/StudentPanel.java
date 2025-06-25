@@ -43,10 +43,10 @@ public class StudentPanel extends javax.swing.JPanel {
         jPanel2 = new javax.swing.JPanel();
         srchtxtfld = new javax.swing.JTextField();
 
-        viewStudentMI.setText("jMenuItem1");
+        viewStudentMI.setText("View Student");
         studentPopup.add(viewStudentMI);
 
-        deleteStudentMI.setText("jMenuItem2");
+        deleteStudentMI.setText("Delete");
         studentPopup.add(deleteStudentMI);
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));

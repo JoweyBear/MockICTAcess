@@ -310,13 +310,13 @@ public class StudentServiceImpl implements StudentService {
             String staff_id = sPanel.jTable1.getValueAt(dataRow, 0).toString();
             int dialogButton = JOptionPane.YES_NO_OPTION;
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to "
-                    + "Delete Admin: " + staff_id + "?", "Warning", dialogButton);
+                    + "Delete Faculty: " + staff_id + "?", "Warning", dialogButton);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 dao.delete(staff_id);
                 setTableData();
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Please select admin to delete.");
+            JOptionPane.showMessageDialog(null, "Please select faculty to delete.");
         }
     }
 
@@ -380,8 +380,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void studentMouseEvent(MouseEvent e
-    ) {
+    public void studentMouseEvent(MouseEvent e) {
         int r = sPanel.jTable1.rowAtPoint(e.getPoint());
         if (r >= 0 && r < sPanel.jTable1.getRowCount()) {
             sPanel.jTable1.setRowSelectionInterval(r, r);
@@ -398,8 +397,8 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void addButton() {
         CardLayout cl = (CardLayout) sPanel.jPanel2.getLayout();
-        sPanel.jPanel2.add(sPanel, "AddAdmin");
-        cl.show(sPanel.jPanel2, "AddAdmin");
+        sPanel.jPanel2.add(sAdd, "AddStudemt");
+        cl.show(sPanel.jPanel2, "AddStudent");
         System.out.println("AddButtonClicked");
     }
 

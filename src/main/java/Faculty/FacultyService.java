@@ -29,7 +29,7 @@ public interface FacultyService {
 
     void scanFingerEdit();
 
-    void studentPopupMenu();
+    void facultyPopupMenu();
 
-    void studentMouseEvent(MouseEvent e);
+    void facultyMouseEvent(MouseEvent e);
 }

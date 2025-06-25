@@ -1,8 +1,12 @@
 package Faculty;
 
 import Faculty.Views.*;
+import Utilities.FingerprintCapture;
+import Utilities.ImageUploader;
 import Utilities.QuickSearchList;
+import java.awt.CardLayout;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.List;
@@ -13,6 +17,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -23,6 +28,10 @@ public class FacultyServiceImpl implements FacultyService {
     FacultyPanel faPanel;
     ViewFacultyDialog viewDialog;
     FacultyDAO dao = new FacultyDAOImpl();
+    private final ImageUploader imageUploader = new ImageUploader();
+    private byte[] uploadedImageForAdd;
+    private byte[] uploadedImageForEdit;
+    private FingerprintCapture fingerprintCapture;
 
     public FacultyServiceImpl(AddFaPanel fAdd, EditFaPanel fEdit, FacultyPanel faPanel, ViewFacultyDialog viewDialog) {
         this.fAdd = fAdd;
@@ -116,7 +125,7 @@ public class FacultyServiceImpl implements FacultyService {
     public void viewStudent() {
         int dataRow = faPanel.jTable1.getSelectedRow();
         if (dataRow >= 0) {
-            String student_id = faPanel.jTable1.getValueAt(dataRow, 0).toString();
+            String faculty_id = faPanel.jTable1.getValueAt(dataRow, 0).toString();
 
             JDialog progressDialog = new JDialog((JFrame) null, "Loading", true);
             JProgressBar progressBar = new JProgressBar();
@@ -130,27 +139,26 @@ public class FacultyServiceImpl implements FacultyService {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.submit(() -> {
                 try {
-                    StudentModel student = dao.studentView(student_id);
+                    FacultyModel faculty = dao.facultyView(faculty_id);
 
                     SwingUtilities.invokeLater(() -> {
                         progressDialog.dispose();
 
-                        viewDialog.studentID.setText(student_id);
-                        viewDialog.college.setText(sPanel.jTable1.getValueAt(dataRow, 1).toString());
-                        viewDialog.year.setText(sPanel.jTable1.getValueAt(dataRow, 2).toString());
-                        viewDialog.section.setText(sPanel.jTable1.getValueAt(dataRow, 3).toString());
-                        viewDialog.fName.setText(sPanel.jTable1.getValueAt(dataRow, 4).toString());
-                        viewDialog.mName.setText(sPanel.jTable1.getValueAt(dataRow, 5).toString());
-                        viewDialog.lName.setText(sPanel.jTable1.getValueAt(dataRow, 6).toString());
-                        viewDialog.sex.setText(sPanel.jTable1.getValueAt(dataRow, 7).toString());
-                        viewDialog.bDay.setText(sPanel.jTable1.getValueAt(dataRow, 8).toString());
-                        viewDialog.cntctNumber.setText(sPanel.jTable1.getValueAt(dataRow, 9).toString());
-                        viewDialog.email.setText(sPanel.jTable1.getValueAt(dataRow, 10).toString());
-                        viewDialog.brgy.setText(sPanel.jTable1.getValueAt(dataRow, 11).toString());
-                        viewDialog.municipal.setText(sPanel.jTable1.getValueAt(dataRow, 12).toString());
+                        viewDialog.facultyID.setText(faculty_id);
+                        viewDialog.college.setText(faPanel.jTable1.getValueAt(dataRow, 1).toString());
+                        viewDialog.pstn.setText(faPanel.jTable1.getValueAt(dataRow, 2).toString());
+                        viewDialog.fName.setText(faPanel.jTable1.getValueAt(dataRow, 3).toString());
+                        viewDialog.mName.setText(faPanel.jTable1.getValueAt(dataRow, 4).toString());
+                        viewDialog.lName.setText(faPanel.jTable1.getValueAt(dataRow, 5).toString());
+                        viewDialog.sex.setText(faPanel.jTable1.getValueAt(dataRow, 6).toString());
+                        viewDialog.bDay.setText(faPanel.jTable1.getValueAt(dataRow, 7).toString());
+                        viewDialog.cntctNumber.setText(faPanel.jTable1.getValueAt(dataRow, 8).toString());
+                        viewDialog.email.setText(faPanel.jTable1.getValueAt(dataRow, 9).toString());
+                        viewDialog.brgy.setText(faPanel.jTable1.getValueAt(dataRow, 10).toString());
+                        viewDialog.municipal.setText(faPanel.jTable1.getValueAt(dataRow, 11).toString());
 
-                        if (student.getImage() != null) {
-                            ImageIcon icon = new ImageIcon(student.getImage());
+                        if (faculty.getImage() != null) {
+                            ImageIcon icon = new ImageIcon(faculty.getImage());
                             Image scaledImage = icon.getImage().getScaledInstance(
                                     viewDialog.image.getWidth(),
                                     viewDialog.image.getHeight(),
@@ -161,8 +169,8 @@ public class FacultyServiceImpl implements FacultyService {
                             viewDialog.image.setText("No Image");
                         }
 
-                        if (student.getFingerprintImage() != null) {
-                            ImageIcon fingerprintIcon = new ImageIcon(student.getFingerprintImage());
+                        if (faculty.getFingerprintImage() != null) {
+                            ImageIcon fingerprintIcon = new ImageIcon(faculty.getFingerprintImage());
                             Image scaledFingerprint = fingerprintIcon.getImage().getScaledInstance(
                                     viewDialog.fngrprnt.getWidth(),
                                     viewDialog.fngrprnt.getHeight(),
@@ -180,7 +188,7 @@ public class FacultyServiceImpl implements FacultyService {
                     SwingUtilities.invokeLater(() -> {
                         progressDialog.dispose();
                         ex.printStackTrace();
-                        JOptionPane.showMessageDialog(null, "Error fetching Student data: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(null, "Error fetching Faculty data: " + ex.getMessage());
                     });
                 } finally {
                     executor.shutdown();
@@ -189,7 +197,7 @@ public class FacultyServiceImpl implements FacultyService {
 
             progressDialog.setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(null, "Please select student to update.");
+            JOptionPane.showMessageDialog(null, "Please select faculty to update.");
         }
 
     }
@@ -232,46 +240,155 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public void update() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (fEdit.faculty_id.getText().trim().equals("")
+                || fEdit.adfname.getText().trim().equals("")
+                || fEdit.admname.getText().trim().equals("")
+                || fEdit.adlname.getText().trim().equals("")
+                || fEdit.nmbr.getText().trim().equals("")
+                || fEdit.ml.getText().trim().equals("")
+                || fEdit.sx.getSelectedItem().equals("Sex")
+                || fEdit.cllg.getSelectedItem().equals("College")
+                || fEdit.pstn.getText().trim().equals("")
+                || fEdit.brgy.getText().trim().equals("")
+                || fEdit.municipal.getText().trim().equals("")) {
+            JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            FacultyModel faculty = new FacultyModel();
+            int dataRow = faPanel.jTable1.getSelectedRow();
+            faculty.setFaculty_id((String) faPanel.jTable1.getValueAt(dataRow, 0));
+            faculty.setFname(fAdd.adfname.getText().trim());
+            faculty.setMname(fAdd.admname.getText().trim());
+            faculty.setLname(fAdd.adlname.getText().trim());
+            faculty.setPosition(fAdd.pstn.getText());
+            faculty.setCntctNmber(fAdd.nmbr.getText().trim());
+            faculty.setEmail(fAdd.ml.getText().trim());
+            faculty.setSx(fAdd.sx.getSelectedItem().toString());
+            faculty.setBday((java.sql.Date) fAdd.bdy.getDate());
+            faculty.setImage(uploadedImageForAdd);
+            faculty.setCollege(fAdd.cllg.getSelectedItem().toString());
+
+//            DPFPTemplate template = fingerprintCapture.getTemplate();
+//            if (template != null) {
+//                faculty.setFingerprint(template.serialize());
+//
+//                // Convert fingerprint sample to image byte[]
+//                Image img = DPFPGlobal.getSampleConversionFactory().createImage(fingerprintCapture.getLastSample());  
+//                BufferedImage bufferedImg = new BufferedImage(
+//                        img.getWidth(null),
+//                        img.getHeight(null),
+//                        BufferedImage.TYPE_INT_RGB
+//                );
+//
+//                Graphics2D g2 = bufferedImg.createGraphics();
+//                g2.drawImage(img, 0, 0, null);
+//                g2.dispose();
+//
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                ImageIO.write(bufferedImg, "png", baos);
+//                faculty.setFingerprintImage(baos.toByteArray());
+//            } else {
+//                System.out.println("No fingerprint template captured.");
+//            }
+            dao.update(faculty);
+            setTableData();
+            clearEdit();
+        }
     }
 
     @Override
     public void delete() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        int dataRow = faPanel.jTable1.getSelectedRow();
+        if (dataRow >= 0) {
+            String staff_id = faPanel.jTable1.getValueAt(dataRow, 0).toString();
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to "
+                    + "Delete faculty: " + staff_id + "?", "Warning", dialogButton);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                dao.delete(staff_id);
+                setTableData();
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select faculty to delete.");
+        }
     }
 
     @Override
     public void addButton() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        CardLayout cl = (CardLayout) faPanel.jPanel2.getLayout();
+        faPanel.jPanel2.add(fAdd, "AddAdmin");
+        cl.show(faPanel.jPanel2, "AddAdmin");
+        System.out.println("AddButtonClicked");
     }
 
     @Override
     public void selectImageForAdd() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ImageUploader uploader = new ImageUploader();
+        uploadedImageForAdd = uploader.pickImage(fAdd, fAdd.jLabelimage);
     }
 
     @Override
     public void selectImageForEdit() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        ImageUploader uploader = new ImageUploader();
+        uploadedImageForEdit = uploader.pickImage(fEdit, fEdit.jLabelimage);
     }
 
     @Override
     public void scanFingerAdd() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+//        fingerprintCapture = new FingerprintCapture(fAdd.jLabelfinger); 
+//        fingerprintCapture.startCapture();
+//
+//        JOptionPane.showMessageDialog(null, "Place your finger on the scanner.");
+//
+//        fingerprintTemplate = fingerprintCapture.getTemplate();  
+//
+//        if (fingerprintTemplate == null) {
+//            JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
+//        } else {
+//            JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
+//        }
+//
+//        fingerprintCapture.stopCapture(); 
     }
 
     @Override
     public void scanFingerEdit() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+//        fingerprintCapture = new FingerprintCapture(fEdit.jLabelfinger); 
+//        fingerprintCapture.startCapture();
+//
+//        JOptionPane.showMessageDialog(null, "Place your finger on the scanner.");
+//
+//        fingerprintTemplate = fingerprintCapture.getTemplate();  
+//
+//        if (fingerprintTemplate == null) {
+//            JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
+//        } else {
+//            JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
+//        }
+//
+//        fingerprintCapture.stopCapture();
     }
 
     @Override
-    public void studentPopupMenu() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void facultyPopupMenu() {
+        SwingUtilities.invokeLater(() -> {
+            int rowAtPoint = faPanel.jTable1.rowAtPoint(SwingUtilities.
+                    convertPoint(faPanel.facultyPopup, new Point(0, 0), faPanel.jTable1));
+            if (rowAtPoint > -1) {
+                faPanel.jTable1.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+            }
+        });
     }
 
     @Override
-    public void studentMouseEvent(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    public void facultyMouseEvent(MouseEvent e) {
+        int r = faPanel.jTable1.rowAtPoint(e.getPoint());
+        if (r >= 0 && r < faPanel.jTable1.getRowCount()) {
+            faPanel.jTable1.setRowSelectionInterval(r, r);
+        } else {
+            faPanel.jTable1.clearSelection();
+        }
+
+        if (e.isPopupTrigger() && e.getComponent() instanceof JTable) {
+            faPanel.facultyPopup.show(e.getComponent(), e.getX(), e.getY());
+        }    }
 }

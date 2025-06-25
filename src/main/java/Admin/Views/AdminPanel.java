@@ -47,10 +47,10 @@ public class AdminPanel extends javax.swing.JPanel {
         jPanel2 = new javax.swing.JPanel();
         srchtxtfld = new javax.swing.JTextField();
 
-        deleteAdminMenu.setText("jMenuItem1");
+        deleteAdminMenu.setText("Delete");
         adminPopUp.add(deleteAdminMenu);
 
-        viewAdmin.setText("jMenuItem1");
+        viewAdmin.setText("View Admin");
         adminPopUp.add(viewAdmin);
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));

@@ -42,10 +42,10 @@ public class FacultyPanel extends javax.swing.JPanel {
         jPanel2 = new javax.swing.JPanel();
         srchtxtfld = new javax.swing.JTextField();
 
-        viewFacultyMI.setText("jMenuItem1");
+        viewFacultyMI.setText("View Faculty");
         facultyPopup.add(viewFacultyMI);
 
-        deleteFacultyMI.setText("jMenuItem2");
+        deleteFacultyMI.setText("Delete");
         facultyPopup.add(deleteFacultyMI);
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));

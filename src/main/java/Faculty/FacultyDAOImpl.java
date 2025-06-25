@@ -182,13 +182,13 @@ public class FacultyDAOImpl implements FacultyDAO {
         }    }
 
     @Override
-    public FacultyModel FacultyView(String stud_id) {
+    public FacultyModel facultyView(String faculty_id) {
         FacultyModel faculty = new FacultyModel();
         try {
             String sql = "SELECT u.image, i.fingerprint_template, i.fingerprint_image FROM user u "
                     + "LEFT JOIN identification i ON u.user_id = i.user_id WHERE u.user_id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, stud_id);
+            ps.setString(1, faculty_id);
             rs = ps.executeQuery();
             if (rs.next()) {
                 byte[] imageBytes = rs.getBytes("image");

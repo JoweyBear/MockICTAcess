@@ -13,7 +13,7 @@
       <SubComponents>
         <MenuItem class="javax.swing.JMenuItem" name="viewStudentMI">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jMenuItem1"/>
+            <Property name="text" type="java.lang.String" value="View Student"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
@@ -21,7 +21,7 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="deleteStudentMI">
           <Properties>
-            <Property name="text" type="java.lang.String" value="jMenuItem2"/>
+            <Property name="text" type="java.lang.String" value="Delete"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
