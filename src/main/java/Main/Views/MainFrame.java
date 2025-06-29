@@ -1,4 +1,4 @@
-package Main;
+package Main.Views;
 
 import Utilities.RegisterFont;
 import java.awt.event.ActionListener;

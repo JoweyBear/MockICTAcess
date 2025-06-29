@@ -1,5 +1,5 @@
 
-package Main;
+package Main.Views;
 
 public class InfoDialog extends javax.swing.JDialog {
 

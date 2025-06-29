@@ -86,7 +86,7 @@ public class AdminDAOImpl implements AdminDAO {
             userPs.setDate(9, new java.sql.Date(admin.getBday().getTime()));
             userPs.setBytes(10, admin.getImage());
             userPs.setString(11, admin.getCollge());
-            userPs.executeUpdate();
+            userPs.execute();
 
             String orgPass = admin.getPass();
             String hash = BCrypt.hashpw(orgPass, BCrypt.gensalt());
@@ -95,13 +95,13 @@ public class AdminDAOImpl implements AdminDAO {
             authPs.setString(1, admin.getStaff_id());
             authPs.setString(2, admin.getUsername());
             authPs.setString(3, hash);
-            authPs.executeUpdate();
+            authPs.execute();
 
             String updateFingerprintSql = "INSERT into identification (user_id, finger_template, fingerprint_image) VALUES (?, ?)";
             PreparedStatement fingerprintPs = conn.prepareStatement(updateFingerprintSql);
             fingerprintPs.setString(1, admin.getStaff_id());
             fingerprintPs.setBytes(2, admin.getFingerprint());
-            fingerprintPs.executeUpdate();
+            fingerprintPs.execute();
 
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
