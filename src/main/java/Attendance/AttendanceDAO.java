@@ -6,17 +6,33 @@ import javax.swing.table.DefaultTableModel;
 public interface AttendanceDAO {
 
     void saveRoom(AttModel att);
+
     void saveClassSched(AttModel att);
+
     void updateRoom(AttModel att);
+
     void updateClassSched(AttModel att);
+
     void deleteRoom(int room_id);
+
     void deleteClassSched(int cs_id);
 
-//    AttModel getById(int csId);
-//    DefaultTableModel getAll();
-//    DefaultTableModel getByRoomId(int roomId);
-//    DefaultTableModel getByFacultyId(int facultyUserId);
-//    DefaultTableModel getByDayAndTime(String day, LocalTime time);
-//    DefaultTableModel searchByName(String name);
+    DefaultTableModel getByCSId(int csId);
+
+    DefaultTableModel getByRoomId(int roomId);
+
+    DefaultTableModel getAll();
+
+    DefaultTableModel getAllRoom();
+
+    DefaultTableModel getAllCS();
+
+    DefaultTableModel getByDayAndTime(String day, LocalTime time);
+
+    DefaultTableModel getByFacultyId(int facultyUserId);
+
+    void addStudentToClassSchedule(int csId, String studentId);
+
+    void removeStudentFromClassSchedule(int csId, String studentId);
 
 }

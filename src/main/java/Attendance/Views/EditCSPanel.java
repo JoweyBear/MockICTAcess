@@ -34,6 +34,7 @@ public class EditCSPanel extends javax.swing.JPanel {
         cmbFclty = new javax.swing.JComboBox<>();
         crsID = new javax.swing.JTextField();
         rmID = new javax.swing.JComboBox<>();
+        day = new javax.swing.JComboBox<>();
 
         setPreferredSize(new java.awt.Dimension(240, 235));
 
@@ -67,6 +68,9 @@ public class EditCSPanel extends javax.swing.JPanel {
 
         crsID.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        day.setEditable(true);
+        day.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Day", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" }));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -90,8 +94,9 @@ public class EditCSPanel extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(time2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(rmID, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(time2, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE))
+                    .addComponent(rmID, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(day, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -104,6 +109,8 @@ public class EditCSPanel extends javax.swing.JPanel {
                     .addComponent(time1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2)
                     .addComponent(time2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(7, 7, 7)
+                .addComponent(day, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmbFclty, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -136,6 +143,7 @@ public class EditCSPanel extends javax.swing.JPanel {
     private void clrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clrActionPerformed
         time1.setTimeToNow();
         time2.setTimeToNow();
+        day.setSelectedIndex(0);
         cmbFclty.setSelectedIndex(0);
         crsID.setText("");
     }//GEN-LAST:event_clrActionPerformed
@@ -148,6 +156,7 @@ public class EditCSPanel extends javax.swing.JPanel {
     public javax.swing.JButton clr;
     public javax.swing.JComboBox<String> cmbFclty;
     public javax.swing.JTextField crsID;
+    public javax.swing.JComboBox<String> day;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

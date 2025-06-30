@@ -7,10 +7,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.Locale;
 
 public class Time {
+
+    public static java.sql.Time valueOf(LocalTime time) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 
     MainFrame frame;
     DateFormat df = new SimpleDateFormat("MMM. dd, yyyy", Locale.ENGLISH);
