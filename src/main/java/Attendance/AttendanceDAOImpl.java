@@ -401,17 +401,19 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     }
 
     @Override
-    public void addStudentToClassSchedule(int csId, String studentId) {
+    public boolean addStudentToClassSchedule(int csId, String studentId) {
+        boolean added = false;
         try {
             String sql = "INSERT INTO class_student (class_schedule_id, student_user_id) VALUES (?, ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, csId);
             ps.setString(2, studentId);
             ps.executeUpdate();
+            added = true; // ✅ Just assign, no need to redeclare
         } catch (SQLException ex) {
             Logger.getLogger(AttendanceDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        return added;
     }
 
     @Override

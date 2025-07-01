@@ -52,9 +52,9 @@
                   <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <Component id="dd" pref="87" max="32767" attributes="0"/>
+                          <Component id="dd" pref="77" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="63" max="-2" attributes="0"/>
-                          <Component id="clr" pref="88" max="32767" attributes="0"/>
+                          <Component id="clr" pref="77" max="32767" attributes="0"/>
                       </Group>
                       <Component id="bldng" alignment="0" max="32767" attributes="0"/>
                       <Component id="cllg" alignment="0" max="32767" attributes="0"/>

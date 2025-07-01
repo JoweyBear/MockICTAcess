@@ -13,6 +13,7 @@ public class AddCSPanel extends javax.swing.JPanel {
         initComponents();
 
         crsID.putClientProperty("JTextField.placeholderText", "Course ID");
+        clssTyp.putClientProperty("JTextField.placeholderText", "Class Type");
 
         dd.setFont(RegisterFont.getFont("nstr", 14));
         clr.setFont(RegisterFont.getFont("nstr", 14));
@@ -40,9 +41,10 @@ public class AddCSPanel extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         cmbFclty = new javax.swing.JComboBox<>();
-        crsID = new javax.swing.JTextField();
+        clssTyp = new javax.swing.JTextField();
         rmID = new javax.swing.JComboBox<>();
         day = new javax.swing.JComboBox<>();
+        crsID = new javax.swing.JTextField();
 
         setPreferredSize(new java.awt.Dimension(240, 235));
 
@@ -76,10 +78,12 @@ public class AddCSPanel extends javax.swing.JPanel {
 
         cmbFclty.setEditable(true);
 
-        crsID.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        clssTyp.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         day.setEditable(true);
         day.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Day", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" }));
+
+        crsID.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -97,7 +101,7 @@ public class AddCSPanel extends javax.swing.JPanel {
                             .addComponent(sctn, 0, 100, Short.MAX_VALUE)
                             .addComponent(clr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(crsID)
+                    .addComponent(clssTyp)
                     .addComponent(cmbFclty, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(time1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -106,7 +110,8 @@ public class AddCSPanel extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(time2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(rmID, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(day, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(day, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(crsID))
                 .addContainerGap(20, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -123,6 +128,8 @@ public class AddCSPanel extends javax.swing.JPanel {
                 .addComponent(day, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cmbFclty, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(clssTyp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(crsID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8)
@@ -146,7 +153,7 @@ public class AddCSPanel extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -155,6 +162,7 @@ public class AddCSPanel extends javax.swing.JPanel {
         time2.setTimeToNow();
         day.setSelectedIndex(0);
         cmbFclty.setSelectedIndex(0);
+        clssTyp.setText("");
         crsID.setText("");
     }//GEN-LAST:event_clrActionPerformed
 
@@ -164,6 +172,7 @@ public class AddCSPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton clr;
+    public javax.swing.JTextField clssTyp;
     public javax.swing.JComboBox<String> cmbFclty;
     public javax.swing.JTextField crsID;
     public javax.swing.JComboBox<String> day;

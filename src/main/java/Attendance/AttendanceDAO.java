@@ -31,7 +31,7 @@ public interface AttendanceDAO {
 
     DefaultTableModel getByFacultyId(int facultyUserId);
 
-    void addStudentToClassSchedule(int csId, String studentId);
+    boolean addStudentToClassSchedule(int csId, String studentId);
 
     void removeStudentFromClassSchedule(int csId, String studentId);
 
