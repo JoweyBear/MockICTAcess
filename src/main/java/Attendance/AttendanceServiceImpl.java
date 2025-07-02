@@ -1,14 +1,13 @@
 package Attendance;
 
 import Attendance.Views.*;
-import Utilities.QuickSearchList;
-import Utilities.StudentCBHandler;
+import Utilities.*;
 import java.awt.CardLayout;
+import java.time.LocalTime;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.Utilities;
 
 public class AttendanceServiceImpl implements AttendanceService {
 
@@ -18,6 +17,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     EditCSPanel editclass;
     AttendancePanel att;
     AttendanceDAO dao = new AttendanceDAOImpl();
+    private String college = GlobalVar.loggedInAdmin.getCollge();
 
     public AttendanceServiceImpl(AddRmPanel addroom, AddCSPanel addclass, EditRmPanel editroom, EditCSPanel editclass, AttendancePanel att) {
         this.addclass = addclass;
@@ -51,8 +51,6 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public void getRoomById() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-
     }
 
     @Override
@@ -72,6 +70,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             att.setFlr_lvl(addroom.flrLvl.getSelectedItem().toString());
             att.setType(addroom.typ.getSelectedItem().toString());
             att.setDesc(addroom.dscp.getText().trim());
+            att.setCollege(college);
             dao.saveRoom(att);
             getAllRooms();
             clearAddRoom();
@@ -167,7 +166,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void addClassSchedule() {
         if (addclass.day.getSelectedItem().equals("Day")
                 || addclass.cmbFclty.getSelectedItem().equals("")
-                || addclass.clssTyp.getText().trim().equals("")) {
+                || addclass.clssTyp.getText().trim().equals("")
+                || addclass.yr.getSelectedItem().equals("Year")
+                || addclass.sctn.getSelectedItem().equals("Section")) {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             AttModel att = new AttModel();
@@ -176,6 +177,8 @@ public class AttendanceServiceImpl implements AttendanceService {
             att.setTime_strt(addclass.time1.getTime());
             att.setTime_end(addclass.time2.getTime());
             att.setSubject(addclass.crsID.getText().trim());
+            att.setYear(addclass.yr.getSelectedItem().toString());
+            att.setSection(addclass.sctn.getSelectedItem().toString());
 
             String facultyid = addclass.cmbFclty.getSelectedItem().toString();
             String faculty_id = facultyid.split(" - ")[0].replace("ID: ", "").trim();
@@ -204,6 +207,8 @@ public class AttendanceServiceImpl implements AttendanceService {
             att.setTime_strt(editclass.time1.getTime());
             att.setTime_end(editclass.time2.getTime());
             att.setSubject(editclass.crsID.getText().trim());
+            att.setYear(addclass.yr.getSelectedItem().toString());
+            att.setSection(addclass.sctn.getSelectedItem().toString());
 
             String facultyid = editclass.cmbFclty.getSelectedItem().toString();
             String faculty_id = facultyid.split(" - ")[0].replace("ID: ", "").trim();
@@ -291,7 +296,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             String student_id = att.jTable2.getValueAt(dataRow, 1).toString();
             int dialogButton = JOptionPane.YES_NO_OPTION;
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to "
-                    + "remove student: " + cs_id + " froom class schecule: " + student_id +"?", "Warning", dialogButton);
+                    + "remove student: " + cs_id + " froom class schecule: " + student_id + "?", "Warning", dialogButton);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 dao.removeStudentFromClassSchedule(cs_id, student_id);
                 getStudentsByClassScheduleId();
@@ -326,7 +331,8 @@ public class AttendanceServiceImpl implements AttendanceService {
         addclass.cmbFclty.setSelectedIndex(0);
         addclass.clssTyp.setText("");
         addclass.crsID.setText("");
-
+        addclass.yr.setSelectedIndex(0);
+        addclass.sctn.setSelectedIndex(0);
     }
 
     private void clearEditCS() {
@@ -336,6 +342,54 @@ public class AttendanceServiceImpl implements AttendanceService {
         editclass.cmbFclty.setSelectedIndex(0);
         editclass.crsID.setText("");
         editclass.clssTyp.setText("");
+        editclass.sctn.setSelectedIndex(0);
+        editclass.yr.setSelectedIndex(0);
+    }
 
+    @Override
+    public void jcomboSelection() {
+        String selected = att.ar.getSelectedItem().toString();
+        if ("Room".equals(selected)) {
+            getAllRooms();
+        } else if ("Class Schedule".equals(selected)) {
+            getAllClassSchedules();
+        }
+    }
+
+    @Override
+    public void editRoom() {
+        int dataRow = att.jTable1.getSelectedRow();
+        if (dataRow >= 0) {
+            String room_id = att.jTable1.getValueAt(dataRow, 0).toString();
+            String college = GlobalVar.loggedInAdmin.getCollge();
+            editroom.jLabel4.setText(room_id);
+            editroom.cllg.setSelectedItem(college);
+            editroom.rmNm.setText(att.jTable1.getValueAt(dataRow, 1).toString());
+            editroom.bldng.setText(att.jTable1.getValueAt(dataRow, 2).toString());
+            editroom.flrLvl.setSelectedItem(att.jTable1.getValueAt(dataRow, 3).toString());
+            editroom.typ.setSelectedItem(att.jTable1.getValueAt(dataRow, 4).toString());
+
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select admin to update.");
+        }
+    }
+
+    @Override
+    public void editCS() {
+        int dataRow = att.jTable1.getSelectedRow();
+        if (dataRow >= 0) {
+            String cs_id = att.jTable1.getValueAt(dataRow, 0).toString();
+            editclass.jLabel4.setText(cs_id);
+            editclass.clssTyp.setText(att.jTable1.getValueAt(dataRow, 1).toString());
+            editclass.crsID.setText(att.jTable1.getValueAt(dataRow, 2).toString());
+            editclass.sctn.setSelectedItem(att.jTable1.getValueAt(dataRow, 3).toString());
+            editclass.yr.setSelectedItem(att.jTable1.getValueAt(dataRow, 4).toString());
+            editclass.day.setSelectedItem(att.jTable1.getValueAt(dataRow, 5).toString());
+            editclass.time1.setTime((LocalTime) att.jTable1.getValueAt(dataRow, 6));
+            editclass.time2.setTime((LocalTime) att.jTable1.getValueAt(dataRow, 7));
+            editclass.cmbFclty.setSelectedItem(att.jTable1.getValueAt(dataRow, 8).toString());
+            editclass.rmID.setSelectedItem(att.jTable1.getValueAt(dataRow, 9).toString());
+
+        }
     }
 }

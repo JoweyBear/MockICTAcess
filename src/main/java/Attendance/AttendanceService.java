@@ -21,4 +21,7 @@ public interface AttendanceService {
     void getStudentsByClassScheduleId();
     void addStudentToClassSchedule();
     void removeStudentFromClassSchedule();
+    void jcomboSelection();
+    void editRoom();
+    void editCS();
 }

@@ -200,16 +200,16 @@ public class AttendancePanel extends javax.swing.JPanel {
                         .addContainerGap(19, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
-    public void buttonListener(ActionListener a, PopupMenuListener b, MouseListener c) {
+    public void buttonListener(ActionListener a, PopupMenuListener b1, MouseListener c1, PopupMenuListener b2, MouseListener c2) {
         ddClss.addActionListener(a);
         ddRm.addActionListener(a);
         fltr.addActionListener(a);
-        jTable1.addMouseListener(c);
-        jTable2.addMouseListener(c);
-        jTable1CSMenuPopup.addPopupMenuListener(b);
-        jTable1RoomPopup.addPopupMenuListener(b);
-        jTable2CSPopup.addPopupMenuListener(b);
-        jTable2RmPopup.addPopupMenuListener(b);
+        jTable1.addMouseListener(c1);
+        jTable2.addMouseListener(c2);
+        jTable1CSMenuPopup.addPopupMenuListener(b1);
+        jTable1RoomPopup.addPopupMenuListener(b1);
+        jTable2CSPopup.addPopupMenuListener(b2);
+        jTable2RmPopup.addPopupMenuListener(b2);
         ar.addActionListener(a);
         addCStoRMMI.addActionListener(a);
         addStudentCSMI.addActionListener(a);

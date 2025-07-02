@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Vector;
@@ -44,18 +45,43 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     @Override
     public void saveClassSched(AttModel att) {
         try {
-            String sql = "INSERT INTO class_schedule(class_type, day, time_start, time_end, subject, faculty_user_id, room_id) VALUES(?, ?, ?, ?, ?, ? ,?)";
-            PreparedStatement ps = conn.prepareStatement(sql);
+            String insertSql = "INSERT INTO class_schedule (class_type, day, time_start, time_end, subject, faculty_user_id, room_id, college) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, att.getClass_type());
             ps.setString(2, att.getDay());
-            ps.setTime(3, java.sql.Time.valueOf(att.getTime_strt()));
-            ps.setTime(4, java.sql.Time.valueOf(att.getTime_end()));
+            ps.setTime(3, Time.valueOf(att.getTime_strt()));
+            ps.setTime(4, Time.valueOf(att.getTime_end()));
             ps.setString(5, att.getSubject());
             ps.setString(6, att.getFaculty_id());
             ps.setInt(7, att.getRm_id());
-            ps.execute();
+            ps.setString(8, att.getCollege());
+            ps.executeUpdate();
+
+            ResultSet rs = ps.getGeneratedKeys();
+            int classScheduleId = -1;
+            if (rs.next()) {
+                classScheduleId = rs.getInt(1);
+            }
+
+            String studentSql = "SELECT s.user_id FROM user s "
+                    + "JOIN student_info si ON s.user_id = si.user_id "
+                    + "WHERE s.role = 'student' AND si.year_level = ? AND si.section = ?";
+            PreparedStatement studentPs = conn.prepareStatement(studentSql);
+            studentPs.setString(1, att.getYear());
+            studentPs.setString(2, att.getYear());
+            ResultSet studentRs = studentPs.executeQuery();
+
+            String assignSql = "INSERT INTO class_student (class_schedule_id, student_user_id) VALUES (?, ?)";
+            PreparedStatement assignPs = conn.prepareStatement(assignSql);
+            while (studentRs.next()) {
+                assignPs.setInt(1, classScheduleId);
+                assignPs.setString(2, studentRs.getString("user_id"));
+                assignPs.addBatch();
+            }
+            assignPs.executeBatch();
+
         } catch (SQLException ex) {
-            Logger.getLogger(AttendanceDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
@@ -79,22 +105,65 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     }
 
     @Override
-    public void updateClassSched(AttModel att) {
+    public boolean updateClassSched(AttModel att) {
+        boolean success = false;
         try {
-            String sql = "UPDATE class_schedule SET class_type = ?, day = ?, time_start = ?, time_end = ?, subject = ?, faculty_user_id = ?, room_id = ? WHERE cs_id = ?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, att.getClass_type());
-            ps.setString(2, att.getDay());
-            ps.setTime(3, java.sql.Time.valueOf(att.getTime_strt()));
-            ps.setTime(4, java.sql.Time.valueOf(att.getTime_end()));
-            ps.setString(5, att.getSubject());
-            ps.setString(6, att.getFaculty_id());
-            ps.setInt(7, att.getRm_id());
-            ps.setInt(8, att.getCs_id());
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(AttendanceDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+            conn.setAutoCommit(false);
+
+            String updateSchedule = "UPDATE class_schedule SET class_type = ?, day = ?, time_start = ?, time_end = ?, subject = ?, faculty_user_id = ?, room_id = ?, year_level = ?, section = ? WHERE cs_id = ?";
+            PreparedStatement ps1 = conn.prepareStatement(updateSchedule);
+            ps1.setString(1, att.getClass_type());
+            ps1.setString(2, att.getDay());
+            ps1.setTime(3, Time.valueOf(att.getTime_strt()));
+            ps1.setTime(4, Time.valueOf(att.getTime_end()));
+            ps1.setString(5, att.getSubject());
+            ps1.setString(6, att.getFaculty_id());
+            ps1.setInt(7, att.getRm_id());
+            ps1.setString(8, att.getYear());
+            ps1.setString(9, att.getSection());
+            ps1.setInt(10, att.getCs_id());
+            ps1.executeUpdate();
+
+            String deleteOld = "DELETE FROM class_student WHERE class_schedule_id = ?";
+            PreparedStatement ps2 = conn.prepareStatement(deleteOld);
+            ps2.setInt(1, att.getCs_id());
+            ps2.executeUpdate();
+
+            String selectStudents = "SELECT user_id FROM student_info WHERE year_level = ? AND section = ?";
+            PreparedStatement ps3 = conn.prepareStatement(selectStudents);
+            ps3.setString(1, att.getYear());
+            ps3.setString(2, att.getSection());
+            ResultSet rs = ps3.executeQuery();
+
+            String insertStudent = "INSERT INTO class_student (class_schedule_id, student_user_id) VALUES (?, ?)";
+            PreparedStatement ps4 = conn.prepareStatement(insertStudent);
+
+            while (rs.next()) {
+                ps4.setInt(1, att.getCs_id());
+                ps4.setString(2, rs.getString("user_id"));
+                ps4.addBatch();
+            }
+
+            ps4.executeBatch();
+
+            conn.commit();
+            success = true;
+        } catch (SQLException e) {
+            try {
+                conn.rollback();
+            } catch (SQLException rollbackEx) {
+                rollbackEx.printStackTrace();
+            }
+            e.printStackTrace();
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
+        return success;
 
     }
 
@@ -366,7 +435,9 @@ public class AttendanceDAOImpl implements AttendanceDAO {
                     + "day AS 'Day',"
                     + "time_start AS 'Time Start',"
                     + "time_end AS 'Time End',"
-                    + "subject AS 'Subject',"
+                    + "subject AS 'Subject', "
+                    + "section AS 'Section', "
+                    + "year AS 'Year', "
                     + "faculty_user_id AS 'Faculty ID',"
                     + "room_id AS 'Room ID'"
                     + "FROM class_schedule WHERE college = ?;";
@@ -396,7 +467,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             e.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(List.of("Class Schedule ID", "Class Type", "Subject", "Day", "Time Start", "Time End", "Faculty ID", "Room ID"));
+        Vector<String> columns = new Vector<>(List.of("Class Schedule ID", "Class Type", "Subject", "Section", "Year", "Day", "Time Start", "Time End",  "Faculty ID", "Room ID"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -409,7 +480,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             ps.setInt(1, csId);
             ps.setString(2, studentId);
             ps.executeUpdate();
-            added = true; // ✅ Just assign, no need to redeclare
+            added = true;  
         } catch (SQLException ex) {
             Logger.getLogger(AttendanceDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }

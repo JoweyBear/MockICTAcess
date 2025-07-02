@@ -25,10 +25,8 @@ public class AttendanceController {
         this.att = att;
         service = new AttendanceServiceImpl(addroom, addclass, editroom, editclass, att);
         this.att.buttonListener(new ButtonEvent(),
-                new JTable1CSPopup(), new JTable1CSPopup(),
-                new JTable1RoomPopup(), new JTable1RoomPopup(),
-                new JTable2CSPopup(), new JTable2CSPopup(),
-                new JTable2RoomPopup(), new JTable2RoomPopup());
+                new JTable1Popup(), new JTable1Popup(),
+                new JTable2Popup(), new JTable2Popup());
     }
 
     class ButtonEvent implements ActionListener {
@@ -42,100 +40,42 @@ public class AttendanceController {
             }
         }
     }
-
-    class JTable1CSPopup extends MouseAdapter implements PopupMenuListener {
+    class JTable1Popup extends MouseAdapter implements PopupMenuListener{
 
         @Override
-        public void mouseReleased(MouseEvent e) {
-
+        public void mouseReleased(MouseEvent e){
+            
         }
-
         @Override
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
 
         @Override
         public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
 
         @Override
         public void popupMenuCanceled(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
         }
-
-    }
-
-    class JTable1RoomPopup extends MouseAdapter implements PopupMenuListener {
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-
-        }
-
-        @Override
-        public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-
-        @Override
-        public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-
-        @Override
-        public void popupMenuCanceled(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-
-    }
-
-        class JTable2RoomPopup extends MouseAdapter implements PopupMenuListener {
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-
-        }
-
-        @Override
-        public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-
-        @Override
-        public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-
-        @Override
-        public void popupMenuCanceled(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-
-    }
-    class JTable2CSPopup extends MouseAdapter implements PopupMenuListener {
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-
-        }
-
-        @Override
-        public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-
-        @Override
-        public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-
-        @Override
-        public void popupMenuCanceled(PopupMenuEvent e) {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-
-    }
         
+    }
+    class JTable2Popup extends MouseAdapter implements PopupMenuListener{
+
+        @Override
+        public void mouseReleased(MouseEvent e){
+            
+        }
+        @Override
+        public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+        }
+
+        @Override
+        public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+        }
+
+        @Override
+        public void popupMenuCanceled(PopupMenuEvent e) {
+        }
+        
+    }
     }

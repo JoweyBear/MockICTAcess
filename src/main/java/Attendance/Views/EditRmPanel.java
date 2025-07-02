@@ -11,12 +11,13 @@ public class EditRmPanel extends javax.swing.JPanel {
         UIManager.put("TextField.background", Color.white);
         initComponents();
 
+        jLabel4.setText("");
         bldng.putClientProperty("JTextField.placeholderText", "Admin ID");
         rmNm.putClientProperty("JTextField.placeholderText", "Position/College");
         dscp.putClientProperty("JTextField.placeholderText", "First Name");
 
 
-        dd.setFont(RegisterFont.getFont("nstr", 14));
+        pdt.setFont(RegisterFont.getFont("nstr", 14));
         clr.setFont(RegisterFont.getFont("nstr", 14));
     }
 
@@ -27,24 +28,26 @@ public class EditRmPanel extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         bldng = new javax.swing.JTextField();
         cllg = new javax.swing.JComboBox<>();
-        dd = new javax.swing.JButton();
+        pdt = new javax.swing.JButton();
         clr = new javax.swing.JButton();
         rmNm = new javax.swing.JTextField();
         flrLvl = new javax.swing.JComboBox<>();
         typ = new javax.swing.JComboBox<>();
         dscp = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(264, 215));
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Add Room", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 1, 18))); // NOI18N
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Edit Room", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 1, 18))); // NOI18N
 
         bldng.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         cllg.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         cllg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "College", "CICT", "CIT", "CHM", "COED" }));
 
-        dd.setText("Add");
+        pdt.setText("Update");
 
         clr.setText("Clear");
         clr.addActionListener(new java.awt.event.ActionListener() {
@@ -63,6 +66,12 @@ public class EditRmPanel extends javax.swing.JPanel {
 
         dscp.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel1.setText("ID:");
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel4.setText("rmID");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -71,9 +80,13 @@ public class EditRmPanel extends javax.swing.JPanel {
                 .addGap(19, 19, 19)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(dd, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(pdt, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
                         .addGap(63, 63, 63)
-                        .addComponent(clr, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE))
+                        .addComponent(clr, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE))
                     .addComponent(bldng)
                     .addComponent(cllg, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(rmNm)
@@ -85,21 +98,25 @@ public class EditRmPanel extends javax.swing.JPanel {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(cllg, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                .addGap(14, 14, 14)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bldng, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                .addComponent(cllg)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rmNm, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                .addComponent(bldng)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(flrLvl, javax.swing.GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE)
+                .addComponent(rmNm)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(typ, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                .addComponent(flrLvl)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dscp, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
+                .addComponent(typ)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dscp)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pdt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(clr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -125,17 +142,19 @@ public class EditRmPanel extends javax.swing.JPanel {
         typ.setSelectedIndex(0);
     }//GEN-LAST:event_clrActionPerformed
     public void buttonListener(ActionListener a){
-        dd.addActionListener(a);
+        pdt.addActionListener(a);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JTextField bldng;
     public javax.swing.JComboBox<String> cllg;
     public javax.swing.JButton clr;
-    public javax.swing.JButton dd;
     public javax.swing.JTextField dscp;
     public javax.swing.JComboBox<String> flrLvl;
+    private javax.swing.JLabel jLabel1;
+    public javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
+    public javax.swing.JButton pdt;
     public javax.swing.JTextField rmNm;
     public javax.swing.JComboBox<String> typ;
     // End of variables declaration//GEN-END:variables

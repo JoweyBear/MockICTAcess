@@ -23,6 +23,8 @@ public class AttModel {
 //    private int room_id;
 
     private String stud_id;
+    private String year;
+    private String section;
 
     private int att_id;
     private String status;
@@ -30,7 +32,9 @@ public class AttModel {
     private String att_method;
     private String user_id;
     private LocalDateTime created_at;
-
+    
+    
+    
     public int getRm_id() {
         return rm_id;
     }
@@ -197,6 +201,22 @@ public class AttModel {
 
     public void setCreated_at(LocalDateTime created_at) {
         this.created_at = created_at;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
     }
 
 }

@@ -164,6 +164,8 @@ public class AddCSPanel extends javax.swing.JPanel {
         cmbFclty.setSelectedIndex(0);
         clssTyp.setText("");
         crsID.setText("");
+        yr.setSelectedIndex(0);
+        sctn.setSelectedIndex(0);
     }//GEN-LAST:event_clrActionPerformed
 
     public void buttonListener(ActionListener a) {

@@ -11,7 +11,7 @@ public interface AttendanceDAO {
 
     void updateRoom(AttModel att);
 
-    void updateClassSched(AttModel att);
+    boolean updateClassSched(AttModel att);
 
     void deleteRoom(int room_id);
 
