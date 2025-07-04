@@ -222,7 +222,7 @@ public class AttendancePanel extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem addCStoRMMI;
+    public javax.swing.JMenuItem addCStoRMMI;
     public javax.swing.JMenuItem addStudentCSMI;
     public javax.swing.JComboBox<String> ar;
     public javax.swing.JButton ddClss;
@@ -238,10 +238,10 @@ public class AttendancePanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     public javax.swing.JTable jTable1;
-    private javax.swing.JPopupMenu jTable1CSMenuPopup;
-    private javax.swing.JPopupMenu jTable1RoomPopup;
+    public javax.swing.JPopupMenu jTable1CSMenuPopup;
+    public javax.swing.JPopupMenu jTable1RoomPopup;
     public javax.swing.JTable jTable2;
-    private javax.swing.JPopupMenu jTable2CSPopup;
+    public javax.swing.JPopupMenu jTable2CSPopup;
     public javax.swing.JPopupMenu jTable2RmPopup;
     public javax.swing.JMenuItem removeCStoRMMI;
     public javax.swing.JMenuItem removeStudentCSMI;

@@ -309,7 +309,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             ex.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(List.of("Attendance ID", "Class Schedule ID", "Student ID", "Student Name", "Subject", "Faculty", "Date", "Method", "Status"));
+        Vector<String> columns = new Vector<>(List.of("Attendance ID", "Class Schedule ID", "Student ID", "Student Name", "Subject", "Date", "Faculty", "Method", "Status"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 

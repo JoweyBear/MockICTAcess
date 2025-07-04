@@ -3,6 +3,7 @@ package Admin.Views;
 import Utilities.RegisterFont;
 import java.awt.Color;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyListener;
 import javax.swing.UIManager;
 
 public class EditAdPanel extends javax.swing.JPanel {
@@ -245,6 +246,10 @@ public class EditAdPanel extends javax.swing.JPanel {
         pdt.addActionListener(a);
         scn.addActionListener(a);
         chssmg.addActionListener(a);
+    }
+    
+    public void keyListener(KeyListener evt){
+        nmbr.addKeyListener(evt);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

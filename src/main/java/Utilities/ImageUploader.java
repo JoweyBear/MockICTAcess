@@ -31,6 +31,8 @@ public class ImageUploader {
 
                 image.setText("");
                 image.setIcon(new ImageIcon(scaled));
+                image.setHorizontalAlignment(SwingConstants.CENTER);
+                image.setVerticalAlignment(SwingConstants.CENTER);
 
                 return imageBytes;
 

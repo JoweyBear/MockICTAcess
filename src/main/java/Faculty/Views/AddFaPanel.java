@@ -3,6 +3,7 @@ package Faculty.Views;
 import Utilities.RegisterFont;
 import java.awt.Color;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyListener;
 import java.util.Date;
 import javax.swing.UIManager;
 
@@ -234,6 +235,10 @@ public class AddFaPanel extends javax.swing.JPanel {
         sv.addActionListener(a);
         scn.addActionListener(a);
         chssmg.addActionListener(a);
+    }
+    
+    public void keyListener(KeyListener evt){
+        nmbr.addKeyListener(evt);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

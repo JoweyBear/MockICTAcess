@@ -37,6 +37,34 @@ public class AttendanceController {
                 service.addClassSched();
             } else if (e.getSource() == att.ddRm) {
                 service.addRoom();
+            }else if(e.getSource() == att.fltr){
+                service.getScheduleAttDate();
+            }else if(e.getSource() == att.ar){
+                service.jcomboSelection();
+            }else if(e.getSource() == att.addStudentCSMI){
+                service.addStudentToClassSchedule();
+            }else if(e.getSource() == att.addCStoRMMI){
+                service.addClassSchedule();
+            }else if(e.getSource() == att.editCSMI){
+                service.editCS();
+            }else if(e.getSource() == att.editRmMI){
+                service.editRoom();
+            }else if(e.getSource() == att.removeCStoRMMI){
+                service.deleteClassSchedule();
+            }else if(e.getSource() == att.removeStudentCSMI){
+                service.removeStudentFromClassSchedule();
+            }else if(e.getSource() == att.viewCSMI){
+                service.getSchedulesByRoomId();
+            }else if(e.getSource() == att.viewRMMI){
+                service.getRoomById();
+            }else if(e.getSource() == addclass.dd){
+               service.addClassSchedule();
+            }else if(e.getSource() == editclass.pdt){
+                service.updateClassSchedule();
+            }else if(e.getSource() == addroom.dd){
+                service.saveRoom();
+            }else if(e.getSource() == editroom.pdt){
+                service.updateRoom();
             }
         }
     }
@@ -44,7 +72,7 @@ public class AttendanceController {
 
         @Override
         public void mouseReleased(MouseEvent e){
-            
+            service.popupJTable1(e);
         }
         @Override
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
@@ -63,7 +91,7 @@ public class AttendanceController {
 
         @Override
         public void mouseReleased(MouseEvent e){
-            
+            service.popupJTable2(e);
         }
         @Override
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {

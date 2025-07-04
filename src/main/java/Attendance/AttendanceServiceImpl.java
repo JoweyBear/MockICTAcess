@@ -3,10 +3,15 @@ package Attendance;
 import Attendance.Views.*;
 import Utilities.*;
 import java.awt.CardLayout;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class AttendanceServiceImpl implements AttendanceService {
@@ -18,6 +23,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     AttendancePanel att;
     AttendanceDAO dao = new AttendanceDAOImpl();
     private String college = GlobalVar.loggedInAdmin.getCollge();
+    TableDateFilter dateFilter = new TableDateFilter(att.jTable2, 5);
 
     public AttendanceServiceImpl(AddRmPanel addroom, AddCSPanel addclass, EditRmPanel editroom, EditCSPanel editclass, AttendancePanel att) {
         this.addclass = addclass;
@@ -144,8 +150,8 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public void getSchedulesByDayAndTime() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void getScheduleAttDate() {
+        dateFilter.applyFilter(att.jDateChooser1, att.jDateChooser2);
     }
 
     @Override
@@ -392,4 +398,57 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         }
     }
+
+    @Override
+    public void popupJTable1(MouseEvent e) {
+        int r = att.jTable1.rowAtPoint(e.getPoint());
+        if (r >= 0 && r < att.jTable1.getRowCount()) {
+            att.jTable1.setRowSelectionInterval(r, r);
+        } else {
+            att.jTable1.clearSelection();
+            return;
+        }
+
+        int rowindex = att.jTable1.getSelectedRow();
+        if (rowindex < 0) {
+            return;
+        }
+
+        if (e.isPopupTrigger() && e.getComponent() instanceof JTable) {
+            String type = att.jTable1.getValueAt(rowindex, 0).toString();
+
+            if (type.equalsIgnoreCase("Room ID")) {
+                att.jTable1RoomPopup.show(att.jTable1, e.getX(), e.getY());
+            } else if (type.equalsIgnoreCase("Class Schedule ID")) {
+                att.jTable1CSMenuPopup.show(att.jTable1, e.getX(), e.getY());
+            }
+        }
+    }
+
+    @Override
+    public void popupJTable2(MouseEvent e) {
+        int r = att.jTable2.rowAtPoint(e.getPoint());
+        if (r >= 0 && r < att.jTable2.getRowCount()) {
+            att.jTable2.setRowSelectionInterval(r, r);
+        } else {
+            att.jTable2.clearSelection();
+            return;
+        }
+
+        int rowindex = att.jTable2.getSelectedRow();
+        if (rowindex < 0) {
+            return;
+        }
+
+        if (e.isPopupTrigger() && e.getComponent() instanceof JTable) {
+            String type = att.jTable2.getValueAt(rowindex, 1).toString();
+
+            if (type.equalsIgnoreCase("Student ID")) {
+                att.jTable2CSPopup.show(att.jTable2, e.getX(), e.getY());
+            } else if (type.equalsIgnoreCase("Subject")) {
+                att.jTable2RmPopup.show(att.jTable2, e.getX(), e.getY());
+            }
+        }
+    }
+
 }
