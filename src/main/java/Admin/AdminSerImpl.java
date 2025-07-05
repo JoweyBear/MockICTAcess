@@ -4,6 +4,7 @@ import Admin.Views.*;
 import Utilities.FingerprintCapture;
 import Utilities.ImageUploader;
 import Utilities.QuickSearchList;
+import Utilities.SearchDefaultModel;
 import java.awt.CardLayout;
 import java.awt.Image;
 import java.awt.Point;
@@ -39,13 +40,15 @@ public class AdminSerImpl implements AdminService {
         this.editPanel = editPanel;
         this.viewDialog = viewDialog;
 
+        setTableData();
+
     }
 
     @Override
     public void setTableData() {
         DefaultTableModel model = dao.fetchAll();
         adminPanel.jTable1.setModel(model);
-        new QuickSearchList(adminPanel, adminPanel.jTable1, adminPanel.srchtxtfld, (List<List<String>>) model);
+        new SearchDefaultModel(adminPanel, adminPanel.jTable1, adminPanel.srchtxtfld, model);
     }
 
     @Override
@@ -80,6 +83,7 @@ public class AdminSerImpl implements AdminService {
             admin.setImage(uploadedImageForAdd);
             admin.setBarangay(addPanel.brgy.getText().trim());
             admin.setMunicipal(addPanel.mncplty.getText().trim());
+            admin.setCollge(addPanel.pstn.getText().trim());
 
 //            
 //            DPFPTemplate template = fingerprintCapture.getTemplate();
@@ -126,6 +130,9 @@ public class AdminSerImpl implements AdminService {
         editPanel.usrnm.setText(viewDialog.usrName.getText().trim());
         editPanel.jLabelimage.setIcon(viewDialog.image.getIcon());
         editPanel.jLabelfinger.setIcon(viewDialog.fngrprnt.getIcon());
+        CardLayout cl = (CardLayout) adminPanel.jPanel2.getLayout();
+        adminPanel.jPanel2.add(editPanel, "EditAdmin");
+        cl.show(adminPanel.jPanel2, "EditAdmin");
     }
 
     @Override
@@ -158,8 +165,9 @@ public class AdminSerImpl implements AdminService {
             admin.setUsername(editPanel.usrnm.getText().trim());
             admin.setPass(editPanel.cnfrm.getText().trim());
             admin.setImage(uploadedImageForEdit);
-            admin.setBarangay(addPanel.brgy.getText().trim());
-            admin.setMunicipal(addPanel.mncplty.getText().trim());
+            admin.setBarangay(editPanel.brgy.getText().trim());
+            admin.setMunicipal(editPanel.mncplty.getText().trim());
+            admin.setCollge(editPanel.pstn.getText().trim());
 
 //            DPFPTemplate template = fingerprintCapture.getTemplate();
 //            if (template != null) {
@@ -294,7 +302,7 @@ public class AdminSerImpl implements AdminService {
     public void viewAdmin() {
         int dataRow = adminPanel.jTable1.getSelectedRow();
         if (dataRow >= 0) {
-            String admin_id = adminPanel.jTable1.getValueAt(dataRow, 0).toString();
+            String admin_id = getCellValue(dataRow, 0);
 
             JDialog progressDialog = new JDialog((JFrame) null, "Loading", true);
             JProgressBar progressBar = new JProgressBar();
@@ -314,17 +322,17 @@ public class AdminSerImpl implements AdminService {
                         progressDialog.dispose();
 
                         viewDialog.adminID.setText(admin_id);
-                        viewDialog.college.setText(adminPanel.jTable1.getValueAt(dataRow, 1).toString());
-                        viewDialog.fName.setText(adminPanel.jTable1.getValueAt(dataRow, 2).toString());
-                        viewDialog.mName.setText(adminPanel.jTable1.getValueAt(dataRow, 3).toString());
-                        viewDialog.lName.setText(adminPanel.jTable1.getValueAt(dataRow, 4).toString());
-                        viewDialog.sex.setText(adminPanel.jTable1.getValueAt(dataRow, 5).toString());
-                        viewDialog.bDay.setText(adminPanel.jTable1.getValueAt(dataRow, 6).toString());
-                        viewDialog.cntctNumber.setText(adminPanel.jTable1.getValueAt(dataRow, 7).toString());
-                        viewDialog.email.setText(adminPanel.jTable1.getValueAt(dataRow, 8).toString());
-                        viewDialog.brgy.setText(adminPanel.jTable1.getValueAt(dataRow, 9).toString());
-                        viewDialog.municipal.setText(adminPanel.jTable1.getValueAt(dataRow, 10).toString());
-                        viewDialog.usrName.setText(adminPanel.jTable1.getValueAt(dataRow, 11).toString());
+                        viewDialog.college.setText(getCellValue(dataRow, 1));
+                        viewDialog.fName.setText(getCellValue(dataRow, 2));
+                        viewDialog.mName.setText(getCellValue(dataRow, 3));
+                        viewDialog.lName.setText(getCellValue(dataRow, 4));
+                        viewDialog.sex.setText(getCellValue(dataRow, 5));
+                        viewDialog.bDay.setText(getCellValue(dataRow, 6));
+                        viewDialog.cntctNumber.setText(getCellValue(dataRow, 7));
+                        viewDialog.email.setText(getCellValue(dataRow, 8));
+                        viewDialog.brgy.setText(getCellValue(dataRow, 9));
+                        viewDialog.municipal.setText(getCellValue(dataRow, 10));
+                        viewDialog.usrName.setText(getCellValue(dataRow, 11));
 
                         if (admin.getImage() != null) {
                             ImageIcon icon = new ImageIcon(admin.getImage());
@@ -368,6 +376,11 @@ public class AdminSerImpl implements AdminService {
         } else {
             JOptionPane.showMessageDialog(null, "Please select admin to update.");
         }
+    }
+
+    private String getCellValue(int row, int col) {
+        Object val = adminPanel.jTable1.getValueAt(row, col);
+        return val != null ? val.toString() : "";
     }
 
     @Override

@@ -70,8 +70,9 @@ public class AdminDAOImpl implements AdminDAO {
     @Override
     public void save(AdminModel admin) {
         try {
-            String userSql = "INSERT INTO user (user_id, role, fname, mname, lname, contact_num, email, barangay, municipality, sex, birthdate, image, college) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String userSql = "INSERT INTO user (user_id, role, fname, mname, lname, contact_num, email, "
+                    + "barangay, municipality, sex, birthdate, image, college) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement userPs = conn.prepareStatement(userSql);
             userPs.setString(1, admin.getStaff_id());
             userPs.setString(2, "admin");
@@ -82,10 +83,10 @@ public class AdminDAOImpl implements AdminDAO {
             userPs.setString(7, admin.getEmail());
             userPs.setString(8, admin.getBarangay());
             userPs.setString(9, admin.getMunicipal());
-            userPs.setString(8, admin.getSx());
-            userPs.setDate(9, new java.sql.Date(admin.getBday().getTime()));
-            userPs.setBytes(10, admin.getImage());
-            userPs.setString(11, admin.getCollge());
+            userPs.setString(10, admin.getSx());
+            userPs.setDate(11, new java.sql.Date(admin.getBday().getTime()));
+            userPs.setBytes(12, admin.getImage());
+            userPs.setString(13, admin.getCollge());
             userPs.execute();
 
             String orgPass = admin.getPass();
@@ -127,11 +128,22 @@ public class AdminDAOImpl implements AdminDAO {
             userPs.setString(12, admin.getStaff_id());
             userPs.executeUpdate();
 
-            String authSql = "UPDATE auth SET username = ?, hash = ? WHERE user_id = ?";
-            PreparedStatement authPs = conn.prepareStatement(authSql);
-            authPs.setString(1, admin.getUsername());
-            authPs.setString(2, admin.getPass());
-            authPs.setString(3, admin.getStaff_id());
+
+            PreparedStatement authPs;
+
+            if (admin.getPass() != null && !admin.getPass().isEmpty()) {
+                String authSql = "UPDATE auth SET username = ?, hash = ? WHERE user_id = ?";
+                authPs = conn.prepareStatement(authSql);
+                authPs.setString(1, admin.getUsername());
+                authPs.setString(2, admin.getPass());
+                authPs.setString(3, admin.getStaff_id());
+            } else {
+                String authSql = "UPDATE auth SET username = ? WHERE user_id = ?";
+                authPs = conn.prepareStatement(authSql);
+                authPs.setString(1, admin.getUsername());
+                authPs.setString(2, admin.getStaff_id());
+            }
+
             authPs.executeUpdate();
 
             if (admin.getFingerprint() != null && admin.getFingerprintImage() != null) {
