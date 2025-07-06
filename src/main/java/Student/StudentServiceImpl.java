@@ -397,7 +397,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void addButton() {
         CardLayout cl = (CardLayout) sPanel.jPanel2.getLayout();
-        sPanel.jPanel2.add(sAdd, "AddStudemt");
+        sPanel.jPanel2.add(sAdd, "AddStudent");
         cl.show(sPanel.jPanel2, "AddStudent");
         System.out.println("AddButtonClicked");
     }

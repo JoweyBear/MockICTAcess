@@ -9,9 +9,14 @@ import java.awt.CardLayout;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -121,18 +126,36 @@ public class AdminSerImpl implements AdminService {
         editPanel.pstn.setText(viewDialog.college.getText().trim());
         editPanel.adfname.setText(viewDialog.fName.getText().trim());
         editPanel.admname.setText(viewDialog.mName.getText().trim());
+        editPanel.adlname.setText(viewDialog.lName.getText().trim());
         editPanel.nmbr.setText(viewDialog.cntctNumber.getText().trim());
         editPanel.ml.setText(viewDialog.email.getText().trim());
         editPanel.sx.setSelectedItem(viewDialog.sex.getText());
         editPanel.brgy.setText(viewDialog.brgy.getText().trim());
         editPanel.mncplty.setText(viewDialog.municipal.getText().trim());
-        editPanel.bdy.setDateFormatString(viewDialog.bDay.getText());
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date parsedDate = format.parse(viewDialog.bDay.getText());
+            editPanel.bdy.setDate(parsedDate);
+        } catch (ParseException ex) {
+            Logger.getLogger(AdminSerImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
         editPanel.usrnm.setText(viewDialog.usrName.getText().trim());
-        editPanel.jLabelimage.setIcon(viewDialog.image.getIcon());
-        editPanel.jLabelfinger.setIcon(viewDialog.fngrprnt.getIcon());
+
+        if (viewDialog.image != null) {
+            editPanel.jLabelimage.setIcon(viewDialog.image.getIcon());
+        } else {
+            editPanel.jLabelimage.setText("No Image");
+        }
+        if (viewDialog.fngrprnt != null) {
+            editPanel.jLabelfinger.setIcon(viewDialog.fngrprnt.getIcon());
+        }else{
+            editPanel.jLabelfinger.setText("No enrolled fingerprint");
+        }
+
         CardLayout cl = (CardLayout) adminPanel.jPanel2.getLayout();
         adminPanel.jPanel2.add(editPanel, "EditAdmin");
         cl.show(adminPanel.jPanel2, "EditAdmin");
+        viewDialog.dispose();
     }
 
     @Override
@@ -326,27 +349,29 @@ public class AdminSerImpl implements AdminService {
                         viewDialog.fName.setText(getCellValue(dataRow, 2));
                         viewDialog.mName.setText(getCellValue(dataRow, 3));
                         viewDialog.lName.setText(getCellValue(dataRow, 4));
-                        viewDialog.sex.setText(getCellValue(dataRow, 5));
-                        viewDialog.bDay.setText(getCellValue(dataRow, 6));
-                        viewDialog.cntctNumber.setText(getCellValue(dataRow, 7));
-                        viewDialog.email.setText(getCellValue(dataRow, 8));
-                        viewDialog.brgy.setText(getCellValue(dataRow, 9));
-                        viewDialog.municipal.setText(getCellValue(dataRow, 10));
+                        viewDialog.cntctNumber.setText(getCellValue(dataRow, 5));
+                        viewDialog.sex.setText(getCellValue(dataRow, 6));
+                        viewDialog.bDay.setText(getCellValue(dataRow, 7));
+                        viewDialog.brgy.setText(getCellValue(dataRow, 8));
+                        viewDialog.municipal.setText(getCellValue(dataRow, 9));
+                        viewDialog.email.setText(getCellValue(dataRow, 10));
                         viewDialog.usrName.setText(getCellValue(dataRow, 11));
 
-                        if (admin.getImage() != null) {
-                            ImageIcon icon = new ImageIcon(admin.getImage());
+                        if (admin.getImageData() != null) {
+                            ImageIcon icon = new ImageIcon(admin.getImageData());
                             Image scaledImage = icon.getImage().getScaledInstance(
                                     viewDialog.image.getWidth(),
                                     viewDialog.image.getHeight(),
                                     Image.SCALE_SMOOTH
                             );
                             viewDialog.image.setIcon(new ImageIcon(scaledImage));
+                            viewDialog.image.setText("");
                         } else {
+                            viewDialog.image.setIcon(null);
                             viewDialog.image.setText("No Image");
                         }
 
-                        if (admin.getFingerprintImage() != null) {
+                        if (admin.getFngrprntImageData() != null) {
                             ImageIcon fingerprintIcon = new ImageIcon(admin.getFingerprintImage());
                             Image scaledFingerprint = fingerprintIcon.getImage().getScaledInstance(
                                     viewDialog.fngrprnt.getWidth(),
@@ -354,7 +379,9 @@ public class AdminSerImpl implements AdminService {
                                     Image.SCALE_SMOOTH
                             );
                             viewDialog.fngrprnt.setIcon(new ImageIcon(scaledFingerprint));
+                            viewDialog.fngrprnt.setText("");
                         } else {
+                            viewDialog.fngrprnt.setIcon(null);
                             viewDialog.fngrprnt.setText("No fingerprint");
                         }
 

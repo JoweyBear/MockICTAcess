@@ -23,7 +23,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     AttendancePanel att;
     AttendanceDAO dao = new AttendanceDAOImpl();
     private String college = GlobalVar.loggedInAdmin.getCollge();
-    TableDateFilter dateFilter = new TableDateFilter(att.jTable2, 5);
+    TableDateFilter dateFilter;
 
     public AttendanceServiceImpl(AddRmPanel addroom, AddCSPanel addclass, EditRmPanel editroom, EditCSPanel editclass, AttendancePanel att) {
         this.addclass = addclass;
@@ -32,6 +32,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         this.editroom = editroom;
         this.att = att;
 
+        this.dateFilter = new TableDateFilter(att.jTable2, 5);
     }
 
     @Override
