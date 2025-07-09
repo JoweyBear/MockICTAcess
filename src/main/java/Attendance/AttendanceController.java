@@ -63,6 +63,7 @@ public class AttendanceController {
                 service.updateClassSchedule();
             }else if(e.getSource() == addroom.dd){
                 service.saveRoom();
+                System.out.println("addclicked");
             }else if(e.getSource() == editroom.pdt){
                 service.updateRoom();
             }

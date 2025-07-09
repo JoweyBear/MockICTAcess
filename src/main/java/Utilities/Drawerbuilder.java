@@ -79,10 +79,10 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
                                 ViewStudentDialog sDialog = new ViewStudentDialog();
                                 new StudentController(sAddPanel, sEditPanel, studentPanel, sDialog);
                                 CardLayout cl = (CardLayout) (dashboard.jPanel2.getLayout());
-                                dashboard.jPanel2.add(studentPanel, "Appointment Panel");
-                                cl.show(dashboard.jPanel2, "Appointment Panel");
+                                dashboard.jPanel2.add(studentPanel, "Student Panel");
+                                cl.show(dashboard.jPanel2, "Student Panel");
 //                                adminPanel.setVisible(true);
-                                System.out.println("AdminPanel Clicked");
+                                System.out.println("StudentPanel Clicked");
                             }
                             if (subIndex == 3) {
                                 DisplayFaPanel fdisplay = new DisplayFaPanel();
@@ -92,10 +92,10 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
                                 ViewFacultyDialog fDialog = new ViewFacultyDialog();
                                 new FacultyController(fAddPanel, fEditPanel, facultyPanel, fDialog);
                                 CardLayout cl = (CardLayout) (dashboard.jPanel2.getLayout());
-                                dashboard.jPanel2.add(facultyPanel, "Appointment Panel");
-                                cl.show(dashboard.jPanel2, "Appointment Panel");
+                                dashboard.jPanel2.add(facultyPanel, "Faculty Panel");
+                                cl.show(dashboard.jPanel2, "Faculty Panel");
 //                                adminPanel.setVisible(true);
-                                System.out.println("AdminPanel Clicked");
+                                System.out.println("Faculty Clicked");
                             }
                             if (subIndex == 4) {
                                 DisplayAttPanel atdisplay = new DisplayAttPanel();
@@ -106,10 +106,10 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
                                 EditCSPanel cseditPanel = new EditCSPanel();
                                 new AttendanceController(rmaddPanel, csaddPanel, rmeditPanel, cseditPanel, attPanel);
                                 CardLayout cl = (CardLayout) (dashboard.jPanel2.getLayout());
-                                dashboard.jPanel2.add(attPanel, "Appointment Panel");
-                                cl.show(dashboard.jPanel2, "Appointment Panel");
+                                dashboard.jPanel2.add(attPanel, "Attendance Panel");
+                                cl.show(dashboard.jPanel2, "Attendance Panel");
 //                                adminPanel.setVisible(true);
-                                System.out.println("AdminPanel Clicked");
+                                System.out.println("Attendance Clicked");
                             }
 //                            Main.main.login();
                         }

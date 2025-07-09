@@ -71,21 +71,21 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
-                  <Component id="cllg" max="32767" attributes="0"/>
+                  <Component id="cllg" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="bldng" max="32767" attributes="0"/>
+                  <Component id="bldng" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="rmNm" max="32767" attributes="0"/>
+                  <Component id="rmNm" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="flrLvl" max="32767" attributes="0"/>
+                  <Component id="flrLvl" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="typ" max="32767" attributes="0"/>
+                  <Component id="typ" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="dscp" max="32767" attributes="0"/>
+                  <Component id="dscp" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="dd" alignment="3" max="32767" attributes="0"/>
-                      <Component id="clr" alignment="3" max="32767" attributes="0"/>
+                      <Component id="dd" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="clr" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="21" max="-2" attributes="0"/>
               </Group>

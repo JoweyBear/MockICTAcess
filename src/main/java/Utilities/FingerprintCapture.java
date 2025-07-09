@@ -1,18 +1,21 @@
 package Utilities;
 
-//import com.digitalpersona.onetouch.*;
-//import com.digitalpersona.onetouch.capture.*;
-//import com.digitalpersona.onetouch.capture.event.*;
+import com.digitalpersona.onetouch.*;
+import com.digitalpersona.onetouch.capture.*;
+import com.digitalpersona.onetouch.capture.event.*;
+import com.digitalpersona.onetouch.processing.DPFPImageQualityException;
 import java.awt.Image;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 public class FingerprintCapture {
-//
+
 //    private DPFPCapture capturer;
 //    private DPFPTemplate template;
 //    private JLabel displayLabel;
-//    private DPFPSample sample;  // This will hold the last sample
+//    private DPFPSample sample;  
 //
 //    public FingerprintCapture(JLabel displayLabel) {
 //        this.displayLabel = displayLabel;
@@ -21,7 +24,7 @@ public class FingerprintCapture {
 //        this.capturer.addDataListener(new DPFPDataAdapter() {
 //            @Override
 //            public void dataAcquired(final DPFPDataEvent e) {
-//                sample = e.getSample();  // ✅ Save sample FIRST
+//                sample = e.getSample();  
 //                DPFPFeatureSet features = extractFeatures(sample);
 //                if (features != null) {
 //                    template = DPFPGlobal.getTemplateFactory().createTemplate(features);
@@ -68,9 +71,14 @@ public class FingerprintCapture {
 //    }
 //
 //    private DPFPFeatureSet extractFeatures(DPFPSample sample) {
-//        return DPFPGlobal.getFeatureExtractionFactory()
-//                .createFeatureExtraction()
-//                .createFeatureSet(sample, DPFPDataPurpose.DATA_PURPOSE_ENROLLMENT);
+//        try {
+//            return DPFPGlobal.getFeatureExtractionFactory()
+//                    .createFeatureExtraction()
+//                    .createFeatureSet(sample, DPFPDataPurpose.DATA_PURPOSE_ENROLLMENT);
+//        } catch (DPFPImageQualityException ex) {
+//            Logger.getLogger(FingerprintCapture.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        return sample;
 //    }
 }
 

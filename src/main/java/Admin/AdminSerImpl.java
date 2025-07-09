@@ -113,9 +113,14 @@ public class AdminSerImpl implements AdminService {
 //            } else {
 //                System.out.println("No fingerprint template captured.");
 //            }
-            dao.save(admin);
-            setTableData();
-            clearAdd();
+            boolean saved = dao.save(admin);
+            if (saved) {
+                setTableData();
+                clearAdd();
+                JOptionPane.showMessageDialog(null, "Admin added successfully.");
+            } else {
+                JOptionPane.showMessageDialog(null, "An error occured. Admin can't be added.");
+            }
 
         }
     }
@@ -148,7 +153,7 @@ public class AdminSerImpl implements AdminService {
         }
         if (viewDialog.fngrprnt != null) {
             editPanel.jLabelfinger.setIcon(viewDialog.fngrprnt.getIcon());
-        }else{
+        } else {
             editPanel.jLabelfinger.setText("No enrolled fingerprint");
         }
 
@@ -214,9 +219,14 @@ public class AdminSerImpl implements AdminService {
 //            } else {
 //                System.out.println("No fingerprint template captured.");
 //            }
-            dao.update(admin);
-            setTableData();
-            clearEdit();
+            boolean update = dao.update(admin);
+            if (update) {
+                setTableData();
+                clearEdit();
+                JOptionPane.showMessageDialog(null, "Admin Information updated successfully.");
+            } else {
+                JOptionPane.showMessageDialog(null, "Student is already in this class.");
+            }
 
         }
     }
@@ -420,12 +430,14 @@ public class AdminSerImpl implements AdminService {
         addPanel.nmbr.setText("");
         addPanel.ml.setText("");
         addPanel.sx.setSelectedIndex(0);
-        addPanel.bdy.setDate(new java.util.Date());
+        addPanel.bdy.setDate(null);
         addPanel.usrnm.setText("");
         addPanel.psswrd.setText("");
         addPanel.cnfrm.setText("");
         addPanel.jLabelimage.setText("");
+        addPanel.jLabelimage.setIcon(null);
         addPanel.jLabelfinger.setText("");
+        addPanel.jLabelfinger.setIcon(null);
         addPanel.brgy.setText("");
         addPanel.mncplty.setText("");
     }
@@ -440,12 +452,14 @@ public class AdminSerImpl implements AdminService {
         editPanel.nmbr.setText("");
         editPanel.ml.setText("");
         editPanel.sx.setSelectedIndex(0);
-        editPanel.bdy.setDate(new java.util.Date());
+        editPanel.bdy.setDate(null);
         editPanel.usrnm.setText("");
         editPanel.psswrd.setText("");
         editPanel.cnfrm.setText("");
         editPanel.jLabelimage.setText("");
+        editPanel.jLabelimage.setIcon(null);
         editPanel.jLabelfinger.setText("");
+        editPanel.jLabelfinger.setIcon(null);
         editPanel.brgy.setText("");
         editPanel.mncplty.setText("");
     }

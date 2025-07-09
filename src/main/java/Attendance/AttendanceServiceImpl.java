@@ -62,6 +62,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public void saveRoom() {
+        System.out.println("saveRoom clicked");
         if (addroom.bldng.getText().trim().equals("")
                 || addroom.cllg.getSelectedItem().equals("College")
                 || addroom.dscp.getText().trim().equals("")
@@ -78,9 +79,16 @@ public class AttendanceServiceImpl implements AttendanceService {
             att.setType(addroom.typ.getSelectedItem().toString());
             att.setDesc(addroom.dscp.getText().trim());
             att.setCollege(college);
-            dao.saveRoom(att);
-            getAllRooms();
-            clearAddRoom();
+
+            boolean saveRM = dao.saveRoom(att);
+            if (saveRM) {
+                getAllRooms();
+                clearAddRoom();
+                JOptionPane.showMessageDialog(null, "Room added successfully.");
+            } else {
+                JOptionPane.showMessageDialog(null, "An error occured. Room can't be added.");
+            }
+
         }
     }
 
@@ -101,9 +109,15 @@ public class AttendanceServiceImpl implements AttendanceService {
             att.setFlr_lvl(editroom.flrLvl.getSelectedItem().toString());
             att.setType(editroom.typ.getSelectedItem().toString());
             att.setDesc(editroom.dscp.getText().trim());
-            dao.updateRoom(att);
-            getAllRooms();
-            clearEditRoom();
+
+            boolean updateRm = dao.updateRoom(att);
+            if (updateRm) {
+                getAllRooms();
+                clearEditRoom();
+                JOptionPane.showMessageDialog(null, "Room information updated succesfully");
+            } else {
+                JOptionPane.showMessageDialog(null, "An error occured. Rooom information can't be update.");
+            }
         }
     }
 
@@ -303,7 +317,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             String student_id = att.jTable2.getValueAt(dataRow, 1).toString();
             int dialogButton = JOptionPane.YES_NO_OPTION;
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to "
-                    + "remove student: " + cs_id + " froom class schecule: " + student_id + "?", "Warning", dialogButton);
+                    + "remove student: " + student_id + " froom class schecule: " + cs_id + "?", "Warning", dialogButton);
             if (dialogResult == JOptionPane.YES_OPTION) {
                 dao.removeStudentFromClassSchedule(cs_id, student_id);
                 getStudentsByClassScheduleId();
@@ -377,7 +391,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             editroom.typ.setSelectedItem(att.jTable1.getValueAt(dataRow, 4).toString());
 
         } else {
-            JOptionPane.showMessageDialog(null, "Please select admin to update.");
+            JOptionPane.showMessageDialog(null, "Please select Room to update.");
         }
     }
 
@@ -397,6 +411,8 @@ public class AttendanceServiceImpl implements AttendanceService {
             editclass.cmbFclty.setSelectedItem(att.jTable1.getValueAt(dataRow, 8).toString());
             editclass.rmID.setSelectedItem(att.jTable1.getValueAt(dataRow, 9).toString());
 
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select Class Schedule to update.");
         }
     }
 

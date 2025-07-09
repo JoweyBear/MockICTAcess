@@ -5,11 +5,11 @@ import javax.swing.table.DefaultTableModel;
 
 public interface AttendanceDAO {
 
-    void saveRoom(AttModel att);
+    boolean saveRoom(AttModel att);
 
-    void saveClassSched(AttModel att);
+    boolean saveClassSched(AttModel att);
 
-    void updateRoom(AttModel att);
+    boolean updateRoom(AttModel att);
 
     boolean updateClassSched(AttModel att);
 

@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -59,7 +60,7 @@ public class StudentDAOImpl implements StudentDAO {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Vector<String> columns = new Vector<>(List.of("ID", "College", "Year", "Section", "First Name", "Middle Name", "Last Name", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality"));
+        Vector<String> columns = new Vector<>(Arrays.asList("ID", "College", "Year", "Section", "First Name", "Middle Name", "Last Name", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 

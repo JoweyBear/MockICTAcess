@@ -9,6 +9,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -26,7 +27,8 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     }
 
     @Override
-    public void saveRoom(AttModel att) {
+    public boolean saveRoom(AttModel att) {
+        boolean saveRm = false;
         try {
             String sql = "INSERT INTO room (name, college, building, floor_level, type, description) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -37,13 +39,16 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             ps.setString(5, att.getType());
             ps.setString(6, att.getDesc());
             ps.execute();
+            saveRm = true;
         } catch (SQLException ex) {
-            Logger.getLogger(AttendanceDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
+        return saveRm;
     }
 
     @Override
-    public void saveClassSched(AttModel att) {
+    public boolean saveClassSched(AttModel att) {
+        boolean saveCS = false;
         try {
             String insertSql = "INSERT INTO class_schedule (class_type, day, time_start, time_end, subject, faculty_user_id, room_id, college) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
@@ -79,14 +84,17 @@ public class AttendanceDAOImpl implements AttendanceDAO {
                 assignPs.addBatch();
             }
             assignPs.executeBatch();
-
+            
+            saveCS = true;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        return saveCS;
     }
 
     @Override
-    public void updateRoom(AttModel att) {
+    public boolean updateRoom(AttModel att) {
+        boolean updateRm = false;
         try {
             String sql = "UPDATE room SET name = ?, college = ?, building = ?, floor_level = ?, type = ?, description = ? WHERE room_id = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -98,15 +106,17 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             ps.setString(6, att.getDesc());
             ps.setInt(7, att.getRm_id());
             ps.executeUpdate();
+            
+            updateRm = true;
         } catch (SQLException ex) {
-            Logger.getLogger(AttendanceDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
-
+        return updateRm;
     }
 
     @Override
     public boolean updateClassSched(AttModel att) {
-        boolean success = false;
+        boolean updateCS = false;
         try {
             conn.setAutoCommit(false);
 
@@ -147,7 +157,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             ps4.executeBatch();
 
             conn.commit();
-            success = true;
+            updateCS = true;
         } catch (SQLException e) {
             try {
                 conn.rollback();
@@ -163,7 +173,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             }
         }
 
-        return success;
+        return updateCS;
 
     }
 
@@ -230,7 +240,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             e.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(List.of("Class Schedule ID", "Student ID", "Student Name", "Subject", "Faculty", "Date", "Method", "Status"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Class Schedule ID", "Student ID", "Student Name", "Subject", "Faculty", "Date", "Method", "Status"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -267,7 +277,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             e.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(List.of("Class Schedule ID", "Subject", "Day", "Time Start", "Time End"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Class Schedule ID", "Subject", "Day", "Time Start", "Time End"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -309,7 +319,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             ex.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(List.of("Attendance ID", "Class Schedule ID", "Student ID", "Student Name", "Subject", "Date", "Faculty", "Method", "Status"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Attendance ID", "Class Schedule ID", "Student ID", "Student Name", "Subject", "Date", "Faculty", "Method", "Status"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -349,7 +359,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             e.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(List.of("Class Schedule ID", "Subject", "Faculty Name", "Room ID", "Time Start", "Time End"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Class Schedule ID", "Subject", "Faculty Name", "Room ID", "Time Start", "Time End"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -386,7 +396,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             e.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(List.of("Class Schedule ID", "Subject", "Day", "Time Start", "Time End"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Class Schedule ID", "Subject", "Day", "Time Start", "Time End"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -422,7 +432,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             e.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(List.of("Room ID", "Room Name", "Building", "Floor Level", "Room Type"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Room ID", "Room Name", "Building", "Floor Level", "Room Type"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -467,7 +477,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             e.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(List.of("Class Schedule ID", "Class Type", "Subject", "Section", "Year", "Day", "Time Start", "Time End",  "Faculty ID", "Room ID"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Class Schedule ID", "Class Type", "Subject", "Section", "Year", "Day", "Time Start", "Time End",  "Faculty ID", "Room ID"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 

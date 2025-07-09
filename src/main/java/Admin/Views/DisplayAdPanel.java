@@ -18,6 +18,7 @@ public class DisplayAdPanel extends javax.swing.JPanel {
 
         jPanel2.setBackground(new java.awt.Color(62, 92, 118));
 
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ManageAdmin.png"))); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);

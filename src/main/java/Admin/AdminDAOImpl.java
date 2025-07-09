@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -63,12 +64,14 @@ public class AdminDAOImpl implements AdminDAO {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Vector<String> columns = new Vector<>(List.of("ID", "College", "First Name", "Middle Name", "Last Name", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality", "Username", "Status"));
+        Vector<String> columns = new Vector<>(Arrays.asList("ID", "College", "First Name", "Middle Name", "Last Name", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality", "Username", "Status"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
     @Override
-    public void save(AdminModel admin) {
+    public boolean save(AdminModel admin) {
+
+        boolean saved = false;
         try {
             String userSql = "INSERT INTO user (user_id, role, fname, mname, lname, contact_num, email, "
                     + "barangay, municipality, sex, birthdate, image, college) "
@@ -104,13 +107,16 @@ public class AdminDAOImpl implements AdminDAO {
             fingerprintPs.setBytes(2, admin.getFingerprint());
             fingerprintPs.execute();
 
+            saved = true;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return saved;
     }
 
     @Override
-    public void update(AdminModel admin) {
+    public boolean update(AdminModel admin) {
+        boolean update = false;
         try {
             String userSql = "UPDATE user SET fname = ?, mname = ?, lname = ?, contact_num = ?, email = ?, barangay = ?, municipality = ?, sex = ?, birthdate = ?, image = ?, college = ? WHERE user_id = ?";
             PreparedStatement userPs = conn.prepareStatement(userSql);
@@ -127,7 +133,6 @@ public class AdminDAOImpl implements AdminDAO {
             userPs.setString(11, admin.getCollge());
             userPs.setString(12, admin.getStaff_id());
             userPs.executeUpdate();
-
 
             PreparedStatement authPs;
 
@@ -184,10 +189,11 @@ public class AdminDAOImpl implements AdminDAO {
             } else {
                 System.out.println("No fingerprint data provided — only user details updated.");
             }
-
+            update = true;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return update;
     }
 
     @Override
