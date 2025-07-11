@@ -91,11 +91,6 @@
             <artifactId>dpjavapos</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.digitalpersona.onetouch</groupId>
-            <artifactId>dpotapi</artifactId>
-            <version>1.0.0</version>
-        </dependency>
     </dependencies>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

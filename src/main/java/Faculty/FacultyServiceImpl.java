@@ -1,7 +1,6 @@
 package Faculty;
 
 import Faculty.Views.*;
-import Utilities.FingerprintCapture;
 import Utilities.ImageUploader;
 import Utilities.QuickSearchList;
 import java.awt.CardLayout;
@@ -20,6 +19,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import utilities.FingerprintCapture;
 
 public class FacultyServiceImpl implements FacultyService {
 

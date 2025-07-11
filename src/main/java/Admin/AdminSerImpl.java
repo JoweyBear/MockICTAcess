@@ -1,7 +1,6 @@
 package Admin;
 
 import Admin.Views.*;
-import Utilities.FingerprintCapture;
 import Utilities.ImageUploader;
 import Utilities.QuickSearchList;
 import Utilities.SearchDefaultModel;
@@ -25,6 +24,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import utilities.FingerprintCapture;
 
 public class AdminSerImpl implements AdminService {
 
