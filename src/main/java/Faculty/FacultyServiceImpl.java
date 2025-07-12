@@ -2,15 +2,21 @@ package Faculty;
 
 import Faculty.Views.*;
 import Utilities.ImageUploader;
-import Utilities.QuickSearchList;
+import Utilities.SearchDefaultModel;
+import com.digitalpersona.uareu.Fmd;
 import java.awt.CardLayout;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.util.Date;
-import java.util.List;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -31,20 +37,24 @@ public class FacultyServiceImpl implements FacultyService {
     private final ImageUploader imageUploader = new ImageUploader();
     private byte[] uploadedImageForAdd;
     private byte[] uploadedImageForEdit;
-    private FingerprintCapture fingerprintCapture;
+    private byte[] fingerprintTemplate;
+    private byte[] fingerprintImage;
+    FingerprintCapture scanner;
 
     public FacultyServiceImpl(AddFaPanel fAdd, EditFaPanel fEdit, FacultyPanel faPanel, ViewFacultyDialog viewDialog) {
         this.fAdd = fAdd;
         this.fEdit = fEdit;
         this.faPanel = faPanel;
         this.viewDialog = viewDialog;
+
+        setTableData();
     }
 
     @Override
     public void setTableData() {
         DefaultTableModel model = dao.fetchAll();
         faPanel.jTable1.setModel(model);
-        new QuickSearchList(faPanel, faPanel.jTable1, faPanel.srchtxtfld, (List<List<String>>) model);
+        new SearchDefaultModel(faPanel, faPanel.jTable1, faPanel.srchtxtfld, model);
     }
 
     @Override
@@ -71,36 +81,27 @@ public class FacultyServiceImpl implements FacultyService {
             faculty.setCntctNmber(fAdd.nmbr.getText().trim());
             faculty.setEmail(fAdd.ml.getText().trim());
             faculty.setSx(fAdd.sx.getSelectedItem().toString());
-            faculty.setBday((java.sql.Date) fAdd.bdy.getDate());
+            faculty.setBday(fAdd.bdy.getDate());
             faculty.setImage(uploadedImageForAdd);
             faculty.setCollege(fAdd.cllg.getSelectedItem().toString());
+            faculty.setBrgy(fAdd.brgy.getText().trim());
+            faculty.setMunicipal(fAdd.municipal.getText().trim());
 
-//            
-//            DPFPTemplate template = fingerprintCapture.getTemplate();
-//            if (template != null) {
-//                faculty.setFingerprint(template.serialize());
-//
-//                // Convert fingerprint sample to image byte[]
-//                Image img = DPFPGlobal.getSampleConversionFactory().createImage(fingerprintCapture.getSample());  
-//                BufferedImage bufferedImg = new BufferedImage(
-//                        img.getWidth(null),
-//                        img.getHeight(null),
-//                        BufferedImage.TYPE_INT_RGB
-//                );
-//
-//                Graphics2D g2 = bufferedImg.createGraphics();
-//                g2.drawImage(img, 0, 0, null);
-//                g2.dispose();
-//
-//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                ImageIO.write(bufferedImg, "png", baos);
-//                faculty.setFingerprintImage(baos.toByteArray());
-//            } else {
-//                System.out.println("No fingerprint template captured.");
-//            }
-            dao.save(faculty);
-            setTableData();
-            clearAdd();
+            if (fingerprintTemplate != null) {
+                faculty.setFingerprint(fingerprintTemplate);
+                faculty.setFingerprintImage(fingerprintImage);
+            } else {
+                System.out.println("No fingerprint template captured.");
+            }
+            boolean save = dao.save(faculty);
+            if (save) {
+                JOptionPane.showMessageDialog(null, "Faculty added succesfully");
+                setTableData();
+                clearAdd();
+            } else {
+                JOptionPane.showMessageDialog(null, "An error occured. Faculty can't be added.");
+            }
+
         }
     }
 
@@ -212,8 +213,9 @@ public class FacultyServiceImpl implements FacultyService {
         fAdd.nmbr.setText("");
         fAdd.ml.setText("");
         fAdd.sx.setSelectedIndex(-1);
-        Date date = new Date();
-        fAdd.bdy.setDate(date);
+        fAdd.bdy.setDate(null);
+        fAdd.jLabelfinger.setIcon(null);
+        fAdd.jLabelimage.setIcon(null);
         fAdd.jLabelimage.setText("");
         fAdd.jLabelfinger.setText("");
         fAdd.brgy.setText("");
@@ -230,8 +232,9 @@ public class FacultyServiceImpl implements FacultyService {
         fEdit.nmbr.setText("");
         fEdit.ml.setText("");
         fEdit.sx.setSelectedIndex(-1);
-        Date date = new Date();
-        fEdit.bdy.setDate(date);
+        fEdit.jLabelfinger.setIcon(null);
+        fEdit.jLabelimage.setIcon(null);
+        fEdit.bdy.setDate(null);
         fEdit.jLabelimage.setText("");
         fEdit.jLabelfinger.setText("");
         fEdit.brgy.setText("");
@@ -266,32 +269,22 @@ public class FacultyServiceImpl implements FacultyService {
             faculty.setBday((java.sql.Date) fAdd.bdy.getDate());
             faculty.setImage(uploadedImageForAdd);
             faculty.setCollege(fAdd.cllg.getSelectedItem().toString());
-
-//            DPFPTemplate template = fingerprintCapture.getTemplate();
-//            if (template != null) {
-//                faculty.setFingerprint(template.serialize());
-//
-//                // Convert fingerprint sample to image byte[]
-//                Image img = DPFPGlobal.getSampleConversionFactory().createImage(fingerprintCapture.getLastSample());  
-//                BufferedImage bufferedImg = new BufferedImage(
-//                        img.getWidth(null),
-//                        img.getHeight(null),
-//                        BufferedImage.TYPE_INT_RGB
-//                );
-//
-//                Graphics2D g2 = bufferedImg.createGraphics();
-//                g2.drawImage(img, 0, 0, null);
-//                g2.dispose();
-//
-//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                ImageIO.write(bufferedImg, "png", baos);
-//                faculty.setFingerprintImage(baos.toByteArray());
-//            } else {
-//                System.out.println("No fingerprint template captured.");
-//            }
-            dao.update(faculty);
-            setTableData();
-            clearEdit();
+            faculty.setBrgy(fEdit.brgy.getText().trim());
+            faculty.setMunicipal(fEdit.municipal.getText().trim());
+            if (fingerprintTemplate != null) {
+                faculty.setFingerprint(fingerprintTemplate);
+                faculty.setFingerprintImage(fingerprintImage);
+            } else {
+                System.out.println("No fingerprint template captured");
+            }
+            boolean update = dao.update(faculty);
+            if (update) {
+                setTableData();
+                clearEdit();
+                JOptionPane.showMessageDialog(null, "Faculty successfully updated.");
+            } else {
+                JOptionPane.showMessageDialog(null, "An error occured. Faculty can't be updated");
+            }
         }
     }
 
@@ -334,38 +327,78 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public void scanFingerAdd() {
-//        fingerprintCapture = new FingerprintCapture(fAdd.jLabelfinger); 
-//        fingerprintCapture.startCapture();
-//
-//        JOptionPane.showMessageDialog(null, "Place your finger on the scanner.");
-//
-//        fingerprintTemplate = fingerprintCapture.getTemplate();  
-//
-//        if (fingerprintTemplate == null) {
-//            JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
-//        } else {
-//            JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
-//        }
-//
-//        fingerprintCapture.stopCapture(); 
+        scanner = new FingerprintCapture(fAdd.jLabelfinger);
+
+        if (scanner.initializeReader()) {
+            if (scanner.captureFingerprint()) {
+
+                Fmd fmd = scanner.getCapturedFmd();
+                if (fingerprintTemplate == null) {
+                    JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
+                }
+                fingerprintTemplate = fmd.getData();
+                try {
+                    ImageIcon icon = (ImageIcon) fAdd.jLabelfinger.getIcon();
+                    Image image = icon.getImage();
+                    BufferedImage bufferedImage = new BufferedImage(
+                            image.getWidth(null),
+                            image.getHeight(null),
+                            BufferedImage.TYPE_INT_RGB
+                    );
+
+                    Graphics2D g2d = bufferedImage.createGraphics();
+                    g2d.drawImage(image, 0, 0, null);
+                    g2d.dispose();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                    ImageIO.write(bufferedImage, "png", baos);
+                    fingerprintImage = baos.toByteArray();
+                } catch (IOException ex) {
+                    Logger.getLogger(FacultyServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
+            }
+        }
+        scanner.closeReader();
     }
 
     @Override
     public void scanFingerEdit() {
-//        fingerprintCapture = new FingerprintCapture(fEdit.jLabelfinger); 
-//        fingerprintCapture.startCapture();
-//
-//        JOptionPane.showMessageDialog(null, "Place your finger on the scanner.");
-//
-//        fingerprintTemplate = fingerprintCapture.getTemplate();  
-//
-//        if (fingerprintTemplate == null) {
-//            JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
-//        } else {
-//            JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
-//        }
-//
-//        fingerprintCapture.stopCapture();
+        scanner = new FingerprintCapture(fEdit.jLabelfinger);
+
+        if (scanner.initializeReader()) {
+            if (scanner.captureFingerprint()) {
+
+                Fmd fmd = scanner.getCapturedFmd();
+                if (fingerprintTemplate == null) {
+                    JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
+                }
+                fingerprintTemplate = fmd.getData();
+                try {
+                    ImageIcon icon = (ImageIcon) fEdit.jLabelfinger.getIcon();
+                    Image image = icon.getImage();
+                    BufferedImage bufferedImage = new BufferedImage(
+                            image.getWidth(null),
+                            image.getHeight(null),
+                            BufferedImage.TYPE_INT_RGB
+                    );
+
+                    Graphics2D g2d = bufferedImage.createGraphics();
+                    g2d.drawImage(image, 0, 0, null);
+                    g2d.dispose();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                    ImageIO.write(bufferedImage, "png", baos);
+                    fingerprintImage = baos.toByteArray();
+                } catch (IOException ex) {
+                    Logger.getLogger(FacultyServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
+            }
+        }
+        scanner.closeReader();
     }
 
     @Override
@@ -390,5 +423,6 @@ public class FacultyServiceImpl implements FacultyService {
 
         if (e.isPopupTrigger() && e.getComponent() instanceof JTable) {
             faPanel.facultyPopup.show(e.getComponent(), e.getX(), e.getY());
-        }    }
+        }
+    }
 }

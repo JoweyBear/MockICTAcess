@@ -1,6 +1,5 @@
 package Admin;
 
-import Utilities.FingerprintCapture;
 import java.sql.ResultSet;
 import javax.swing.table.DefaultTableModel;
 

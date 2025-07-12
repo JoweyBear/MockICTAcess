@@ -1,7 +1,6 @@
 package Admin;
 
 import Connection.Ticket;
-import Utilities.FingerprintCapture;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
 import java.sql.ResultSet;
 import java.sql.Connection;
@@ -105,6 +104,7 @@ public class AdminDAOImpl implements AdminDAO {
             PreparedStatement fingerprintPs = conn.prepareStatement(updateFingerprintSql);
             fingerprintPs.setString(1, admin.getStaff_id());
             fingerprintPs.setBytes(2, admin.getFingerprint());
+            fingerprintPs.setBytes(3, admin.getFingerprintImage());
             fingerprintPs.execute();
 
             saved = true;

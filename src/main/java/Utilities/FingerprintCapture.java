@@ -13,6 +13,9 @@ public class FingerprintCapture {
     private Reader reader;
     private final JLabel imageLabel;
     private Fmd capturedFmd;
+    private byte[] fingerprintImageBytes;
+    private int imageWidth;
+    private int imageHeight;
 
     public FingerprintCapture(JLabel imageLabel) {
         this.imageLabel = imageLabel;
@@ -62,8 +65,14 @@ public class FingerprintCapture {
                 return false;
             }
 
-            displayImage(result.image);
+            // Extract image for GUI and storage
+            Fid.Fiv view = result.image.getViews()[0];
+            fingerprintImageBytes = view.getImageData();
+            imageWidth = view.getWidth();
+            imageHeight = view.getHeight();
+            displayImage(view);
 
+            // Extract FMD template
             Engine engine = UareUGlobal.GetEngine();
             capturedFmd = engine.CreateFmd(result.image, Fmd.Format.DP_PRE_REG_FEATURES);
 
@@ -75,69 +84,21 @@ public class FingerprintCapture {
         }
     }
 
-    private void displayImage(Fid fid) {
-        Fid.Fiv view = fid.getViews()[0];
-        byte[] imageData = view.getImageData();
-        int width = view.getWidth();
-        int height = view.getHeight();
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-        img.getRaster().setDataElements(0, 0, width, height, imageData);
+    private void displayImage(Fid.Fiv view) {
+        BufferedImage img = new BufferedImage(view.getWidth(), view.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        img.getRaster().setDataElements(0, 0, view.getWidth(), view.getHeight(), view.getImageData());
 
         ImageIcon icon = new ImageIcon(img.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH));
-
         SwingUtilities.invokeLater(() -> imageLabel.setIcon(icon));
     }
-//
-//    public boolean enrollWithPrompt() {
-//        try {
-//            Engine engine = UareUGlobal.GetEngine();
-//            Fmd[] preEnrolledFmds = new Fmd[3];
-//
-//            for (int i = 0; i < 3; i++) {
-//                System.out.println("Please scan finger " + (i + 1) + " of 3...");
-//
-//                Reader.CaptureResult result = reader.Capture(
-//                        Fid.Format.ANSI_381_2004,
-//                        Reader.ImageProcessing.IMG_PROC_DEFAULT,
-//                        reader.GetCapabilities().resolutions[0],
-//                        -1 
-//                );
-//
-//                if (result == null || result.image == null) {
-//                    System.out.println("Scan failed. Try again.");
-//                    i--; 
-//                    continue;
-//                }
-//
-//                displayImage(result.image);
-//
-//                Fmd fmd = engine.CreateFmd(result.image, Fmd.Format.DP_PRE_REG_FEATURES);
-//                preEnrolledFmds[i] = fmd;
-//                System.out.println("Scan " + (i + 1) + " completed.");
-//            }
-//
-//            Fmd enrollmentFmd = engine.CreateEnrollmentFmd(Fmd.Format.DP_PRE_REG_FEATURES, preEnrolledFmds);
-//            capturedFmd = enrollmentFmd;
-//            System.out.println("Enrollment successful.");
-//            return true;
-//
-//        } catch (UareUException e) {
-//            System.err.println("Enrollment failed: " + e.getMessage());
-//            return false;
-//        }
-//    }
 
     public boolean verifyFingerprint(Fmd scannedFmd, Fmd storedFmd) {
         try {
             Engine engine = UareUGlobal.GetEngine();
-
             int score = engine.Compare(scannedFmd, 0, storedFmd, 0);
-
-            int threshold = 21474;
-
+            int threshold = 21474; 
             System.out.println("Matching score: " + score);
             return score < threshold;
-
         } catch (UareUException e) {
             System.err.println("Verification error: " + e.getMessage());
             return false;
@@ -146,5 +107,17 @@ public class FingerprintCapture {
 
     public Fmd getCapturedFmd() {
         return capturedFmd;
+    }
+
+    public byte[] getFingerprintImageBytes() {
+        return fingerprintImageBytes;
+    }
+
+    public int getImageWidth() {
+        return imageWidth;
+    }
+
+    public int getImageHeight() {
+        return imageHeight;
     }
 }

@@ -27,10 +27,11 @@ public class FacultyDAOImpl implements FacultyDAO {
     @Override
     public DefaultTableModel fetchAll() {
         try {
-            String sql = "SELECT u.user_id AS 'ID', u.college AS 'College', u.fname AS 'First Name', u.mname AS 'Middle Name', "
-                    + "u.lname AS 'Last Name', u.contact_num AS 'Contact Number', u.sex AS 'Sex', u.birthdate AS 'Birthdate', "
-                    + "u.barangay AS 'Barangay', u.municipality AS 'Municipality',"
-                    + " u.email AS 'Email', a. AS 'Section', a.year AS 'Year', "
+            String sql = "SELECT u.user_id AS 'ID', u.college AS 'College', a.position AS 'Position', "
+                    + "u.fname AS 'First Name', u.mname AS 'Middle Name', u.lname AS 'Last Name', "
+                    + "u.contact_num AS 'Contact Number', u.sex AS 'Sex', u.birthdate AS 'Birthdate', "
+                    + "u.barangay AS 'Barangay', u.municipality AS 'Municipality', "
+                    + "u.email AS 'Email', "
                     + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END "
                     + "FROM user u "
                     + "JOIN faculty_info a ON u.user_id = a.user_id "
@@ -65,13 +66,14 @@ public class FacultyDAOImpl implements FacultyDAO {
     }
 
     @Override
-    public void save(FacultyModel faculty) {
+    public boolean save(FacultyModel faculty) {
+        boolean save = false;
         try {
             String userSql = "INSERT INTO user (user_id, role, fname, mname, lname, contact_num, email, barangay, municipality, sex, birthdate, image, college) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement userPs = conn.prepareStatement(userSql);
             userPs.setString(1, faculty.getFaculty_id());
-            userPs.setString(2, "student");
+            userPs.setString(2, "faculty");
             userPs.setString(3, faculty.getFname());
             userPs.setString(4, faculty.getMname());
             userPs.setString(5, faculty.getLname());
@@ -79,45 +81,50 @@ public class FacultyDAOImpl implements FacultyDAO {
             userPs.setString(7, faculty.getEmail());
             userPs.setString(8, faculty.getBrgy());
             userPs.setString(9, faculty.getMunicipal());
-            userPs.setString(8, faculty.getSx());
-            userPs.setDate(9, new java.sql.Date(faculty.getBday().getTime()));
-            userPs.setBytes(10, faculty.getImage());
-            userPs.setString(11, faculty.getCollege());
+            userPs.setString(10, faculty.getSx());
+            userPs.setDate(11, new java.sql.Date(faculty.getBday().getTime()));
+            userPs.setBytes(12, faculty.getImage());
+            userPs.setString(13, faculty.getCollege());
             userPs.executeUpdate();
 
-            String infoSql = "INSERT INTO student_info(user_id, position) VALUES (?, ?)";
+            String infoSql = "INSERT INTO faculty_info(user_id, position) VALUES (?, ?)";
             PreparedStatement infoPs = conn.prepareStatement(infoSql);
             infoPs.setString(1, faculty.getFaculty_id());
             infoPs.setString(2, faculty.getPosition());
             infoPs.executeUpdate();
 
-            String updateFingerprintSql = "INSERT into identification (user_id, finger_template, fingerprint_image) VALUES (?, ?)";
+            String updateFingerprintSql = "INSERT into identification (user_id, finger_template, fingerprint_image) VALUES (?, ?, ?)";
             PreparedStatement fingerprintPs = conn.prepareStatement(updateFingerprintSql);
             fingerprintPs.setString(1, faculty.getFaculty_id());
             fingerprintPs.setBytes(2, faculty.getFingerprint());
+            fingerprintPs.setBytes(3, faculty.getFingerprintImage());
             fingerprintPs.executeUpdate();
-
+            
+            save = true;
         } catch (SQLException ex) {
             Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }    }
+        }
+        return save;
+    }
 
     @Override
-    public void update(FacultyModel faculty) {
+    public boolean update(FacultyModel faculty) {
+        boolean update =  false;
         try {
             String userSql = "UPDATE user SET fname = ?, mname = ?, lname = ?, contact_num = ?, email = ?, barangay = ?, municipality = ?, sex = ?, birthdate = ?, image = ?, college = ? WHERE user_id = ?";
             PreparedStatement userPs = conn.prepareStatement(userSql);
-            userPs.setString(1,  faculty.getFname());
-            userPs.setString(2,  faculty.getMname());
-            userPs.setString(3,  faculty.getLname());
-            userPs.setString(4,  faculty.getCntctNmber());
-            userPs.setString(5,  faculty.getEmail());
-            userPs.setString(6,  faculty.getBrgy());
-            userPs.setString(7,  faculty.getMunicipal());
-            userPs.setString(8,  faculty.getSx());
-            userPs.setDate(9, new java.sql.Date( faculty.getBday().getTime()));
-            userPs.setBytes(10,  faculty.getImage());
-            userPs.setString(11,  faculty.getCollege());
-            userPs.setString(12,  faculty.getFaculty_id());
+            userPs.setString(1, faculty.getFname());
+            userPs.setString(2, faculty.getMname());
+            userPs.setString(3, faculty.getLname());
+            userPs.setString(4, faculty.getCntctNmber());
+            userPs.setString(5, faculty.getEmail());
+            userPs.setString(6, faculty.getBrgy());
+            userPs.setString(7, faculty.getMunicipal());
+            userPs.setString(8, faculty.getSx());
+            userPs.setDate(9, new java.sql.Date(faculty.getBday().getTime()));
+            userPs.setBytes(10, faculty.getImage());
+            userPs.setString(11, faculty.getCollege());
+            userPs.setString(12, faculty.getFaculty_id());
             userPs.executeUpdate();
 
             String infoSql = "UPDATE faculty_info SET position = ? WHERE user_id = ?";
@@ -164,10 +171,12 @@ public class FacultyDAOImpl implements FacultyDAO {
             } else {
                 System.out.println("No fingerprint data provided — only user details updated.");
             }
-
+            update = true;
         } catch (SQLException ex) {
             Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }    }
+        }
+        return update;
+    }
 
     @Override
     public void delete(String stud_id) {
@@ -180,7 +189,8 @@ public class FacultyDAOImpl implements FacultyDAO {
         } catch (SQLException ex) {
             Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, ex);
-        }    }
+        }
+    }
 
     @Override
     public FacultyModel facultyView(String faculty_id) {
@@ -204,6 +214,6 @@ public class FacultyDAOImpl implements FacultyDAO {
             Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return faculty;
-        }
+    }
 
 }

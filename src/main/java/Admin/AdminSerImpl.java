@@ -2,20 +2,24 @@ package Admin;
 
 import Admin.Views.*;
 import Utilities.ImageUploader;
-import Utilities.QuickSearchList;
 import Utilities.SearchDefaultModel;
+import com.digitalpersona.uareu.Fmd;
 import java.awt.CardLayout;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -36,8 +40,9 @@ public class AdminSerImpl implements AdminService {
     private final ImageUploader imageUploader = new ImageUploader();
     private byte[] uploadedImageForAdd;
     private byte[] uploadedImageForEdit;
-    private FingerprintCapture fingerprintCapture;
-//    private DPFPTemplate fingerprintTemplate;
+    private byte[] fingerprintTemplate;
+    private byte[] fingerprintImage;
+    FingerprintCapture scanner;
 
     public AdminSerImpl(AdminPanel adminPanel, AddAdPanel addPanel, EditAdPanel editPanel, ViewAdminDialog viewDialog) {
         this.adminPanel = adminPanel;
@@ -90,29 +95,12 @@ public class AdminSerImpl implements AdminService {
             admin.setMunicipal(addPanel.mncplty.getText().trim());
             admin.setCollge(addPanel.pstn.getText().trim());
 
-//            
-//            DPFPTemplate template = fingerprintCapture.getTemplate();
-//            if (template != null) {
-//                admin.setFingerprint(template.serialize());
-//
-//                // Convert fingerprint sample to image byte[]
-//                Image img = DPFPGlobal.getSampleConversionFactory().createImage(fingerprintCapture.getSample());  
-//                BufferedImage bufferedImg = new BufferedImage(
-//                        img.getWidth(null),
-//                        img.getHeight(null),
-//                        BufferedImage.TYPE_INT_RGB
-//                );
-//
-//                Graphics2D g2 = bufferedImg.createGraphics();
-//                g2.drawImage(img, 0, 0, null);
-//                g2.dispose();
-//
-//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                ImageIO.write(bufferedImg, "png", baos);
-//                admin.setFingerprintImage(baos.toByteArray());
-//            } else {
-//                System.out.println("No fingerprint template captured.");
-//            }
+            if (fingerprintTemplate != null) {
+                admin.setFingerprint(fingerprintTemplate);
+                admin.setFingerprintImage(fingerprintImage);
+            } else {
+                System.out.println("No fingerprint template captured.");
+            }
             boolean saved = dao.save(admin);
             if (saved) {
                 setTableData();
@@ -196,36 +184,19 @@ public class AdminSerImpl implements AdminService {
             admin.setBarangay(editPanel.brgy.getText().trim());
             admin.setMunicipal(editPanel.mncplty.getText().trim());
             admin.setCollge(editPanel.pstn.getText().trim());
-
-//            DPFPTemplate template = fingerprintCapture.getTemplate();
-//            if (template != null) {
-//                admin.setFingerprint(template.serialize());
-//
-//                // Convert fingerprint sample to image byte[]
-//                Image img = DPFPGlobal.getSampleConversionFactory().createImage(fingerprintCapture.getLastSample());  
-//                BufferedImage bufferedImg = new BufferedImage(
-//                        img.getWidth(null),
-//                        img.getHeight(null),
-//                        BufferedImage.TYPE_INT_RGB
-//                );
-//
-//                Graphics2D g2 = bufferedImg.createGraphics();
-//                g2.drawImage(img, 0, 0, null);
-//                g2.dispose();
-//
-//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                ImageIO.write(bufferedImg, "png", baos);
-//                admin.setFingerprintImage(baos.toByteArray());
-//            } else {
-//                System.out.println("No fingerprint template captured.");
-//            }
+            if (fingerprintTemplate != null) {
+                admin.setFingerprint(fingerprintTemplate);
+                admin.setFingerprintImage(fingerprintImage);
+            } else {
+                System.out.println("No fingerprint template captured.");
+            }
             boolean update = dao.update(admin);
             if (update) {
                 setTableData();
                 clearEdit();
                 JOptionPane.showMessageDialog(null, "Admin Information updated successfully.");
             } else {
-                JOptionPane.showMessageDialog(null, "Student is already in this class.");
+                JOptionPane.showMessageDialog(null, "An error occured. Admin inforamtion can't be edited.");
             }
 
         }
@@ -270,38 +241,78 @@ public class AdminSerImpl implements AdminService {
 
     @Override
     public void scanFingerAdd() {
-//        fingerprintCapture = new FingerprintCapture(addPanel.jLabelfinger); 
-//        fingerprintCapture.startCapture();
-//
-//        JOptionPane.showMessageDialog(null, "Place your finger on the scanner.");
-//
-//        fingerprintTemplate = fingerprintCapture.getTemplate();  
-//
-//        if (fingerprintTemplate == null) {
-//            JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
-//        } else {
-//            JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
-//        }
-//
-//        fingerprintCapture.stopCapture(); 
+        scanner = new FingerprintCapture(addPanel.jLabelfinger);
+
+        if (scanner.initializeReader()) {
+            if (scanner.captureFingerprint()) {
+
+                Fmd fmd = scanner.getCapturedFmd();
+                if (fingerprintTemplate == null) {
+                    JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
+                }
+                fingerprintTemplate = fmd.getData();
+                try {
+                    ImageIcon icon = (ImageIcon) addPanel.jLabelfinger.getIcon();
+                    Image image = icon.getImage();
+                    BufferedImage bufferedImage = new BufferedImage(
+                            image.getWidth(null),
+                            image.getHeight(null),
+                            BufferedImage.TYPE_INT_RGB
+                    );
+
+                    Graphics2D g2d = bufferedImage.createGraphics();
+                    g2d.drawImage(image, 0, 0, null);
+                    g2d.dispose();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                    ImageIO.write(bufferedImage, "png", baos);
+                    fingerprintImage = baos.toByteArray();
+                } catch (IOException ex) {
+                    Logger.getLogger(AdminSerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
+            }
+        }
+        scanner.closeReader();
     }
 
     @Override
     public void scanFingerEdit() {
-//        fingerprintCapture = new FingerprintCapture(editPanel.jLabelfinger); 
-//        fingerprintCapture.startCapture();
-//
-//        JOptionPane.showMessageDialog(null, "Place your finger on the scanner.");
-//
-//        fingerprintTemplate = fingerprintCapture.getTemplate();  
-//
-//        if (fingerprintTemplate == null) {
-//            JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
-//        } else {
-//            JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
-//        }
-//
-//        fingerprintCapture.stopCapture();
+        scanner = new FingerprintCapture(editPanel.jLabelfinger);
+
+        if (scanner.initializeReader()) {
+            if (scanner.captureFingerprint()) {
+
+                Fmd fmd = scanner.getCapturedFmd();
+                if (fingerprintTemplate == null) {
+                    JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
+                }
+                fingerprintTemplate = fmd.getData();
+                try {
+                    ImageIcon icon = (ImageIcon) addPanel.jLabelfinger.getIcon();
+                    Image image = icon.getImage();
+                    BufferedImage bufferedImage = new BufferedImage(
+                            image.getWidth(null),
+                            image.getHeight(null),
+                            BufferedImage.TYPE_INT_RGB
+                    );
+
+                    Graphics2D g2d = bufferedImage.createGraphics();
+                    g2d.drawImage(image, 0, 0, null);
+                    g2d.dispose();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                    ImageIO.write(bufferedImage, "png", baos);
+                    fingerprintImage = baos.toByteArray();
+                } catch (IOException ex) {
+                    Logger.getLogger(AdminSerImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
+            }
+        }
+        scanner.closeReader();
     }
 
     @Override
