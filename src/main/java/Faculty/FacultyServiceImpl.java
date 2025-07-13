@@ -12,6 +12,9 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -37,8 +40,10 @@ public class FacultyServiceImpl implements FacultyService {
     private final ImageUploader imageUploader = new ImageUploader();
     private byte[] uploadedImageForAdd;
     private byte[] uploadedImageForEdit;
-    private byte[] fingerprintTemplate;
-    private byte[] fingerprintImage;
+    private byte[] fingerprintTemplateAdd;
+    private byte[] fingerprintImageAdd;
+    private byte[] fingerprintTemplateEdit;
+    private byte[] fingerprintImageEdit;
     FingerprintCapture scanner;
 
     public FacultyServiceImpl(AddFaPanel fAdd, EditFaPanel fEdit, FacultyPanel faPanel, ViewFacultyDialog viewDialog) {
@@ -87,9 +92,9 @@ public class FacultyServiceImpl implements FacultyService {
             faculty.setBrgy(fAdd.brgy.getText().trim());
             faculty.setMunicipal(fAdd.municipal.getText().trim());
 
-            if (fingerprintTemplate != null) {
-                faculty.setFingerprint(fingerprintTemplate);
-                faculty.setFingerprintImage(fingerprintImage);
+            if (fingerprintTemplateAdd != null) {
+                faculty.setFingerprint(fingerprintTemplateAdd);
+                faculty.setFingerprintImage(fingerprintImageAdd);
             } else {
                 System.out.println("No fingerprint template captured.");
             }
@@ -108,6 +113,7 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public void editView() {
         fEdit.faculty_id.setText(viewDialog.facultyID.getText().trim());
+        fEdit.pstn.setText(viewDialog.pstn.getText().trim());
         fEdit.adfname.setText(viewDialog.fName.getText().trim());
         fEdit.admname.setText(viewDialog.mName.getText().trim());
         fEdit.adlname.setText(viewDialog.lName.getText().trim());
@@ -115,15 +121,37 @@ public class FacultyServiceImpl implements FacultyService {
         fEdit.ml.setText(viewDialog.email.getText().trim());
         fEdit.sx.setSelectedItem(viewDialog.sex.getText());
         fEdit.cllg.setSelectedItem(viewDialog.college.getText());
-        fEdit.jLabelimage.setIcon(viewDialog.image.getIcon());
-        fEdit.jLabelfinger.setIcon(viewDialog.fngrprnt.getIcon());
         fEdit.brgy.setText(viewDialog.brgy.getText().trim());
         fEdit.municipal.setText(viewDialog.municipal.getText());
-        fEdit.pstn.setText(viewDialog.pstn.getText().trim());
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date parsedDate = format.parse(viewDialog.bDay.getText());
+            fEdit.bdy.setDate(parsedDate);
+        } catch (ParseException ex) {
+            Logger.getLogger(FacultyServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (viewDialog.image != null) {
+            fEdit.jLabelimage.setIcon(viewDialog.image.getIcon());
+            fEdit.jLabelimage.setText("");
+        } else {
+            fEdit.jLabelimage.setText("No Image");
+        }
+        if (viewDialog.fngrprnt != null) {
+            fEdit.jLabelfinger.setIcon(viewDialog.fngrprnt.getIcon());
+            fEdit.jLabelfinger.setText("");
+        } else {
+            fEdit.jLabelfinger.setText("No enrolled fingerprint");
+        }
+
+        CardLayout cl = (CardLayout) faPanel.jPanel2.getLayout();
+        faPanel.jPanel2.add(fEdit, "EditFaculty");
+        cl.show(faPanel.jPanel2, "EditFaculty");
+        viewDialog.dispose();
     }
 
     @Override
-    public void viewStudent() {
+    public void viewFaculty() {
         int dataRow = faPanel.jTable1.getSelectedRow();
         if (dataRow >= 0) {
             String faculty_id = faPanel.jTable1.getValueAt(dataRow, 0).toString();
@@ -131,7 +159,7 @@ public class FacultyServiceImpl implements FacultyService {
             JDialog progressDialog = new JDialog((JFrame) null, "Loading", true);
             JProgressBar progressBar = new JProgressBar();
             progressBar.setIndeterminate(true);
-            progressBar.setString("Fetching admin data...");
+            progressBar.setString("Fetching faculty data...");
             progressBar.setStringPainted(true);
             progressDialog.add(progressBar);
             progressDialog.setSize(300, 75);
@@ -146,39 +174,43 @@ public class FacultyServiceImpl implements FacultyService {
                         progressDialog.dispose();
 
                         viewDialog.facultyID.setText(faculty_id);
-                        viewDialog.college.setText(faPanel.jTable1.getValueAt(dataRow, 1).toString());
-                        viewDialog.pstn.setText(faPanel.jTable1.getValueAt(dataRow, 2).toString());
-                        viewDialog.fName.setText(faPanel.jTable1.getValueAt(dataRow, 3).toString());
-                        viewDialog.mName.setText(faPanel.jTable1.getValueAt(dataRow, 4).toString());
-                        viewDialog.lName.setText(faPanel.jTable1.getValueAt(dataRow, 5).toString());
-                        viewDialog.sex.setText(faPanel.jTable1.getValueAt(dataRow, 6).toString());
-                        viewDialog.bDay.setText(faPanel.jTable1.getValueAt(dataRow, 7).toString());
-                        viewDialog.cntctNumber.setText(faPanel.jTable1.getValueAt(dataRow, 8).toString());
-                        viewDialog.email.setText(faPanel.jTable1.getValueAt(dataRow, 9).toString());
-                        viewDialog.brgy.setText(faPanel.jTable1.getValueAt(dataRow, 10).toString());
-                        viewDialog.municipal.setText(faPanel.jTable1.getValueAt(dataRow, 11).toString());
+                        viewDialog.college.setText(getCellValue(dataRow, 1));
+                        viewDialog.pstn.setText(getCellValue(dataRow, 2));
+                        viewDialog.fName.setText(getCellValue(dataRow, 3));
+                        viewDialog.mName.setText(getCellValue(dataRow, 4));
+                        viewDialog.lName.setText(getCellValue(dataRow, 5));
+                        viewDialog.sex.setText(getCellValue(dataRow, 7));
+                        viewDialog.bDay.setText(getCellValue(dataRow, 8));
+                        viewDialog.cntctNumber.setText(getCellValue(dataRow, 6));
+                        viewDialog.email.setText(getCellValue(dataRow, 11));
+                        viewDialog.brgy.setText(getCellValue(dataRow, 9));
+                        viewDialog.municipal.setText(getCellValue(dataRow, 10));
 
-                        if (faculty.getImage() != null) {
-                            ImageIcon icon = new ImageIcon(faculty.getImage());
+                        if (faculty.getImageData() != null) {
+                            ImageIcon icon = new ImageIcon(faculty.getImageData());
                             Image scaledImage = icon.getImage().getScaledInstance(
                                     viewDialog.image.getWidth(),
                                     viewDialog.image.getHeight(),
                                     Image.SCALE_SMOOTH
                             );
                             viewDialog.image.setIcon(new ImageIcon(scaledImage));
+                            viewDialog.image.setText("");
                         } else {
+                            viewDialog.image.setIcon(null);
                             viewDialog.image.setText("No Image");
                         }
 
-                        if (faculty.getFingerprintImage() != null) {
-                            ImageIcon fingerprintIcon = new ImageIcon(faculty.getFingerprintImage());
+                        if (faculty.getFingerprintImageData() != null) {
+                            ImageIcon fingerprintIcon = new ImageIcon(faculty.getFingerprintImageData());
                             Image scaledFingerprint = fingerprintIcon.getImage().getScaledInstance(
                                     viewDialog.fngrprnt.getWidth(),
                                     viewDialog.fngrprnt.getHeight(),
                                     Image.SCALE_SMOOTH
                             );
                             viewDialog.fngrprnt.setIcon(new ImageIcon(scaledFingerprint));
+                            viewDialog.fngrprnt.setText("");
                         } else {
+                            viewDialog.fngrprnt.setIcon(null);
                             viewDialog.fngrprnt.setText("No fingerprint");
                         }
 
@@ -201,6 +233,11 @@ public class FacultyServiceImpl implements FacultyService {
             JOptionPane.showMessageDialog(null, "Please select faculty to update.");
         }
 
+    }
+
+    private String getCellValue(int row, int col) {
+        Object val = faPanel.jTable1.getValueAt(row, col);
+        return val != null ? val.toString() : "";
     }
 
     @Override
@@ -259,21 +296,21 @@ public class FacultyServiceImpl implements FacultyService {
             FacultyModel faculty = new FacultyModel();
             int dataRow = faPanel.jTable1.getSelectedRow();
             faculty.setFaculty_id((String) faPanel.jTable1.getValueAt(dataRow, 0));
-            faculty.setFname(fAdd.adfname.getText().trim());
-            faculty.setMname(fAdd.admname.getText().trim());
-            faculty.setLname(fAdd.adlname.getText().trim());
-            faculty.setPosition(fAdd.pstn.getText());
-            faculty.setCntctNmber(fAdd.nmbr.getText().trim());
-            faculty.setEmail(fAdd.ml.getText().trim());
-            faculty.setSx(fAdd.sx.getSelectedItem().toString());
-            faculty.setBday((java.sql.Date) fAdd.bdy.getDate());
-            faculty.setImage(uploadedImageForAdd);
-            faculty.setCollege(fAdd.cllg.getSelectedItem().toString());
+            faculty.setFname(fEdit.adfname.getText().trim());
+            faculty.setMname(fEdit.admname.getText().trim());
+            faculty.setLname(fEdit.adlname.getText().trim());
+            faculty.setPosition(fEdit.pstn.getText());
+            faculty.setCntctNmber(fEdit.nmbr.getText().trim());
+            faculty.setEmail(fEdit.ml.getText().trim());
+            faculty.setSx(fEdit.sx.getSelectedItem().toString());
+            faculty.setBday(fEdit.bdy.getDate());
+            faculty.setImage(uploadedImageForEdit);
+            faculty.setCollege(fEdit.cllg.getSelectedItem().toString());
             faculty.setBrgy(fEdit.brgy.getText().trim());
             faculty.setMunicipal(fEdit.municipal.getText().trim());
-            if (fingerprintTemplate != null) {
-                faculty.setFingerprint(fingerprintTemplate);
-                faculty.setFingerprintImage(fingerprintImage);
+            if (fingerprintTemplateEdit != null) {
+                faculty.setFingerprint(fingerprintTemplateEdit);
+                faculty.setFingerprintImage(fingerprintImageEdit);
             } else {
                 System.out.println("No fingerprint template captured");
             }
@@ -308,8 +345,8 @@ public class FacultyServiceImpl implements FacultyService {
     @Override
     public void addButton() {
         CardLayout cl = (CardLayout) faPanel.jPanel2.getLayout();
-        faPanel.jPanel2.add(fAdd, "AddAdmin");
-        cl.show(faPanel.jPanel2, "AddAdmin");
+        faPanel.jPanel2.add(fAdd, "AddFaculty");
+        cl.show(faPanel.jPanel2, "AddFaculty");
         System.out.println("AddButtonClicked");
     }
 
@@ -333,10 +370,10 @@ public class FacultyServiceImpl implements FacultyService {
             if (scanner.captureFingerprint()) {
 
                 Fmd fmd = scanner.getCapturedFmd();
-                if (fingerprintTemplate == null) {
+                if (fingerprintTemplateAdd == null) {
                     JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
                 }
-                fingerprintTemplate = fmd.getData();
+                fingerprintTemplateAdd = fmd.getData();
                 try {
                     ImageIcon icon = (ImageIcon) fAdd.jLabelfinger.getIcon();
                     Image image = icon.getImage();
@@ -352,7 +389,7 @@ public class FacultyServiceImpl implements FacultyService {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                     ImageIO.write(bufferedImage, "png", baos);
-                    fingerprintImage = baos.toByteArray();
+                    fingerprintImageAdd = baos.toByteArray();
                 } catch (IOException ex) {
                     Logger.getLogger(FacultyServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -371,10 +408,10 @@ public class FacultyServiceImpl implements FacultyService {
             if (scanner.captureFingerprint()) {
 
                 Fmd fmd = scanner.getCapturedFmd();
-                if (fingerprintTemplate == null) {
+                if (fingerprintTemplateEdit == null) {
                     JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
                 }
-                fingerprintTemplate = fmd.getData();
+                fingerprintTemplateEdit = fmd.getData();
                 try {
                     ImageIcon icon = (ImageIcon) fEdit.jLabelfinger.getIcon();
                     Image image = icon.getImage();
@@ -390,7 +427,7 @@ public class FacultyServiceImpl implements FacultyService {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                     ImageIO.write(bufferedImage, "png", baos);
-                    fingerprintImage = baos.toByteArray();
+                    fingerprintImageEdit = baos.toByteArray();
                 } catch (IOException ex) {
                     Logger.getLogger(FacultyServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
                 }

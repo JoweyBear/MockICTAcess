@@ -40,8 +40,10 @@ public class AdminSerImpl implements AdminService {
     private final ImageUploader imageUploader = new ImageUploader();
     private byte[] uploadedImageForAdd;
     private byte[] uploadedImageForEdit;
-    private byte[] fingerprintTemplate;
-    private byte[] fingerprintImage;
+    private byte[] fingerprintTemplateAdd;
+    private byte[] fingerprintImageAdd;
+    private byte[] fingerprintTemplateEdit;
+    private byte[] fingerprintImageEdit;
     FingerprintCapture scanner;
 
     public AdminSerImpl(AdminPanel adminPanel, AddAdPanel addPanel, EditAdPanel editPanel, ViewAdminDialog viewDialog) {
@@ -95,9 +97,9 @@ public class AdminSerImpl implements AdminService {
             admin.setMunicipal(addPanel.mncplty.getText().trim());
             admin.setCollge(addPanel.pstn.getText().trim());
 
-            if (fingerprintTemplate != null) {
-                admin.setFingerprint(fingerprintTemplate);
-                admin.setFingerprintImage(fingerprintImage);
+            if (fingerprintTemplateAdd != null) {
+                admin.setFingerprint(fingerprintTemplateAdd);
+                admin.setFingerprintImage(fingerprintImageAdd);
             } else {
                 System.out.println("No fingerprint template captured.");
             }
@@ -184,9 +186,9 @@ public class AdminSerImpl implements AdminService {
             admin.setBarangay(editPanel.brgy.getText().trim());
             admin.setMunicipal(editPanel.mncplty.getText().trim());
             admin.setCollge(editPanel.pstn.getText().trim());
-            if (fingerprintTemplate != null) {
-                admin.setFingerprint(fingerprintTemplate);
-                admin.setFingerprintImage(fingerprintImage);
+            if (fingerprintTemplateEdit != null) {
+                admin.setFingerprint(fingerprintTemplateEdit);
+                admin.setFingerprintImage(fingerprintImageEdit);
             } else {
                 System.out.println("No fingerprint template captured.");
             }
@@ -247,10 +249,10 @@ public class AdminSerImpl implements AdminService {
             if (scanner.captureFingerprint()) {
 
                 Fmd fmd = scanner.getCapturedFmd();
-                if (fingerprintTemplate == null) {
+                if (fingerprintTemplateEdit == null) {
                     JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
                 }
-                fingerprintTemplate = fmd.getData();
+                fingerprintTemplateEdit = fmd.getData();
                 try {
                     ImageIcon icon = (ImageIcon) addPanel.jLabelfinger.getIcon();
                     Image image = icon.getImage();
@@ -266,7 +268,7 @@ public class AdminSerImpl implements AdminService {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                     ImageIO.write(bufferedImage, "png", baos);
-                    fingerprintImage = baos.toByteArray();
+                    fingerprintImageEdit = baos.toByteArray();
                 } catch (IOException ex) {
                     Logger.getLogger(AdminSerImpl.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -285,10 +287,10 @@ public class AdminSerImpl implements AdminService {
             if (scanner.captureFingerprint()) {
 
                 Fmd fmd = scanner.getCapturedFmd();
-                if (fingerprintTemplate == null) {
+                if (fingerprintTemplateEdit == null) {
                     JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
                 }
-                fingerprintTemplate = fmd.getData();
+                fingerprintTemplateEdit = fmd.getData();
                 try {
                     ImageIcon icon = (ImageIcon) addPanel.jLabelfinger.getIcon();
                     Image image = icon.getImage();
@@ -304,7 +306,7 @@ public class AdminSerImpl implements AdminService {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
                     ImageIO.write(bufferedImage, "png", baos);
-                    fingerprintImage = baos.toByteArray();
+                    fingerprintImageEdit = baos.toByteArray();
                 } catch (IOException ex) {
                     Logger.getLogger(AdminSerImpl.class.getName()).log(Level.SEVERE, null, ex);
                 }

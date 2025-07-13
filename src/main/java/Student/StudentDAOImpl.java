@@ -27,13 +27,13 @@ public class StudentDAOImpl implements StudentDAO {
     @Override
     public DefaultTableModel fetchAll() {
         try {
-            String sql = "SELECT u.user_id AS 'ID', u.college AS 'College', u.fname AS 'First Name', u.mname AS 'Middle Name', "
-                    + "u.lname AS 'Last Name', u.contact_num AS 'Contact Number', u.sex AS 'Sex', u.birthdate AS 'Birthdate', "
-                    + "u.barangay AS 'Barangay', u.municipality AS 'Municipality',"
-                    + " u.email AS 'Email', a.section AS 'Section', a.year AS 'Year', "
-                    + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END "
+            String sql = "SELECT u.user_id AS 'ID', u.college AS 'College' , a.section AS 'Section', a.year AS 'Year', "
+                    + "u.fname AS 'First Name', u.mname AS 'Middle Name', u.lname AS 'Last Name', "
+                    + "u.sex AS 'Sex', u.birthdate AS 'Birthdate', u.contact_num AS 'Contact Number', "
+                    + "u.email AS 'Email', u.barangay AS 'Barangay', u.municipality AS 'Municipality',"
+                    + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS 'Status' "
                     + "FROM user u "
-                    + "JOIN student a ON u.user_id = a.user_id "
+                    + "JOIN student_info a ON u.user_id = a.user_id "
                     + "WHERE u.role = 'student'";
 
             Statement stmt = conn.createStatement();
@@ -60,15 +60,16 @@ public class StudentDAOImpl implements StudentDAO {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Vector<String> columns = new Vector<>(Arrays.asList("ID", "College", "Year", "Section", "First Name", "Middle Name", "Last Name", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality"));
+        Vector<String> columns = new Vector<>(List.of("ID", "College", "Year", "Section", "First Name", "Middle Name", "Last Name", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
     @Override
-    public void save(StudentModel student) {
+    public boolean save(StudentModel student) {
+        boolean save = false;
         try {
             String userSql = "INSERT INTO user (user_id, role, fname, mname, lname, contact_num, email, barangay, municipality, sex, birthdate, image, college) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement userPs = conn.prepareStatement(userSql);
             userPs.setString(1, student.getStud_id());
             userPs.setString(2, "student");
@@ -79,10 +80,10 @@ public class StudentDAOImpl implements StudentDAO {
             userPs.setString(7, student.getEmail());
             userPs.setString(8, student.getBrgy());
             userPs.setString(9, student.getMunicipal());
-            userPs.setString(8, student.getSx());
-            userPs.setDate(9, new java.sql.Date(student.getBday().getTime()));
-            userPs.setBytes(10, student.getImage());
-            userPs.setString(11, student.getCollege());
+            userPs.setString(10, student.getSx());
+            userPs.setDate(11, new java.sql.Date(student.getBday().getTime()));
+            userPs.setBytes(12, student.getImage());
+            userPs.setString(13, student.getCollege());
             userPs.executeUpdate();
 
             String infoSql = "INSERT INTO student_info(user_id, year, section) VALUES (?, ?, ?)";
@@ -92,19 +93,22 @@ public class StudentDAOImpl implements StudentDAO {
             infoPs.setString(3, student.getSection());
             infoPs.executeUpdate();
 
-            String updateFingerprintSql = "INSERT into identification (user_id, finger_template, fingerprint_image) VALUES (?, ?)";
+            String updateFingerprintSql = "INSERT into identification (user_id, fingerprint_template, fingerprint_image) VALUES (?, ?, ?)";
             PreparedStatement fingerprintPs = conn.prepareStatement(updateFingerprintSql);
             fingerprintPs.setString(1, student.getStud_id());
             fingerprintPs.setBytes(2, student.getFingerprint());
+            fingerprintPs.setBytes(3, student.getFingerprintImage());
             fingerprintPs.executeUpdate();
-
+            save = true;
         } catch (SQLException ex) {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return save;
     }
 
     @Override
-    public void update(StudentModel student) {
+    public boolean update(StudentModel student) {
+        boolean update = false;
         try {
             String userSql = "UPDATE user SET fname = ?, mname = ?, lname = ?, contact_num = ?, email = ?, barangay = ?, municipality = ?, sex = ?, birthdate = ?, image = ?, college = ? WHERE user_id = ?";
             PreparedStatement userPs = conn.prepareStatement(userSql);
@@ -167,10 +171,11 @@ public class StudentDAOImpl implements StudentDAO {
             } else {
                 System.out.println("No fingerprint data provided — only user details updated.");
             }
-
+            update = true;
         } catch (SQLException ex) {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return update;
     }
 
     @Override

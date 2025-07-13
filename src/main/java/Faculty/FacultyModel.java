@@ -22,7 +22,7 @@ public class FacultyModel {
     private String position;
     private byte[] imageData;
     private byte[] fingerprintData;
-    private byte[] fngrprntImageData;
+    private byte[] fingerprintImageData;
 
     
     public byte[] getFingerprint() {
@@ -162,13 +162,15 @@ public class FacultyModel {
         this.fingerprintData = fingerprintData;
     }
 
-    public byte[] getFngrprntImageData() {
-        return fngrprntImageData;
+    public byte[] getFingerprintImageData() {
+        return fingerprintImageData;
     }
 
-    public void setFngrprntImageData(byte[] fngrprntImageData) {
-        this.fngrprntImageData = fngrprntImageData;
+    public void setFingerprintImageData(byte[] fingerprintImageData) {
+        this.fingerprintImageData = fingerprintImageData;
     }
+
+
 
     public String getPosition() {
         return position;

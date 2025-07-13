@@ -5,7 +5,6 @@ import Utilities.RegisterFont;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
-import java.util.Date;
 import javax.swing.UIManager;
 
 public class EditFaPanel extends javax.swing.JPanel {
@@ -21,14 +20,14 @@ public class EditFaPanel extends javax.swing.JPanel {
         adlname.putClientProperty("JTextField.placeholderText", "Last Name");
         nmbr.putClientProperty("JTextField.placeholderText", "Contact Number");
         ml.putClientProperty("JTextField.placeholderText", "Email");
-        brgy.putClientProperty("JTextField.placeholderText", "Email");
-        municipal.putClientProperty("JTextField.placeholderText", "Email");
+        brgy.putClientProperty("JTextField.placeholderText", "Barangay");
+        municipal.putClientProperty("JTextField.placeholderText", "Municipality");
         sx.putClientProperty("JComboBox.placeholderText", "Sex");
         bdy.putClientProperty("JDateChooser.placeholderText", "Birthday");
 
 
-        jLabelimage.setText("");
-        jLabelfinger.setText("");
+        jLabelimage.setText("No Image");
+        jLabelfinger.setText("No Enrolled Fingerprint");
         chssmg.setFont(RegisterFont.getFont("nstr", 14));
         scn.setFont(RegisterFont.getFont("nstr", 14));
         pdt.setFont(RegisterFont.getFont("nstr", 14));
@@ -62,6 +61,7 @@ public class EditFaPanel extends javax.swing.JPanel {
         cllg = new javax.swing.JComboBox<>();
         brgy = new javax.swing.JTextField();
         municipal = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(13, 27, 42), 2, true), "Edit Faculty", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("SansSerif", 1, 36))); // NOI18N
@@ -82,6 +82,7 @@ public class EditFaPanel extends javax.swing.JPanel {
 
         pstn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        jLabelimage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelimage.setText("jLabel3");
 
         pdt.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
@@ -100,6 +101,7 @@ public class EditFaPanel extends javax.swing.JPanel {
 
         nmbr.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        jLabelfinger.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelfinger.setText("jLabel3");
 
         chssmg.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
@@ -117,6 +119,9 @@ public class EditFaPanel extends javax.swing.JPanel {
 
         municipal.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel3.setText("Birthday:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -133,21 +138,25 @@ public class EditFaPanel extends javax.swing.JPanel {
                     .addComponent(adfname)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(faculty_id)
-                    .addComponent(bdy, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(sx, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(adlname)
                     .addComponent(nmbr)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(scn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelfinger, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 72, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelimage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(chssmg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(scn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelfinger, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE))
+                        .addGap(72, 72, 72)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelimage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(chssmg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)))
                     .addComponent(ml)
                     .addComponent(brgy)
-                    .addComponent(municipal))
+                    .addComponent(municipal)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(bdy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(36, 36, 36))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(105, 105, 105)
@@ -159,7 +168,7 @@ public class EditFaPanel extends javax.swing.JPanel {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(faculty_id, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addGap(10, 10, 10)
@@ -183,10 +192,12 @@ public class EditFaPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(municipal, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sx, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(sx, javax.swing.GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bdy, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(bdy, javax.swing.GroupLayout.DEFAULT_SIZE, 28, Short.MAX_VALUE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelfinger, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabelimage, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -226,8 +237,7 @@ public class EditFaPanel extends javax.swing.JPanel {
         nmbr.setText("");
         ml.setText("");
         sx.setSelectedIndex(-1);
-        Date date = new Date();
-        bdy.setDate(date);
+        bdy.setDate(null);
         jLabelimage.setText("");
         jLabelfinger.setText("");
         brgy.setText("");
@@ -255,6 +265,7 @@ public class EditFaPanel extends javax.swing.JPanel {
     private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     public javax.swing.JLabel jLabelfinger;
     public javax.swing.JLabel jLabelimage;
     private javax.swing.JPanel jPanel1;

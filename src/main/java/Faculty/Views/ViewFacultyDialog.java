@@ -1,5 +1,6 @@
 package Faculty.Views;
 
+import Utilities.RegisterFont;
 import java.awt.event.ActionListener;
 
 public class ViewFacultyDialog extends javax.swing.JDialog {
@@ -23,6 +24,9 @@ public class ViewFacultyDialog extends javax.swing.JDialog {
         pstn.setText("");
         image.setText("");
         fngrprnt.setText("");
+
+        edit.setFont(RegisterFont.getFont("nstr", 14));
+
     }
 
     @SuppressWarnings("unchecked")
@@ -30,7 +34,7 @@ public class ViewFacultyDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        dt = new javax.swing.JButton();
+        edit = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         image = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -64,7 +68,7 @@ public class ViewFacultyDialog extends javax.swing.JDialog {
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "View Faculty", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("SansSerif", 1, 36))); // NOI18N
 
-        dt.setText("Edit");
+        edit.setText("Edit");
 
         jPanel2.setBackground(new java.awt.Color(226, 219, 204));
 
@@ -338,12 +342,12 @@ public class ViewFacultyDialog extends javax.swing.JDialog {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(64, 64, 64)
-                        .addComponent(dt, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
-                        .addGap(413, 413, 413)))
+                        .addComponent(edit, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
+                        .addGap(54, 54, 54)))
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29))
         );
         jPanel1Layout.setVerticalGroup(
@@ -357,7 +361,7 @@ public class ViewFacultyDialog extends javax.swing.JDialog {
                         .addGap(18, 18, 18)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addComponent(dt, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(edit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(24, 24, 24))
         );
 
@@ -374,8 +378,8 @@ public class ViewFacultyDialog extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    public void buttonListener(ActionListener a){
-        dt.addActionListener(a);
+    public void buttonListener(ActionListener a) {
+        edit.addActionListener(a);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -383,7 +387,7 @@ public class ViewFacultyDialog extends javax.swing.JDialog {
     public javax.swing.JLabel brgy;
     public javax.swing.JLabel cntctNumber;
     public javax.swing.JLabel college;
-    public javax.swing.JButton dt;
+    public javax.swing.JButton edit;
     public javax.swing.JLabel email;
     public javax.swing.JLabel fName;
     public javax.swing.JLabel facultyID;

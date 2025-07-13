@@ -24,9 +24,10 @@ public class FacultyController {
         this.faPanel = faPanel;
         this.viewDialog = viewDialog;
         service = new FacultyServiceImpl(addPanel, editPanel, faPanel, viewDialog);
-        faPanel.buttonListener(new ButtonEvent(), new PopupEvent(), new PopupEvent());
-        addPanel.buttonListener(new ButtonEvent());
-        editPanel.buttonListener(new ButtonEvent());
+        this.faPanel.buttonListener(new ButtonEvent(), new PopupEvent(), new PopupEvent());
+        this.addPanel.buttonListener(new ButtonEvent());
+        this.editPanel.buttonListener(new ButtonEvent());
+        this.viewDialog.buttonListener(new ButtonEvent());
 
         this.addPanel.nmbr.addKeyListener(new KeyAdapter() {
             @Override
@@ -51,8 +52,8 @@ public class FacultyController {
                 }
             }
         });
-        this.editPanel.nmbr.addKeyListener(new KeyAdapter(){
-                        @Override
+        this.editPanel.nmbr.addKeyListener(new KeyAdapter() {
+            @Override
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();
                 String number = editPanel.nmbr.getText();
@@ -97,8 +98,8 @@ public class FacultyController {
             } else if (e.getSource() == faPanel.deleteFacultyMI) {
                 service.delete();
             } else if (e.getSource() == faPanel.viewFacultyMI) {
-                service.viewStudent();
-            } else if (e.getSource() == viewDialog.dt) {
+                service.viewFaculty();
+            } else if (e.getSource() == viewDialog.edit) {
                 service.editView();
             }
         }

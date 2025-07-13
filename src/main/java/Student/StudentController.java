@@ -28,7 +28,8 @@ public class StudentController {
         this.sAdd.buttonListener(new ButtonEvent());
         this.sEdit.buttonListener(new ButtonEvent());
         this.sPanel.buttonListener(new ButtonEvent(), new PopupEvent(), new PopupEvent());
-
+        this.viewDialog.buttonListener(new ButtonEvent());
+        
         this.sAdd.nmbr.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -105,6 +106,7 @@ public class StudentController {
                 sService.viewStudent();
             } else if (e.getSource() == viewDialog.dt) {
                 sService.editView();
+                System.out.println("StudentEditClicked");
             }
         }
 

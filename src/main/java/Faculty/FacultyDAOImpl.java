@@ -32,7 +32,7 @@ public class FacultyDAOImpl implements FacultyDAO {
                     + "u.contact_num AS 'Contact Number', u.sex AS 'Sex', u.birthdate AS 'Birthdate', "
                     + "u.barangay AS 'Barangay', u.municipality AS 'Municipality', "
                     + "u.email AS 'Email', "
-                    + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END "
+                    + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS 'Status' "
                     + "FROM user u "
                     + "JOIN faculty_info a ON u.user_id = a.user_id "
                     + "WHERE u.role = 'faculty'";
@@ -185,7 +185,7 @@ public class FacultyDAOImpl implements FacultyDAO {
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, stud_id);
             stmt.execute();
-            JOptionPane.showMessageDialog(null, "Student Deleted!");
+            JOptionPane.showMessageDialog(null, "Faculty Deleted!");
         } catch (SQLException ex) {
             Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, ex);
@@ -208,7 +208,7 @@ public class FacultyDAOImpl implements FacultyDAO {
 
                 faculty.setFingerprintData(fingerprintBytes);
                 faculty.setImageData(imageBytes);
-                faculty.setFngrprntImageData(fngrprntImgBytes);
+                faculty.setFingerprintImageData(fngrprntImgBytes);
             }
         } catch (SQLException ex) {
             Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);

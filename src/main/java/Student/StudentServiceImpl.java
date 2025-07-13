@@ -2,15 +2,24 @@ package Student;
 
 import Student.Views.*;
 import Utilities.ImageUploader;
-import Utilities.QuickSearchList;
+import Utilities.SearchDefaultModel;
+import com.digitalpersona.uareu.Fmd;
 import java.awt.CardLayout;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.sql.Date;
-import java.util.List;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -31,7 +40,11 @@ public class StudentServiceImpl implements StudentService {
     private final ImageUploader imageUploader = new ImageUploader();
     private byte[] uploadedImageForAdd;
     private byte[] uploadedImageForEdit;
-    private FingerprintCapture fingerprintCapture;
+    private byte[] fingerprintTemplateAdd;
+    private byte[] fingerprintImageAdd;
+    private byte[] fingerprintTemplateEdit;
+    private byte[] fingerprintImageEdit;
+    FingerprintCapture scanner;
 
     public StudentServiceImpl(AddStudPanel sAdd, EditStudPanel sEdit, StudentPanel sPanel, ViewStudentDialog viewDialog) {
         this.sAdd = sAdd;
@@ -39,13 +52,15 @@ public class StudentServiceImpl implements StudentService {
         this.sPanel = sPanel;
         this.viewDialog = viewDialog;
 
+        setTableData();
+
     }
 
     @Override
     public void setTableData() {
         DefaultTableModel model = dao.fetchAll();
         sPanel.jTable1.setModel(model);
-        new QuickSearchList(sPanel, sPanel.jTable1, sPanel.srchtxtfld, (List<List<String>>) model);
+        new SearchDefaultModel(sPanel, sPanel.jTable1, sPanel.srchtxtfld, model);
     }
 
     @Override
@@ -73,38 +88,27 @@ public class StudentServiceImpl implements StudentService {
             student.setCntctNmber(sAdd.nmbr.getText().trim());
             student.setEmail(sAdd.ml.getText().trim());
             student.setSx(sAdd.sx.getSelectedItem().toString());
-            student.setBday((Date) sAdd.bdy.getDate());
+            student.setBday(sAdd.bdy.getDate());
             student.setImage(uploadedImageForAdd);
             student.setSection(sAdd.sctn.getSelectedItem().toString());
             student.setYear(sAdd.yr.getSelectedItem().toString());
             student.setCollege(sAdd.cllg.getSelectedItem().toString());
 
-//            
-//            DPFPTemplate template = fingerprintCapture.getTemplate();
-//            if (template != null) {
-//                student.setFingerprint(template.serialize());
-//
-//                // Convert fingerprint sample to image byte[]
-//                Image img = DPFPGlobal.getSampleConversionFactory().createImage(fingerprintCapture.getSample());  
-//                BufferedImage bufferedImg = new BufferedImage(
-//                        img.getWidth(null),
-//                        img.getHeight(null),
-//                        BufferedImage.TYPE_INT_RGB
-//                );
-//
-//                Graphics2D g2 = bufferedImg.createGraphics();
-//                g2.drawImage(img, 0, 0, null);
-//                g2.dispose();
-//
-//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                ImageIO.write(bufferedImg, "png", baos);
-//                student.setFingerprintImage(baos.toByteArray());
-//            } else {
-//                System.out.println("No fingerprint template captured.");
-//            }
-            dao.save(student);
-            setTableData();
-            clearAdd();
+            if (fingerprintTemplateAdd != null) {
+                student.setFingerprint(fingerprintTemplateAdd);
+                student.setFingerprintImage(fingerprintImageAdd);
+            } else {
+                JOptionPane.showMessageDialog(null, "No fingerprint captured.");
+            }
+            boolean save = dao.save(student);
+            if (save) {
+                JOptionPane.showMessageDialog(null, "Student added successfully");
+                setTableData();
+                clearAdd();
+            } else {
+                JOptionPane.showMessageDialog(null, "An error occured. Student can't be added.");
+            }
+
         }
     }
 
@@ -120,10 +124,31 @@ public class StudentServiceImpl implements StudentService {
         sEdit.cllg.setSelectedItem(viewDialog.college.getText());
         sEdit.yr.setSelectedItem(viewDialog.year.getText());
         sEdit.sctn.setSelectedItem(viewDialog.section.getText());
-        sEdit.jLabelimage.setIcon(viewDialog.image.getIcon());
-        sEdit.jLabelfinger.setIcon(viewDialog.fngrprnt.getIcon());
         sEdit.brgy.setText(viewDialog.brgy.getText().trim());
         sEdit.municipal.setText(viewDialog.municipal.getText());
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date parsedDate = format.parse(viewDialog.bDay.getText());
+            sEdit.bdy.setDate(parsedDate);
+        } catch (ParseException ex) {
+            Logger.getLogger(StudentServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (viewDialog.image != null) {
+            sEdit.jLabelimage.setIcon(viewDialog.image.getIcon());
+        } else {
+            sEdit.jLabelimage.setText("No Image.");
+        }
+        if (viewDialog.fngrprnt != null) {
+            sEdit.jLabelfinger.setIcon(viewDialog.fngrprnt.getIcon());
+        } else {
+            sEdit.jLabelfinger.setText("No enrolled Fingerprint");
+        }
+
+        CardLayout cl = (CardLayout) sPanel.jPanel2.getLayout();
+        sPanel.jPanel2.add(sEdit, "EditStudent");
+        cl.show(sPanel.jPanel2, "EditStudent");
+        viewDialog.dispose();
     }
 
     @Override
@@ -150,18 +175,18 @@ public class StudentServiceImpl implements StudentService {
                         progressDialog.dispose();
 
                         viewDialog.studentID.setText(student_id);
-                        viewDialog.college.setText(sPanel.jTable1.getValueAt(dataRow, 1).toString());
-                        viewDialog.year.setText(sPanel.jTable1.getValueAt(dataRow, 2).toString());
-                        viewDialog.section.setText(sPanel.jTable1.getValueAt(dataRow, 3).toString());
-                        viewDialog.fName.setText(sPanel.jTable1.getValueAt(dataRow, 4).toString());
-                        viewDialog.mName.setText(sPanel.jTable1.getValueAt(dataRow, 5).toString());
-                        viewDialog.lName.setText(sPanel.jTable1.getValueAt(dataRow, 6).toString());
-                        viewDialog.sex.setText(sPanel.jTable1.getValueAt(dataRow, 7).toString());
-                        viewDialog.bDay.setText(sPanel.jTable1.getValueAt(dataRow, 8).toString());
-                        viewDialog.cntctNumber.setText(sPanel.jTable1.getValueAt(dataRow, 9).toString());
-                        viewDialog.email.setText(sPanel.jTable1.getValueAt(dataRow, 10).toString());
-                        viewDialog.brgy.setText(sPanel.jTable1.getValueAt(dataRow, 11).toString());
-                        viewDialog.municipal.setText(sPanel.jTable1.getValueAt(dataRow, 12).toString());
+                        viewDialog.college.setText(getCellValue(dataRow, 1));
+                        viewDialog.year.setText(getCellValue(dataRow, 2));
+                        viewDialog.section.setText(getCellValue(dataRow, 3));
+                        viewDialog.fName.setText(getCellValue(dataRow, 4));
+                        viewDialog.mName.setText(getCellValue(dataRow, 5));
+                        viewDialog.lName.setText(getCellValue(dataRow, 6));
+                        viewDialog.sex.setText(getCellValue(dataRow, 7));
+                        viewDialog.bDay.setText(getCellValue(dataRow, 8));
+                        viewDialog.cntctNumber.setText(getCellValue(dataRow, 9));
+                        viewDialog.email.setText(getCellValue(dataRow, 10));
+                        viewDialog.brgy.setText(getCellValue(dataRow, 11));
+                        viewDialog.municipal.setText(getCellValue(dataRow, 12));
 
                         if (student.getImage() != null) {
                             ImageIcon icon = new ImageIcon(student.getImage());
@@ -171,8 +196,10 @@ public class StudentServiceImpl implements StudentService {
                                     Image.SCALE_SMOOTH
                             );
                             viewDialog.image.setIcon(new ImageIcon(scaledImage));
+                            viewDialog.image.setText("");
                         } else {
                             viewDialog.image.setText("No Image");
+                            viewDialog.image.setIcon(null);
                         }
 
                         if (student.getFingerprintImage() != null) {
@@ -183,8 +210,10 @@ public class StudentServiceImpl implements StudentService {
                                     Image.SCALE_SMOOTH
                             );
                             viewDialog.fngrprnt.setIcon(new ImageIcon(scaledFingerprint));
+                            viewDialog.fngrprnt.setText("");
                         } else {
                             viewDialog.fngrprnt.setText("No fingerprint");
+                            viewDialog.fngrprnt.setIcon(null);
                         }
 
                         viewDialog.setLocationRelativeTo(null);
@@ -205,6 +234,11 @@ public class StudentServiceImpl implements StudentService {
         } else {
             JOptionPane.showMessageDialog(null, "Please select student to update.");
         }
+    }
+
+    private String getCellValue(int row, int col) {
+        Object val = sPanel.jTable1.getValueAt(row, col);
+        return val != null ? val.toString() : "";
     }
 
     @Override
@@ -269,7 +303,7 @@ public class StudentServiceImpl implements StudentService {
             student.setCntctNmber(sAdd.nmbr.getText().trim());
             student.setEmail(sAdd.ml.getText().trim());
             student.setSx(sAdd.sx.getSelectedItem().toString());
-            student.setBday((Date) sAdd.bdy.getDate());
+            student.setBday(sAdd.bdy.getDate());
             student.setImage(uploadedImageForAdd);
             student.setSection(sAdd.sctn.getSelectedItem().toString());
             student.setYear(sAdd.yr.getSelectedItem().toString());
@@ -307,16 +341,16 @@ public class StudentServiceImpl implements StudentService {
     public void delete() {
         int dataRow = sPanel.jTable1.getSelectedRow();
         if (dataRow >= 0) {
-            String staff_id = sPanel.jTable1.getValueAt(dataRow, 0).toString();
+            String student_id = sPanel.jTable1.getValueAt(dataRow, 0).toString();
             int dialogButton = JOptionPane.YES_NO_OPTION;
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to "
-                    + "Delete Faculty: " + staff_id + "?", "Warning", dialogButton);
+                    + "Delete Student: " + student_id + "?", "Warning", dialogButton);
             if (dialogResult == JOptionPane.YES_OPTION) {
-                dao.delete(staff_id);
+                dao.delete(student_id);
                 setTableData();
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Please select faculty to delete.");
+            JOptionPane.showMessageDialog(null, "Please select student to delete.");
         }
     }
 
@@ -334,38 +368,78 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void scanFingerAdd() {
-//        fingerprintCapture = new FingerprintCapture(sAdd.jLabelfinger); 
-//        fingerprintCapture.startCapture();
-//
-//        JOptionPane.showMessageDialog(null, "Place your finger on the scanner.");
-//
-//        fingerprintTemplate = fingerprintCapture.getTemplate();  
-//
-//        if (fingerprintTemplate == null) {
-//            JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
-//        } else {
-//            JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
-//        }
-//
-//        fingerprintCapture.stopCapture(); 
+        scanner = new FingerprintCapture(sAdd.jLabelfinger);
+
+        if (scanner.initializeReader()) {
+            if (scanner.captureFingerprint()) {
+
+                Fmd fmd = scanner.getCapturedFmd();
+                if (fingerprintTemplateAdd == null) {
+                    JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
+                }
+                fingerprintTemplateAdd = fmd.getData();
+                try {
+                    ImageIcon icon = (ImageIcon) sAdd.jLabelfinger.getIcon();
+                    Image image = icon.getImage();
+                    BufferedImage bufferedImage = new BufferedImage(
+                            image.getWidth(null),
+                            image.getHeight(null),
+                            BufferedImage.TYPE_INT_RGB
+                    );
+
+                    Graphics2D g2d = bufferedImage.createGraphics();
+                    g2d.drawImage(image, 0, 0, null);
+                    g2d.dispose();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                    ImageIO.write(bufferedImage, "png", baos);
+                    fingerprintImageAdd = baos.toByteArray();
+                } catch (IOException ex) {
+                    Logger.getLogger(StudentServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
+            }
+        }
+        scanner.closeReader();
     }
 
     @Override
     public void scanFingerEdit() {
-//        fingerprintCapture = new FingerprintCapture(sEdit.jLabelfinger); 
-//        fingerprintCapture.startCapture();
-//
-//        JOptionPane.showMessageDialog(null, "Place your finger on the scanner.");
-//
-//        fingerprintTemplate = fingerprintCapture.getTemplate();  
-//
-//        if (fingerprintTemplate == null) {
-//            JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
-//        } else {
-//            JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
-//        }
-//
-//        fingerprintCapture.stopCapture();
+        scanner = new FingerprintCapture(sEdit.jLabelfinger);
+
+        if (scanner.initializeReader()) {
+            if (scanner.captureFingerprint()) {
+
+                Fmd fmd = scanner.getCapturedFmd();
+                if (fingerprintTemplateEdit == null) {
+                    JOptionPane.showMessageDialog(null, "Fingerprint not captured.");
+                }
+                fingerprintTemplateEdit = fmd.getData();
+                try {
+                    ImageIcon icon = (ImageIcon) sEdit.jLabelfinger.getIcon();
+                    Image image = icon.getImage();
+                    BufferedImage bufferedImage = new BufferedImage(
+                            image.getWidth(null),
+                            image.getHeight(null),
+                            BufferedImage.TYPE_INT_RGB
+                    );
+
+                    Graphics2D g2d = bufferedImage.createGraphics();
+                    g2d.drawImage(image, 0, 0, null);
+                    g2d.dispose();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                    ImageIO.write(bufferedImage, "png", baos);
+                    fingerprintImageEdit = baos.toByteArray();
+                } catch (IOException ex) {
+                    Logger.getLogger(StudentServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Fingerprint captured successfully!");
+            }
+        }
+        scanner.closeReader();
     }
 
     @Override

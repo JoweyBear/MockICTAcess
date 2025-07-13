@@ -27,6 +27,10 @@ public class AttendanceController {
         this.att.buttonListener(new ButtonEvent(),
                 new JTable1Popup(), new JTable1Popup(),
                 new JTable2Popup(), new JTable2Popup());
+        this.addclass.buttonListener(new ButtonEvent());
+        this.addroom.buttonListener(new ButtonEvent());
+        this.editclass.buttonListener(new ButtonEvent());
+        this.editroom.buttonListener(new ButtonEvent());
     }
 
     class ButtonEvent implements ActionListener {

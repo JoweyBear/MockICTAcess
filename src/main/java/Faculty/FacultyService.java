@@ -9,7 +9,7 @@ public interface FacultyService {
 
     void editView();
 
-    void viewStudent();
+    void viewFaculty();
 
     void clearAdd();
 

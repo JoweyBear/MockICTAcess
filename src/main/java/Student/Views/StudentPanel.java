@@ -4,10 +4,13 @@ import Utilities.RegisterFont;
 import com.formdev.flatlaf.FlatLaf;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
+import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.event.PopupMenuListener;
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class StudentPanel extends javax.swing.JPanel {
 
@@ -26,6 +29,22 @@ public class StudentPanel extends javax.swing.JPanel {
         dd.setFont(RegisterFont.getFont("nstr", 14));
 //        dt.setFont(RegisterFont.getFont("nstr", 14));
 //        dlt.setFont(RegisterFont.getFont("nstr", 14));
+
+        jTable1.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (value != null) {
+                    setToolTipText(value.toString());
+                } else {
+                    setToolTipText("No data");
+                }
+
+                return cell;
+            }
+        });
+
 
     }
 
