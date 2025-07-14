@@ -41,46 +41,54 @@ public class AttendanceController {
                 service.addClassSched();
             } else if (e.getSource() == att.ddRm) {
                 service.addRoom();
-            }else if(e.getSource() == att.fltr){
+            } else if (e.getSource() == att.fltr) {
                 service.getScheduleAttDate();
-            }else if(e.getSource() == att.ar){
+            } else if (e.getSource() == att.ar) {
                 service.jcomboSelection();
-            }else if(e.getSource() == att.addStudentCSMI){
+            } else if (e.getSource() == att.addStudentCSMI) {
                 service.addStudentToClassSchedule();
-            }else if(e.getSource() == att.addCStoRMMI){
+            } else if (e.getSource() == att.addCStoRMMI) {
                 service.addClassSchedule();
-            }else if(e.getSource() == att.editCSMI){
+            } else if (e.getSource() == att.editCSMI) {
                 service.editCS();
-            }else if(e.getSource() == att.editRmMI){
+            } else if (e.getSource() == att.editRmMI) {
                 service.editRoom();
-            }else if(e.getSource() == att.removeCStoRMMI){
+            } else if (e.getSource() == att.removeCStoRMMI) {
                 service.deleteClassSchedule();
-            }else if(e.getSource() == att.removeStudentCSMI){
+            } else if (e.getSource() == att.removeStudentCSMI) {
                 service.removeStudentFromClassSchedule();
-            }else if(e.getSource() == att.viewCSMI){
+            } else if (e.getSource() == att.viewCSMI) {
                 service.getSchedulesByRoomId();
-            }else if(e.getSource() == att.viewRMMI){
+            } else if (e.getSource() == att.viewRMMI) {
                 service.getRoomById();
-            }else if(e.getSource() == addclass.dd){
-               service.addClassSchedule();
-            }else if(e.getSource() == editclass.pdt){
+            } else if (e.getSource() == addclass.dd) {
+                service.addClassSchedule();
+            } else if (e.getSource() == editclass.pdt) {
                 service.updateClassSchedule();
-            }else if(e.getSource() == addroom.dd){
+            } else if (e.getSource() == addroom.dd) {
                 service.saveRoom();
                 System.out.println("addclicked");
-            }else if(e.getSource() == editroom.pdt){
+            } else if (e.getSource() == editroom.pdt) {
                 service.updateRoom();
             }
         }
     }
-    class JTable1Popup extends MouseAdapter implements PopupMenuListener{
+
+    class JTable1Popup extends MouseAdapter implements PopupMenuListener {
 
         @Override
-        public void mouseReleased(MouseEvent e){
+        public void mouseReleased(MouseEvent e) {
             service.popupJTable1(e);
         }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            service.popupJTable1(e);
+        }
+
         @Override
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+            System.out.println("Popup for Jtable 1");
         }
 
         @Override
@@ -90,14 +98,16 @@ public class AttendanceController {
         @Override
         public void popupMenuCanceled(PopupMenuEvent e) {
         }
-        
+
     }
-    class JTable2Popup extends MouseAdapter implements PopupMenuListener{
+
+    class JTable2Popup extends MouseAdapter implements PopupMenuListener {
 
         @Override
-        public void mouseReleased(MouseEvent e){
+        public void mouseReleased(MouseEvent e) {
             service.popupJTable2(e);
         }
+
         @Override
         public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
         }
@@ -109,6 +119,6 @@ public class AttendanceController {
         @Override
         public void popupMenuCanceled(PopupMenuEvent e) {
         }
-        
+
     }
-    }
+}

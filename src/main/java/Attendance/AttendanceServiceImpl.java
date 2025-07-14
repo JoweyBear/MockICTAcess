@@ -1,17 +1,19 @@
 package Attendance;
 
 import Attendance.Views.*;
-import Utilities.*;
+import Utilities.GlobalVar;
+import Utilities.QuickSearchList;
+import Utilities.SearchDefaultModel;
+import Utilities.StudentCBHandler;
+import Utilities.TableDateFilter;
+//import Utilities.*;
 import java.awt.CardLayout;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 public class AttendanceServiceImpl implements AttendanceService {
@@ -53,7 +55,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void getAllRooms() {
         DefaultTableModel model = dao.getAllRoom();
         att.jTable1.setModel(model);
-        new QuickSearchList(att, att.jTable1, att.srchTF, (List<List<String>>) model);
+        new SearchDefaultModel(att, att.jTable1, att.srchTF, model);
     }
 
     @Override
@@ -82,9 +84,9 @@ public class AttendanceServiceImpl implements AttendanceService {
 
             boolean saveRM = dao.saveRoom(att);
             if (saveRM) {
+                JOptionPane.showMessageDialog(null, "Room added successfully.");
                 getAllRooms();
                 clearAddRoom();
-                JOptionPane.showMessageDialog(null, "Room added successfully.");
             } else {
                 JOptionPane.showMessageDialog(null, "An error occured. Room can't be added.");
             }
@@ -142,7 +144,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void getAllClassSchedules() {
         DefaultTableModel model = dao.getAllCS();
         att.jTable1.setModel(model);
-        new QuickSearchList(att, att.jTable1, att.srchTF, (List<List<String>>) model);
+        new SearchDefaultModel(att, att.jTable1, att.srchTF, model);
 
     }
 
@@ -200,14 +202,17 @@ public class AttendanceServiceImpl implements AttendanceService {
             att.setSubject(addclass.crsID.getText().trim());
             att.setYear(addclass.yr.getSelectedItem().toString());
             att.setSection(addclass.sctn.getSelectedItem().toString());
+            att.setCollege(college);
 
             String facultyid = addclass.cmbFclty.getSelectedItem().toString();
-            String faculty_id = facultyid.split(" - ")[0].replace("ID: ", "").trim();
+            String faculty_id = facultyid.split(" - ")[0].replace("Faculty ID: ", "").trim();
             att.setFaculty_id(faculty_id);
+            System.out.println(faculty_id);
 
             String roomid = addclass.rmID.getSelectedItem().toString();
-            String room_id = roomid.split(" - ")[0].replace("ID: ", "").trim();
+            String room_id = roomid.split(" - ")[0].replace("Room ID: ", "").trim();
             att.setRm_id(Integer.parseInt(room_id));
+            System.out.println(room_id);
 
             dao.saveClassSched(att);
             getAllClassSchedules();
@@ -346,25 +351,29 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     private void clearAddCS() {
-        addclass.time1.setTimeToNow();
-        addclass.time2.setTimeToNow();
+        addclass.time1.setTime(null);
+        addclass.time2.setTime(null);
         addclass.day.setSelectedIndex(0);
         addclass.cmbFclty.setSelectedIndex(0);
         addclass.clssTyp.setText("");
         addclass.crsID.setText("");
         addclass.yr.setSelectedIndex(0);
         addclass.sctn.setSelectedIndex(0);
+        addclass.cmbFclty.setSelectedItem("");
+        addclass.rmID.setSelectedItem("");
     }
 
     private void clearEditCS() {
-        editclass.time1.setTimeToNow();
-        editclass.time2.setTimeToNow();
+        editclass.time1.setTime(null);
+        editclass.time2.setTime(null);
         editclass.day.setSelectedIndex(0);
         editclass.cmbFclty.setSelectedIndex(0);
         editclass.crsID.setText("");
         editclass.clssTyp.setText("");
         editclass.sctn.setSelectedIndex(0);
         editclass.yr.setSelectedIndex(0);
+        editclass.cmbFclty.setSelectedItem("");
+        editclass.rmID.setSelectedItem("");
     }
 
     @Override
@@ -426,17 +435,13 @@ public class AttendanceServiceImpl implements AttendanceService {
             return;
         }
 
-        int rowindex = att.jTable1.getSelectedRow();
-        if (rowindex < 0) {
-            return;
-        }
-
         if (e.isPopupTrigger() && e.getComponent() instanceof JTable) {
-            String type = att.jTable1.getValueAt(rowindex, 0).toString();
+            int column = att.jTable1.columnAtPoint(e.getPoint());
+            String columnName = att.jTable1.getColumnName(column);
 
-            if (type.equalsIgnoreCase("Room ID")) {
+            if (columnName.equalsIgnoreCase("Room ID")) {
                 att.jTable1RoomPopup.show(att.jTable1, e.getX(), e.getY());
-            } else if (type.equalsIgnoreCase("Class Schedule ID")) {
+            } else if (columnName.equalsIgnoreCase("Class Schedule ID")) {
                 att.jTable1CSMenuPopup.show(att.jTable1, e.getX(), e.getY());
             }
         }
@@ -458,11 +463,11 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
 
         if (e.isPopupTrigger() && e.getComponent() instanceof JTable) {
-            String type = att.jTable2.getValueAt(rowindex, 1).toString();
-
-            if (type.equalsIgnoreCase("Student ID")) {
+            int column = att.jTable2.columnAtPoint(e.getPoint());
+            String columnName = att.jTable2.getColumnName(column);
+            if (columnName.equalsIgnoreCase("Student ID")) {
                 att.jTable2CSPopup.show(att.jTable2, e.getX(), e.getY());
-            } else if (type.equalsIgnoreCase("Subject")) {
+            } else if (columnName.equalsIgnoreCase("Subject")) {
                 att.jTable2RmPopup.show(att.jTable2, e.getX(), e.getY());
             }
         }

@@ -1,13 +1,14 @@
 package Attendance;
 
 import Connection.Ticket;
-import Utilities.*;
+import Utilities.GlobalVar;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -50,16 +51,18 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     public boolean saveClassSched(AttModel att) {
         boolean saveCS = false;
         try {
-            String insertSql = "INSERT INTO class_schedule (class_type, day, time_start, time_end, subject, faculty_user_id, room_id, college) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String insertSql = "INSERT INTO class_schedule (class_type, day, section, year,  time_start, time_end, subject, faculty_user_id, room_id, college) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, att.getClass_type());
             ps.setString(2, att.getDay());
-            ps.setTime(3, Time.valueOf(att.getTime_strt()));
-            ps.setTime(4, Time.valueOf(att.getTime_end()));
-            ps.setString(5, att.getSubject());
-            ps.setString(6, att.getFaculty_id());
-            ps.setInt(7, att.getRm_id());
-            ps.setString(8, att.getCollege());
+            ps.setString(3, att.getSection());
+            ps.setString(4, att.getYear());
+            ps.setTime(5, Time.valueOf(att.getTime_strt()));
+            ps.setTime(6, Time.valueOf(att.getTime_end()));
+            ps.setString(7, att.getSubject());
+            ps.setString(8, att.getFaculty_id());
+            ps.setInt(9, att.getRm_id());
+            ps.setString(10, att.getCollege());
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
@@ -70,7 +73,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
 
             String studentSql = "SELECT s.user_id FROM user s "
                     + "JOIN student_info si ON s.user_id = si.user_id "
-                    + "WHERE s.role = 'student' AND si.year_level = ? AND si.section = ?";
+                    + "WHERE s.role = 'student' AND si.year = ? AND si.section = ?";
             PreparedStatement studentPs = conn.prepareStatement(studentSql);
             studentPs.setString(1, att.getYear());
             studentPs.setString(2, att.getYear());
@@ -84,7 +87,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
                 assignPs.addBatch();
             }
             assignPs.executeBatch();
-            
+
             saveCS = true;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -106,7 +109,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             ps.setString(6, att.getDesc());
             ps.setInt(7, att.getRm_id());
             ps.executeUpdate();
-            
+
             updateRm = true;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -120,7 +123,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
         try {
             conn.setAutoCommit(false);
 
-            String updateSchedule = "UPDATE class_schedule SET class_type = ?, day = ?, time_start = ?, time_end = ?, subject = ?, faculty_user_id = ?, room_id = ?, year_level = ?, section = ? WHERE cs_id = ?";
+            String updateSchedule = "UPDATE class_schedule SET class_type = ?, day = ?, time_start = ?, time_end = ?, subject = ?, faculty_user_id = ?, room_id = ?, year = ?, section = ? WHERE cs_id = ?";
             PreparedStatement ps1 = conn.prepareStatement(updateSchedule);
             ps1.setString(1, att.getClass_type());
             ps1.setString(2, att.getDay());
@@ -139,7 +142,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             ps2.setInt(1, att.getCs_id());
             ps2.executeUpdate();
 
-            String selectStudents = "SELECT user_id FROM student_info WHERE year_level = ? AND section = ?";
+            String selectStudents = "SELECT user_id FROM student_info WHERE year = ? AND section = ?";
             PreparedStatement ps3 = conn.prepareStatement(selectStudents);
             ps3.setString(1, att.getYear());
             ps3.setString(2, att.getSection());
@@ -477,7 +480,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             e.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(Arrays.asList("Class Schedule ID", "Class Type", "Subject", "Section", "Year", "Day", "Time Start", "Time End",  "Faculty ID", "Room ID"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Class Schedule ID", "Class Type", "Subject", "Section", "Year", "Day", "Time Start", "Time End", "Faculty ID", "Room ID"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -490,7 +493,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             ps.setInt(1, csId);
             ps.setString(2, studentId);
             ps.executeUpdate();
-            added = true;  
+            added = true;
         } catch (SQLException ex) {
             Logger.getLogger(AttendanceDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }

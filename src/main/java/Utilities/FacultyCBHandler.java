@@ -27,9 +27,9 @@ public class FacultyCBHandler extends KeyAdapter {
         this.comboBox = combo;
         try (Connection conn = Ticket.getConn(); 
                 Statement stmt = conn.createStatement(); 
-                ResultSet rs = stmt.executeQuery("SELECT user_id, fname, lname FROM user WHERE role = 'faculty'")) {
+                ResultSet rs = stmt.executeQuery("SELECT user_id, fname, lname FROM user WHERE role = 'faculty' AND is_active = 1")) {
             while (rs.next()) {
-                String item = String.format("ID: %s - %s %s", rs.getString("user_id"), rs.getString("fname"), rs.getString("lname"));
+                String item = String.format("Faculty ID: %s - %s %s", rs.getString("user_id"), rs.getString("fname"), rs.getString("lname"));
                 list.add(item);
             }
         } catch (SQLException ex) {
