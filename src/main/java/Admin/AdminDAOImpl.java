@@ -228,6 +228,8 @@ public class AdminDAOImpl implements AdminDAO {
                 admin.setFingerprintData(fingerprintBytes);
                 admin.setImageData(imageBytes);
                 admin.setFngrprntImageData(fngrprntImgBytes);
+                System.out.println("Byte array has data. Size: " + fngrprntImgBytes.length + " bytes");
+
             }
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);

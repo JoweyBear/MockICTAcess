@@ -10,6 +10,7 @@ import Utilities.TableDateFilter;
 import java.awt.CardLayout;
 import java.awt.event.MouseEvent;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -155,7 +156,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             int roomID = (int) att.jTable1.getValueAt(dataRow, 0);
             DefaultTableModel model = dao.getByRoomId(roomID);
             att.jTable2.setModel(model);
-            new QuickSearchList(att, att.jTable2, att.srchTF, (List<List<String>>) model);
+            new SearchDefaultModel(att, att.jTable2, att.srchTF, model);
         } else {
             JOptionPane.showMessageDialog(null, "Please select a room to view.");
         }
@@ -274,7 +275,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             int csID = (int) att.jTable1.getValueAt(dataRow, 0);
             DefaultTableModel model = dao.getByCSId(csID);
             att.jTable2.setModel(model);
-            new QuickSearchList(att, att.jTable2, att.srchTF, (List<List<String>>) model);
+            new SearchDefaultModel(att, att.jTable2, att.srchTF, model);
         } else {
             JOptionPane.showMessageDialog(null, "Please select a room to view.");
         }
@@ -386,18 +387,26 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
     }
 
+    private String getCellValue(int row, int col) {
+        Object val = att.jTable1.getValueAt(row, col);
+        return val != null ? val.toString() : "";
+    }
+
     @Override
     public void editRoom() {
         int dataRow = att.jTable1.getSelectedRow();
         if (dataRow >= 0) {
-            String room_id = att.jTable1.getValueAt(dataRow, 0).toString();
-            String college = GlobalVar.loggedInAdmin.getCollge();
+            String room_id = getCellValue(dataRow, 0);
             editroom.jLabel4.setText(room_id);
             editroom.cllg.setSelectedItem(college);
-            editroom.rmNm.setText(att.jTable1.getValueAt(dataRow, 1).toString());
-            editroom.bldng.setText(att.jTable1.getValueAt(dataRow, 2).toString());
-            editroom.flrLvl.setSelectedItem(att.jTable1.getValueAt(dataRow, 3).toString());
-            editroom.typ.setSelectedItem(att.jTable1.getValueAt(dataRow, 4).toString());
+            editroom.rmNm.setText(getCellValue(dataRow, 1));
+            editroom.bldng.setText(getCellValue(dataRow, 2));
+            editroom.flrLvl.setSelectedItem(getCellValue(dataRow, 3));
+            editroom.typ.setSelectedItem(getCellValue(dataRow, 4));
+
+            CardLayout cl = (CardLayout) att.jPanel1.getLayout();
+            att.jPanel1.add(editroom, "EditRoom");
+            cl.show(att.jPanel1, "EditRoom");
 
         } else {
             JOptionPane.showMessageDialog(null, "Please select Room to update.");
@@ -408,17 +417,26 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void editCS() {
         int dataRow = att.jTable1.getSelectedRow();
         if (dataRow >= 0) {
-            String cs_id = att.jTable1.getValueAt(dataRow, 0).toString();
+            String cs_id = getCellValue(dataRow, 0);
             editclass.jLabel4.setText(cs_id);
-            editclass.clssTyp.setText(att.jTable1.getValueAt(dataRow, 1).toString());
-            editclass.crsID.setText(att.jTable1.getValueAt(dataRow, 2).toString());
-            editclass.sctn.setSelectedItem(att.jTable1.getValueAt(dataRow, 3).toString());
-            editclass.yr.setSelectedItem(att.jTable1.getValueAt(dataRow, 4).toString());
-            editclass.day.setSelectedItem(att.jTable1.getValueAt(dataRow, 5).toString());
-            editclass.time1.setTime((LocalTime) att.jTable1.getValueAt(dataRow, 6));
-            editclass.time2.setTime((LocalTime) att.jTable1.getValueAt(dataRow, 7));
-            editclass.cmbFclty.setSelectedItem(att.jTable1.getValueAt(dataRow, 8).toString());
-            editclass.rmID.setSelectedItem(att.jTable1.getValueAt(dataRow, 9).toString());
+            editclass.clssTyp.setText(getCellValue(dataRow, 1));
+            editclass.crsID.setText(getCellValue(dataRow, 2));
+            editclass.sctn.setSelectedItem(getCellValue(dataRow, 3));
+            editclass.yr.setSelectedItem(getCellValue(dataRow, 4));
+            editclass.day.setSelectedItem(getCellValue(dataRow, 5));
+            String time1 = getCellValue(dataRow, 6);
+            String time2 = getCellValue(dataRow, 7);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+            LocalTime timeStart = LocalTime.parse(time1, formatter);
+            LocalTime timeEnd = LocalTime.parse(time2, formatter);
+            editclass.time1.setTime(timeStart);
+            editclass.time2.setTime(timeEnd);
+            editclass.cmbFclty.setSelectedItem(getCellValue(dataRow, 8));
+            editclass.rmID.setSelectedItem(getCellValue(dataRow, 9));
+
+            CardLayout cl = (CardLayout) att.jPanel1.getLayout();
+            att.jPanel1.add(editclass, "EditClass");
+            cl.show(att.jPanel1, "EditClass");
 
         } else {
             JOptionPane.showMessageDialog(null, "Please select Class Schedule to update.");

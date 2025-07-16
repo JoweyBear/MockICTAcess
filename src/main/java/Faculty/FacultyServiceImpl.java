@@ -364,7 +364,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public void scanFingerAdd() {
-        scanner = new FingerprintCapture(fAdd.jLabelfinger);
+//        scanner = new FingerprintCapture(fAdd.jLabelfinger);
 
         if (scanner.initializeReader()) {
             if (scanner.captureFingerprint()) {
@@ -402,7 +402,7 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public void scanFingerEdit() {
-        scanner = new FingerprintCapture(fEdit.jLabelfinger);
+//        scanner = new FingerprintCapture(fEdit.jLabelfinger);
 
         if (scanner.initializeReader()) {
             if (scanner.captureFingerprint()) {

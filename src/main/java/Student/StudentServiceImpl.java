@@ -368,7 +368,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void scanFingerAdd() {
-        scanner = new FingerprintCapture(sAdd.jLabelfinger);
+//        scanner = new FingerprintCapture(sAdd.jLabelfinger);
 
         if (scanner.initializeReader()) {
             if (scanner.captureFingerprint()) {
@@ -406,7 +406,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void scanFingerEdit() {
-        scanner = new FingerprintCapture(sEdit.jLabelfinger);
+//        scanner = new FingerprintCapture(sEdit.jLabelfinger);
 
         if (scanner.initializeReader()) {
             if (scanner.captureFingerprint()) {
