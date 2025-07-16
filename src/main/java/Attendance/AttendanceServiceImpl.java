@@ -2,7 +2,6 @@ package Attendance;
 
 import Attendance.Views.*;
 import Utilities.GlobalVar;
-import Utilities.QuickSearchList;
 import Utilities.SearchDefaultModel;
 import Utilities.StudentCBHandler;
 import Utilities.TableDateFilter;
@@ -11,7 +10,6 @@ import java.awt.CardLayout;
 import java.awt.event.MouseEvent;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -179,7 +177,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             int csID = (int) att.jTable1.getValueAt(dataRow, 0);
             DefaultTableModel model = dao.getByCSId(csID);
             att.jTable2.setModel(model);
-            new QuickSearchList(att, att.jTable2, att.srchTF, (List<List<String>>) model);
+            new SearchDefaultModel(att, att.jTable2, att.srchTF, model);
 
         } else {
             JOptionPane.showMessageDialog(null, "Please select a class chedule to view.");
