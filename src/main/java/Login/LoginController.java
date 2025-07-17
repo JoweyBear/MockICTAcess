@@ -8,13 +8,18 @@ import java.awt.event.KeyListener;
 public class LoginController {
 
     LoginFrame frame;
+    LoginFrameFPrint frameFP;
     LoginService service;
 
-    public LoginController(LoginFrame frame) {
+    public LoginController(LoginFrame frame, LoginFrameFPrint frameFP) {
         this.frame = frame;
-        service = new LoginSerImpl(frame);
+        this.frameFP = frameFP;
+        service = new LoginSerImpl(frame, frameFP);
         this.frame.ntr.addActionListener((ActionEvent e) -> {
             service.login();
+        });
+        this.frameFP.lgn.addActionListener((ActionEvent e) ->{
+            service.authentication();
         });
         this.frame.psswrd.addKeyListener(new KeyListener() {
             public void actionPerformed(KeyEvent evt) {

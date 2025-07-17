@@ -1,5 +1,6 @@
 package Admin;
 
+import com.digitalpersona.uareu.Fmd;
 import java.util.Date;
 
 public class AdminModel {
@@ -25,6 +26,16 @@ public class AdminModel {
     private byte[] imageData;
     private byte[] fingerprintData;
     private byte[] fngrprntImageData;
+
+    private Fmd fingerprintTemplate;
+
+    public Fmd getFingerprintTemplate() {
+        return fingerprintTemplate;
+    }
+
+    public void setFingerprintTemplate(Fmd fingerprintTemplate) {
+        this.fingerprintTemplate = fingerprintTemplate;
+    }
 
     public byte[] getFingerprintImage() {
         return fingerprintImage;

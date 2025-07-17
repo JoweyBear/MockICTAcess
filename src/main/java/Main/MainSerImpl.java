@@ -13,8 +13,10 @@ public class MainSerImpl implements MainService {
     @Override
     public void loginButton() {
         LoginFrame lgnfrm = new LoginFrame();
-        new LoginController(lgnfrm);
-        lgnfrm.setVisible(true);
+        LoginFrameFPrint lgnfrmFP = new LoginFrameFPrint();
+        new LoginController(lgnfrm, lgnfrmFP);
+//        lgnfrm.setVisible(true);
+        lgnfrmFP.setVisible(true);        
         frame.setVisible(false);
     }
 

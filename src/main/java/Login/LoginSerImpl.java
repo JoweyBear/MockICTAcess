@@ -3,17 +3,29 @@ package Login;
 import Admin.AdminModel;
 import AdminDashboard.Dashboard;
 import Utilities.GlobalVar;
-import javax.swing.*;
-import java.awt.*;
+import com.digitalpersona.uareu.Engine;
+import com.digitalpersona.uareu.Fmd;
+import com.digitalpersona.uareu.UareUGlobal;
+import java.awt.BorderLayout;
+import java.util.List;
 import java.util.concurrent.*;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import utilities.FingerprintCapture;
 
 public class LoginSerImpl implements LoginService {
 
     LoginDAO dao = new LoginDAOImpl();
     LoginFrame frame;
+    LoginFrameFPrint frameFP;
 
-    public LoginSerImpl(LoginFrame frame) {
+    public LoginSerImpl(LoginFrame frame, LoginFrameFPrint frameFP) {
         this.frame = frame;
+        this.frameFP = frameFP;
     }
 
     @Override
@@ -33,68 +45,73 @@ public class LoginSerImpl implements LoginService {
     @Override
     public void authentication() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        // Create modal dialog
-        JDialog dialog = new JDialog(frame, "Authenticating", true);
+
+        JDialog dialog = new JDialog(frameFP, "Authenticating", true);
         dialog.setLayout(new BorderLayout());
         dialog.setSize(350, 150);
-        dialog.setLocationRelativeTo(frame);
+        dialog.setLocationRelativeTo(frameFP);
 
-        JLabel messageLabel = new JLabel("Authentication... Please wait...", SwingConstants.CENTER);
+        JLabel messageLabel = new JLabel("Scanning... Please wait...", SwingConstants.CENTER);
         dialog.add(messageLabel, BorderLayout.NORTH);
 
         JProgressBar progressBar = new JProgressBar(0, 100);
-        progressBar.setStringPainted(true); // shows %
+        progressBar.setStringPainted(true);
         dialog.add(progressBar, BorderLayout.CENTER);
 
-        // Submit authentication task
         executor.submit(() -> {
-            boolean result = false;
+            List<AdminModel> admins = dao.verifyAdminLogin();
+            boolean matched = false;
+            AdminModel matchedAdmin = null;
 
-            for (int i = 0; i <= 100; i++) {
-                int progress = i;
+            FingerprintCapture scanner = new FingerprintCapture();
+            if (!scanner.initializeReader()) {
+                System.out.println("Failed to initialize fingerprint reader.");
+                return;
+            }
 
-                // Update progress on Swing thread
-                SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
+            if (!scanner.captureFingerprint()) {
+                System.out.println("Failed to capture fingerprint.");
+                return;
+            }
 
-                try {
-                    Thread.sleep(30); // simulate time taken
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
+            Fmd scannedFmd = scanner.getCapturedFmd();
+
+            if (scannedFmd != null) {
+                for (int i = 0; i < admins.size(); i++) {
+                    AdminModel admin = admins.get(i);
+                    byte[] storedTemplate = admin.getFingerprint();
+
+                    if (scanner.matchFingerprint(storedTemplate, scannedFmd)) {
+                        matched = true;
+                        matchedAdmin = admin;
+                        break; // Stop after finding the first match
+                    }
+
+                    final int progress = (int) (((i + 1) / (float) admins.size()) * 100);
+                    SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
                 }
             }
 
-            // Simulated fingerprint authentication result
-            result = Math.random() > 0.3;
+            AdminModel finalAdmin = matchedAdmin;
+            boolean finalMatch = matched;
 
-            // Show result after completion
-            boolean finalResult = result;
             SwingUtilities.invokeLater(() -> {
-                dialog.dispose(); // close loading dialog
-
-                if (finalResult) {
-                    JOptionPane.showMessageDialog(frame, "Authentication successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    // TODO: Redirect to next screen
+                dialog.dispose();
+                if (finalMatch && finalAdmin != null) {
+                    String name = finalAdmin.getStFname() + " " + finalAdmin.getStLname();
+                    JOptionPane.showMessageDialog(null, "Welcome " + name + "!", "Authenticated", JOptionPane.INFORMATION_MESSAGE);
+                    Dashboard dashboard = new Dashboard();
+                    dashboard.setVisible(true);
+                    frameFP.setVisible(false);
                 } else {
-                    JOptionPane.showMessageDialog(frame, "Authentication failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Authentication failed.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             });
+
+            executor.shutdown();
         });
 
-        dialog.setVisible(true); // blocks until disposed
-    }
-
-    public void shutdownExecutor() {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.shutdown();
-        try {
-            if (!executor.awaitTermination(3, TimeUnit.SECONDS)) {
-                executor.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            executor.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
-
+        dialog.setVisible(true);
     }
 
 }

@@ -132,6 +132,35 @@ public class FingerprintCapture {
 //        SwingUtilities.invokeLater(() -> targetLabel.setIcon(icon));
 //    }
 
+    public boolean matchFingerprint(byte[] storedTemplate, Fmd scannedFmd) {
+        try {
+            Fmd enrolledFmd = UareUGlobal.GetImporter().ImportFmd(
+                    storedTemplate,
+                    Fmd.Format.DP_REG_FEATURES, 
+                    Fmd.Format.DP_REG_FEATURES 
+            );
+            Engine engine = UareUGlobal.GetEngine();
+            int falseMatchRate = engine.Compare(enrolledFmd, 0, scannedFmd, 0);
+
+            return falseMatchRate < Engine.PROBABILITY_ONE / 100000;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false; // Failed comparison or conversion
+        }
+    }
+
+    public Fmd capture() {
+        if (!initializeReader()) {
+            return null;
+        }
+        if (captureFingerprint()) {
+            closeReader(); // optional
+            return capturedFmd;
+        }
+        closeReader();
+        return null;
+    }
+
     public Fmd getCapturedFmd() {
         return capturedFmd;
     }

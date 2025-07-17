@@ -10,7 +10,7 @@ import javax.swing.UIManager;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
 public class LoginFrameFPrint extends javax.swing.JDialog {
-    
+
     public LoginFrameFPrint() {
         initComponents();
         setLocationRelativeTo(null);
@@ -22,12 +22,13 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         UIManager.put("Panel.arc", 20);
-        
-        jLabel2.setFont(RegisterFont.getFont("vouge",50f));
-        cncl.setFont(RegisterFont.getFont("instr",14f));
+
+        jLabel2.setFont(RegisterFont.getFont("vouge", 50f));
+        cncl.setFont(RegisterFont.getFont("instr", 14f));
+        lgn.setFont(RegisterFont.getFont("instr", 14f));
+
 //        ntr.setBackground(new Color(62, 92, 118));
 //        cncl.setBackground(new Color(62, 92, 118));
-
 //        srnm.setBackground(new Color(0, 0, 0, 0));
 //        srnm.putClientProperty("FlatLaf.style", "background:null");
 //        psswrd.setBackground(new Color(0, 0, 0, 0));
@@ -40,6 +41,7 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
 
         jPanel1 = new javax.swing.JPanel();
         cncl = new javax.swing.JButton();
+        lgn = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -57,7 +59,11 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
                 cnclActionPerformed(evt);
             }
         });
-        jPanel1.add(cncl, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 350, 130, 30));
+        jPanel1.add(cncl, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 340, 130, 30));
+
+        lgn.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
+        lgn.setText("Initiate Scan");
+        jPanel1.add(lgn, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 270, 130, 30));
 
         jLabel2.setFont(new java.awt.Font("Vogue", 1, 50)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -79,7 +85,9 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 458, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -92,9 +100,10 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
 //        psswrd.addKeyListener(evt);
 //    }
 //
-//    public void buttonListener(ActionListener a) {
-//        ntr.addActionListener(a);
-//    }
+
+    public void buttonListener(ActionListener a) {
+        lgn.addActionListener(a);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton cncl;
@@ -102,5 +111,6 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
+    public javax.swing.JButton lgn;
     // End of variables declaration//GEN-END:variables
 }
