@@ -12,7 +12,7 @@ public class EditCSPanel extends javax.swing.JPanel {
         initComponents();
 
         jLabel4.setText("");
-        crsID.putClientProperty("JTextField.placeholderText", "Course ID");        
+//        crsID.putClientProperty("JTextField.placeholderText", "Course ID");        
 
         pdt.setFont(RegisterFont.getFont("nstr", 14));
         clr.setFont(RegisterFont.getFont("nstr", 14));
@@ -175,9 +175,7 @@ public class EditCSPanel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -190,7 +188,6 @@ public class EditCSPanel extends javax.swing.JPanel {
         time2.setTimeToNow();
         day.setSelectedIndex(0);
         cmbFclty.setSelectedIndex(0);
-        crsID.setText("");
         clssTyp.setText("");
         yr.setSelectedIndex(0);
         sctn.setSelectedIndex(0);
@@ -204,7 +201,7 @@ public class EditCSPanel extends javax.swing.JPanel {
     public javax.swing.JButton clr;
     public javax.swing.JTextField clssTyp;
     public javax.swing.JComboBox<String> cmbFclty;
-    public javax.swing.JTextField crsID;
+    private javax.swing.JTextField crsID;
     public javax.swing.JComboBox<String> day;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

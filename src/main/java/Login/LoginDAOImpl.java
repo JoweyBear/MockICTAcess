@@ -79,15 +79,18 @@ public class LoginDAOImpl implements LoginDAO {
 
     @Override
     public List<AdminModel> verifyAdminLogin() {
-        List<AdminModel> admins = new ArrayList();
+        List<AdminModel> admins = new ArrayList<>();
 
-        String sql = "SELECT u.user_id, u.name, i.fingerprint_data"
-                + "FROM user u"
-                + "JOIN identification i ON u.user_id = i.user_id"
-                + "WHERE u.role = 'admin' AND i.fingerprint_data IS NOT NULL";
+        String sql = "SELECT u.user_id, u.fname, u.mname, u.lname, "
+                + "u.contact_num, u.email, u.sex, u.birthdate, u.image, u.college, "
+                + "i.fingerprint_template "
+                + "FROM user u "
+                + "JOIN identification i ON u.user_id = i.user_id "
+                + "WHERE u.role = 'admin' AND i.fingerprint_template IS NOT NULL";
+
         try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
             while (rs.next()) {
-                String storedHash = rs.getString("hash");
                 String fName = rs.getString("fname");
                 String mName = rs.getString("mname");
                 String lName = rs.getString("lname");
@@ -97,6 +100,7 @@ public class LoginDAOImpl implements LoginDAO {
                 Date bday = rs.getDate("birthdate");
                 byte[] image = rs.getBytes("image");
                 String coll = rs.getString("college");
+                byte[] fingerprint = rs.getBytes("fingerprint_template");
 
                 AdminModel admin = new AdminModel();
                 admin.setStFname(fName);
@@ -108,15 +112,19 @@ public class LoginDAOImpl implements LoginDAO {
                 admin.setCollge(coll);
                 admin.setEmail(email);
                 admin.setImage(image);
-                System.out.println("Welcome, " + fName + " " + lName + "!");
+                admin.setFingerprint(fingerprint);
 
+                System.out.println("Welcome, " + fName + " " + lName + "!");
+                System.out.println("Loaded fingerprint size: " + fingerprint.length);
+
+                admins.add(admin);
             }
 
         } catch (SQLException ex) {
             Logger.getLogger(LoginDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return admins;
 
+        return admins;
     }
 
 }

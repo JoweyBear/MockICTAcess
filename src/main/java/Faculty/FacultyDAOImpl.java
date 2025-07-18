@@ -85,6 +85,8 @@ public class FacultyDAOImpl implements FacultyDAO {
             userPs.setDate(11, new java.sql.Date(faculty.getBday().getTime()));
             userPs.setBytes(12, faculty.getImage());
             userPs.setString(13, faculty.getCollege());
+            System.out.println(faculty.getImage().length);
+            
             userPs.executeUpdate();
 
             String infoSql = "INSERT INTO faculty_info(user_id, position) VALUES (?, ?)";
@@ -93,7 +95,7 @@ public class FacultyDAOImpl implements FacultyDAO {
             infoPs.setString(2, faculty.getPosition());
             infoPs.executeUpdate();
 
-            String updateFingerprintSql = "INSERT into identification (user_id, finger_template, fingerprint_image) VALUES (?, ?, ?)";
+            String updateFingerprintSql = "INSERT into identification (user_id, fingerprint_template, fingerprint_image) VALUES (?, ?, ?)";
             PreparedStatement fingerprintPs = conn.prepareStatement(updateFingerprintSql);
             fingerprintPs.setString(1, faculty.getFaculty_id());
             fingerprintPs.setBytes(2, faculty.getFingerprint());
@@ -169,7 +171,7 @@ public class FacultyDAOImpl implements FacultyDAO {
                     System.out.println("Fingerprint and image inserted.");
                 }
             } else {
-                System.out.println("No fingerprint data provided — only user details updated.");
+                System.out.println("No fingerprint data provided - only user details updated.");
             }
             update = true;
         } catch (SQLException ex) {

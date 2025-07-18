@@ -44,6 +44,8 @@ public class LoginSerImpl implements LoginService {
 
     @Override
     public void authentication() {
+        System.out.println("Scanning started...");
+
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
         JDialog dialog = new JDialog(frameFP, "Authenticating", true);
@@ -59,56 +61,50 @@ public class LoginSerImpl implements LoginService {
         dialog.add(progressBar, BorderLayout.CENTER);
 
         executor.submit(() -> {
+            FingerprintCapture scanner = new FingerprintCapture();
             List<AdminModel> admins = dao.verifyAdminLogin();
             boolean matched = false;
             AdminModel matchedAdmin = null;
 
-            FingerprintCapture scanner = new FingerprintCapture();
-            if (!scanner.initializeReader()) {
-                System.out.println("Failed to initialize fingerprint reader.");
-                return;
-            }
+            try {
+                if (!scanner.initializeReader()) {
+                    return;
+                }
+                if (!scanner.captureFingerprint()) {
+                    return;
+                }
 
-            if (!scanner.captureFingerprint()) {
-                System.out.println("Failed to capture fingerprint.");
-                return;
-            }
+                Fmd scannedFmd = scanner.getCapturedFmd();
+                if (scannedFmd == null) {
+                    return;
+                }
 
-            Fmd scannedFmd = scanner.getCapturedFmd();
-
-            if (scannedFmd != null) {
                 for (int i = 0; i < admins.size(); i++) {
-                    AdminModel admin = admins.get(i);
-                    byte[] storedTemplate = admin.getFingerprint();
-
-                    if (scanner.matchFingerprint(storedTemplate, scannedFmd)) {
+                    boolean ok = scanner.matchFingerprint(admins.get(i).getFingerprint(), scannedFmd);
+                    if (ok) {
                         matched = true;
-                        matchedAdmin = admin;
-                        break; // Stop after finding the first match
+                        matchedAdmin = admins.get(i);
+                        break;
                     }
-
-                    final int progress = (int) (((i + 1) / (float) admins.size()) * 100);
+                    int progress = (int) ((i + 1) * 100f / admins.size());
                     SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
                 }
+            } finally {
+                scanner.closeReader();
             }
 
-            AdminModel finalAdmin = matchedAdmin;
-            boolean finalMatch = matched;
-
+            final boolean finalMatch = matched;
+            final AdminModel user = matchedAdmin;
             SwingUtilities.invokeLater(() -> {
                 dialog.dispose();
-                if (finalMatch && finalAdmin != null) {
-                    String name = finalAdmin.getStFname() + " " + finalAdmin.getStLname();
-                    JOptionPane.showMessageDialog(null, "Welcome " + name + "!", "Authenticated", JOptionPane.INFORMATION_MESSAGE);
-                    Dashboard dashboard = new Dashboard();
-                    dashboard.setVisible(true);
+                if (finalMatch) {
+                    JOptionPane.showMessageDialog(frameFP, "Welcome, " + user.getStFname() + "!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    new Dashboard().setVisible(true);
                     frameFP.setVisible(false);
                 } else {
-                    JOptionPane.showMessageDialog(null, "Authentication failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frameFP, "Authentication failed.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             });
-
-            executor.shutdown();
         });
 
         dialog.setVisible(true);

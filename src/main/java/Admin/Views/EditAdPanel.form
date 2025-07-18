@@ -20,11 +20,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="jPanel1" max="32767" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-          </Group>
+          <Component id="jPanel1" alignment="1" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -59,8 +55,8 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="94" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="pdt" alignment="0" pref="178" max="32767" attributes="0"/>
-                      <Component id="clr" alignment="0" pref="178" max="32767" attributes="0"/>
+                      <Component id="pdt" alignment="0" pref="190" max="32767" attributes="0"/>
+                      <Component id="clr" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="117" max="-2" attributes="0"/>
               </Group>
@@ -69,31 +65,31 @@
                       <Group type="102" attributes="0">
                           <EmptySpace min="-2" pref="34" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="admname" alignment="0" pref="322" max="32767" attributes="0"/>
+                              <Component id="admname" alignment="0" max="32767" attributes="0"/>
                               <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
-                              <Component id="sx" alignment="0" pref="322" max="32767" attributes="0"/>
-                              <Component id="adlname" alignment="0" pref="322" max="32767" attributes="0"/>
-                              <Component id="nmbr" alignment="0" pref="322" max="32767" attributes="0"/>
-                              <Component id="ml" alignment="0" pref="322" max="32767" attributes="0"/>
-                              <Component id="mncplty" alignment="0" pref="322" max="32767" attributes="0"/>
-                              <Component id="brgy" alignment="0" pref="322" max="32767" attributes="0"/>
-                              <Component id="usrnm" alignment="0" pref="322" max="32767" attributes="0"/>
-                              <Component id="psswrd" alignment="0" pref="322" max="32767" attributes="0"/>
-                              <Component id="cnfrm" alignment="0" pref="322" max="32767" attributes="0"/>
+                              <Component id="sx" alignment="0" max="32767" attributes="0"/>
+                              <Component id="adlname" alignment="0" max="32767" attributes="0"/>
+                              <Component id="nmbr" alignment="0" max="32767" attributes="0"/>
+                              <Component id="ml" alignment="0" max="32767" attributes="0"/>
+                              <Component id="mncplty" alignment="0" max="32767" attributes="0"/>
+                              <Component id="brgy" alignment="0" max="32767" attributes="0"/>
+                              <Component id="usrnm" alignment="0" max="32767" attributes="0"/>
+                              <Component id="psswrd" alignment="0" max="32767" attributes="0"/>
+                              <Component id="cnfrm" alignment="0" max="32767" attributes="0"/>
                               <Component id="jLabel2" alignment="0" max="32767" attributes="0"/>
-                              <Component id="admin_id" alignment="0" pref="322" max="32767" attributes="0"/>
+                              <Component id="admin_id" alignment="0" max="32767" attributes="0"/>
                               <Group type="102" alignment="1" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="scn" pref="152" max="32767" attributes="0"/>
+                                      <Component id="scn" max="32767" attributes="0"/>
                                       <Component id="jLabelfinger" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="jLabelimage" alignment="1" pref="152" max="32767" attributes="0"/>
-                                      <Component id="chssmg" alignment="1" pref="152" max="32767" attributes="0"/>
+                                      <Component id="jLabelimage" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="chssmg" alignment="1" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
-                              <Component id="adfname" alignment="0" pref="322" max="32767" attributes="0"/>
+                              <Component id="adfname" alignment="0" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <Group type="102" attributes="0">
@@ -106,7 +102,7 @@
                               <Group type="102" attributes="0">
                                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="bdy" pref="270" max="32767" attributes="0"/>
+                                  <Component id="bdy" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>

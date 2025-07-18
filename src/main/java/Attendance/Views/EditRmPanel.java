@@ -12,9 +12,9 @@ public class EditRmPanel extends javax.swing.JPanel {
         initComponents();
 
         jLabel4.setText("");
-        bldng.putClientProperty("JTextField.placeholderText", "Admin ID");
-        rmNm.putClientProperty("JTextField.placeholderText", "Position/College");
-        dscp.putClientProperty("JTextField.placeholderText", "First Name");
+        bldng.putClientProperty("JTextField.placeholderText", "Building");
+        rmNm.putClientProperty("JTextField.placeholderText", "Room Name");
+        dscp.putClientProperty("JTextField.placeholderText", "Description");
 
 
         pdt.setFont(RegisterFont.getFont("nstr", 14));

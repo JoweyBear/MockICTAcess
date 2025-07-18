@@ -418,12 +418,12 @@ public class AttendanceServiceImpl implements AttendanceService {
             String cs_id = getCellValue(dataRow, 0);
             editclass.jLabel4.setText(cs_id);
             editclass.clssTyp.setText(getCellValue(dataRow, 1));
-            editclass.crsID.setText(getCellValue(dataRow, 2));
-            editclass.sctn.setSelectedItem(getCellValue(dataRow, 3));
-            editclass.yr.setSelectedItem(getCellValue(dataRow, 4));
-            editclass.day.setSelectedItem(getCellValue(dataRow, 5));
-            String time1 = getCellValue(dataRow, 6);
-            String time2 = getCellValue(dataRow, 7);
+            editclass.crsID.setText(getCellValue(dataRow, 5));
+            editclass.sctn.setSelectedItem(getCellValue(dataRow, 6));
+            editclass.yr.setSelectedItem(getCellValue(dataRow, 7));
+            editclass.day.setSelectedItem(getCellValue(dataRow, 2));
+            String time1 = getCellValue(dataRow, 3);
+            String time2 = getCellValue(dataRow, 4);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
             LocalTime timeStart = LocalTime.parse(time1, formatter);
             LocalTime timeEnd = LocalTime.parse(time2, formatter);

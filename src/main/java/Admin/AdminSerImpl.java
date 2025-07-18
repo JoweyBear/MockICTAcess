@@ -221,10 +221,12 @@ public class AdminSerImpl implements AdminService {
                 }
             }
             if (fingerprintTemplateEdit != null) {
+                admin.setFingerprint(fingerprintTemplateEdit);
                 admin.setFingerprintImage(fingerprintImageEdit);
             } else {
                 System.out.println("No fingerprint template captured.");
             }
+
             boolean update = dao.update(admin);
             if (update) {
                 setTableData();
@@ -290,7 +292,7 @@ public class AdminSerImpl implements AdminService {
     @Override
     public void scanFingerAdd() {
         JDialog progressDialog = new JDialog((JFrame) null, "Scan Fingerprint", true);
-        JProgressBar progressBar = new JProgressBar(0, 3); // 3 required scans
+        JProgressBar progressBar = new JProgressBar(0, 3);
         progressBar.setValue(0);
         progressBar.setString("Scan 1 of 3");
         progressBar.setStringPainted(true);

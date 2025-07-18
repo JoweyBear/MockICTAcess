@@ -18,6 +18,10 @@ public class LoginController {
         this.frame.ntr.addActionListener((ActionEvent e) -> {
             service.login();
         });
+        this.frameFP.forPass.addActionListener((ActionEvent e) ->{
+            frameFP.setVisible(false);
+            frame.setVisible(true);
+        });
         this.frameFP.lgn.addActionListener((ActionEvent e) ->{
             service.authentication();
         });

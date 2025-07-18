@@ -106,6 +106,7 @@ public class FingerprintCapture {
 //    }
 
     public boolean verifyFingerprint(Fmd scannedFmd, Fmd storedFmd) {
+        System.out.println("called verify fingerprint");
         try {
             Engine engine = UareUGlobal.GetEngine();
             int score = engine.Compare(scannedFmd, 0, storedFmd, 0);
@@ -132,20 +133,34 @@ public class FingerprintCapture {
 //        SwingUtilities.invokeLater(() -> targetLabel.setIcon(icon));
 //    }
 
-    public boolean matchFingerprint(byte[] storedTemplate, Fmd scannedFmd) {
+    public boolean matchFingerprint(byte[] storedTemplateBytes, Fmd scannedFmd) {
         try {
-            Fmd enrolledFmd = UareUGlobal.GetImporter().ImportFmd(
-                    storedTemplate,
-                    Fmd.Format.DP_REG_FEATURES, 
-                    Fmd.Format.DP_REG_FEATURES 
-            );
-            Engine engine = UareUGlobal.GetEngine();
-            int falseMatchRate = engine.Compare(enrolledFmd, 0, scannedFmd, 0);
+            // Import stored template bytes into an Fmd object
+            Fmd storedFmd = UareUGlobal.GetImporter()
+                    .ImportFmd(
+                            storedTemplateBytes,
+                            Fmd.Format.DP_PRE_REG_FEATURES, // stored format
+                            Fmd.Format.DP_PRE_REG_FEATURES
+                    );
 
-            return falseMatchRate < Engine.PROBABILITY_ONE / 100000;
-        } catch (Exception e) {
+            Engine engine = UareUGlobal.GetEngine();
+
+            // Identify: compare scannedFmd against array of one stored Fmd
+            Fmd[] storedArray = new Fmd[]{storedFmd};
+            Engine.Candidate[] candidates = engine.Identify(
+                    scannedFmd,
+                    0, // max FAR (zero for strict match)
+                    storedArray,
+                    1,
+                    storedArray.length
+                    
+            );
+
+            return candidates.length > 0;  // match found
+
+        } catch (UareUException e) {
             e.printStackTrace();
-            return false; // Failed comparison or conversion
+            return false;
         }
     }
 
@@ -159,6 +174,12 @@ public class FingerprintCapture {
         }
         closeReader();
         return null;
+    }
+
+    public void clearCapturedData() {
+        capturedFmd = null;
+        capturedFid = null;
+        fingerprintImageBytes = null;
     }
 
     public Fmd getCapturedFmd() {

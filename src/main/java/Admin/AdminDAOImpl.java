@@ -187,7 +187,7 @@ public class AdminDAOImpl implements AdminDAO {
                     System.out.println("Fingerprint and image inserted.");
                 }
             } else {
-                System.out.println("No fingerprint data provided — only user details updated.");
+                System.out.println("No fingerprint data provided - only user details updated.");
             }
             update = true;
         } catch (SQLException ex) {
@@ -228,7 +228,7 @@ public class AdminDAOImpl implements AdminDAO {
                 admin.setFingerprintData(fingerprintBytes);
                 admin.setImageData(imageBytes);
                 admin.setFngrprntImageData(fngrprntImgBytes);
-                System.out.println("Byte array has data. Size: " + fngrprntImgBytes.length + " bytes");
+//                System.out.println("Byte array has data. Size: " + fngrprntImgBytes.length + " bytes");
 
             }
         } catch (SQLException ex) {

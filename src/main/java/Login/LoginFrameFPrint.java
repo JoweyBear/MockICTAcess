@@ -22,6 +22,7 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         UIManager.put("Panel.arc", 20);
+        forPass.setBorderPainted(false);
 
         jLabel2.setFont(RegisterFont.getFont("vouge", 50f));
         cncl.setFont(RegisterFont.getFont("instr", 14f));
@@ -42,6 +43,7 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
         jPanel1 = new javax.swing.JPanel();
         cncl = new javax.swing.JButton();
         lgn = new javax.swing.JButton();
+        forPass = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -59,11 +61,17 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
                 cnclActionPerformed(evt);
             }
         });
-        jPanel1.add(cncl, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 340, 130, 30));
+        jPanel1.add(cncl, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 360, 130, 30));
 
         lgn.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
         lgn.setText("Initiate Scan");
+        lgn.setFocusPainted(false);
+        lgn.setRequestFocusEnabled(false);
+        lgn.setVerifyInputWhenFocusTarget(false);
         jPanel1.add(lgn, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 270, 130, 30));
+
+        forPass.setText("Use Password Instead");
+        jPanel1.add(forPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 320, 210, -1));
 
         jLabel2.setFont(new java.awt.Font("Vogue", 1, 50)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
@@ -103,10 +111,12 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
 
     public void buttonListener(ActionListener a) {
         lgn.addActionListener(a);
+        forPass.addActionListener(a);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton cncl;
+    public javax.swing.JButton forPass;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
