@@ -201,7 +201,7 @@ public class EditCSPanel extends javax.swing.JPanel {
     public javax.swing.JButton clr;
     public javax.swing.JTextField clssTyp;
     public javax.swing.JComboBox<String> cmbFclty;
-    private javax.swing.JTextField crsID;
+    public javax.swing.JTextField crsID;
     public javax.swing.JComboBox<String> day;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
