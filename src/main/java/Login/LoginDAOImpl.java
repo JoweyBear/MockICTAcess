@@ -2,12 +2,15 @@ package Login;
 
 import Admin.AdminModel;
 import Connection.Ticket;
+import Utilities.Encryption;
+import java.io.IOException;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,6 +22,7 @@ public class LoginDAOImpl implements LoginDAO {
 
     private Connection conn;
     private ResultSet rs;
+    Encryption en = new Encryption();
 
     public LoginDAOImpl() {
         conn = Ticket.getConn();
@@ -37,18 +41,20 @@ public class LoginDAOImpl implements LoginDAO {
                 rs = stmt.executeQuery();
 
                 if (rs.next()) {
-
                     String storedHash = rs.getString("hash");
-                    String fName = rs.getString("fname");
-                    String mName = rs.getString("mname");
-                    String lName = rs.getString("lname");
-                    String conNum = rs.getString("contact_num");
-                    String email = rs.getString("email");
-                    String sx = rs.getString("sex");
-                    Date bday = rs.getDate("birthdate");
-                    byte[] image = rs.getBytes("image");
-                    String coll = rs.getString("college");
-                    if (storedHash.equals(pass)) {
+                    
+                     if (storedHash.equals(pass)) {
+//                    if (BCrypt.checkpw(pass, storedHash)) {
+                        String fName = en.decrypt(rs.getString("fname"));
+                        String mName = en.decrypt(rs.getString("mname"));
+                        String lName = en.decrypt(rs.getString("lname"));
+                        String conNum = en.decrypt(rs.getString("contact_num"));
+                        String email = en.decrypt(rs.getString("email"));
+                        String sx = rs.getString("sex"); 
+                        Date bday = rs.getDate("birthdate");
+                        byte[] image = rs.getBytes("image");
+                        String coll = rs.getString("college"); 
+
                         admin = new AdminModel();
                         admin.setStFname(fName);
                         admin.setStMname(mName);
@@ -59,19 +65,18 @@ public class LoginDAOImpl implements LoginDAO {
                         admin.setCollge(coll);
                         admin.setEmail(email);
                         admin.setImage(image);
+
                         System.out.println("Welcome, " + fName + " " + lName + "!");
                     } else {
                         System.out.println("Invalid password.");
                     }
-
                 }
             } else {
-
                 JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-
-        } catch (SQLException err) {
-            JOptionPane.showMessageDialog(null, err.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException | IOException ex) {
+            ex.printStackTrace(); // helpful for debugging
+            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         return admin;

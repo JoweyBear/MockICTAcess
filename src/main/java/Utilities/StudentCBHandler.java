@@ -4,6 +4,7 @@ import Connection.Ticket;
 import java.awt.EventQueue;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,14 +23,22 @@ public class StudentCBHandler extends KeyAdapter {
 
     private final JComboBox<String> comboBox;
     private final List<String> list = new ArrayList<>();
+    private final Encryption de = new Encryption();
 
-    public StudentCBHandler(JComboBox<String> combo) {
+    public StudentCBHandler(JComboBox<String> combo) throws IOException {
         this.comboBox = combo;
-        try (Connection conn = Ticket.getConn(); 
-                Statement stmt = conn.createStatement(); 
-                ResultSet rs = stmt.executeQuery("SELECT user_id, fname, lname FROM user WHERE role = 'student'")) {
+        try (Connection conn = Ticket.getConn(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT user_id,  fname, mname, lname FROM user WHERE role = 'student'")) {
             while (rs.next()) {
-                String item = String.format("ID: %s - %s %s", rs.getString("user_id"), rs.getString("fname"), rs.getString("lname"));
+                String id = rs.getString("user_id");
+                String fname = de.decrypt(rs.getString("fname"));
+                String mname = de.decrypt(rs.getString("mname"));
+                String lname = de.decrypt(rs.getString("lname"));
+
+                String middleInitial = (mname != null && !mname.trim().isEmpty())
+                        ? mname.trim().substring(0, 1).toUpperCase() + "."
+                        : "";
+
+                String item = String.format("ID: %s - %s %s %s", id, fname, middleInitial, lname);
                 list.add(item);
             }
         } catch (SQLException ex) {

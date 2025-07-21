@@ -23,7 +23,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class Encryption {
 
-    InputStream is = Encryption.class.getResourceAsStream("Configurations/Outlet.properties");
+    InputStream is = Encryption.class.getResourceAsStream("/Configurations/Outlet.properties");
     Properties outlet = new Properties();
 
     public String encrypt(String strToEncrypt) throws IOException {

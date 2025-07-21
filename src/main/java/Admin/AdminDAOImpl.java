@@ -1,7 +1,9 @@
 package Admin;
 
 import Connection.Ticket;
+import Utilities.Encryption;
 import com.mysql.cj.jdbc.result.ResultSetMetaData;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.Date;
@@ -22,6 +24,7 @@ public class AdminDAOImpl implements AdminDAO {
 
     private Connection conn;
     private ResultSet rs;
+    Encryption de = new Encryption();
 
     public AdminDAOImpl() {
         conn = Ticket.getConn();
@@ -32,8 +35,7 @@ public class AdminDAOImpl implements AdminDAO {
         try {
             String sql = "SELECT u.user_id AS 'ID', u.college AS 'College', u.fname AS 'First Name', u.mname AS 'Middle Name', "
                     + "u.lname AS 'Last Name', u.contact_num AS 'Contact Number', u.sex AS 'Sex', u.birthdate AS 'Birthdate', "
-                    + "u.barangay AS 'Barangay', u.municipality AS 'Municipality',"
-                    + " u.email AS 'Email', a.username AS 'Username', "
+                    + "u.barangay AS 'Barangay', u.municipality AS 'Municipality', u.email AS 'Email', a.username AS 'Username', "
                     + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS 'Status' "
                     + "FROM user u "
                     + "JOIN auth a ON u.user_id = a.user_id "
@@ -53,17 +55,35 @@ public class AdminDAOImpl implements AdminDAO {
             while (rs.next()) {
                 Vector<Object> row = new Vector<>();
                 for (int i = 1; i <= columnCount; i++) {
-                    row.add(rs.getObject(i));
+                    String col = md.getColumnLabel(i);
+                    Object val = rs.getObject(i);
+
+                    if (val != null && Arrays.asList(
+                            "First Name", "Middle Name", "Last Name",
+                            "Municipality", "Barangay", "Contact Number"
+                    ).contains(col)) {
+                        try {
+                            val = de.decrypt(val.toString());
+                        } catch (Exception ex) {
+                            System.err.println("Decryption failed for " + col + ": " + ex.getMessage());
+                        }
+                    }
+
+                    row.add(val); 
                 }
                 data.add(row);
             }
 
             return new DefaultTableModel(data, columnNames);
+
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Vector<String> columns = new Vector<>(Arrays.asList("ID", "College", "First Name", "Middle Name", "Last Name", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality", "Username", "Status"));
+        Vector<String> columns = new Vector<>(Arrays.asList(
+                "ID", "College", "First Name", "Middle Name", "Last Name", "Contact Number",
+                "Sex", "Birthdate", "Barangay", "Municipality", "Email", "Username", "Status"
+        ));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -78,13 +98,19 @@ public class AdminDAOImpl implements AdminDAO {
             PreparedStatement userPs = conn.prepareStatement(userSql);
             userPs.setString(1, admin.getStaff_id());
             userPs.setString(2, "admin");
-            userPs.setString(3, admin.getStFname());
-            userPs.setString(4, admin.getStMname());
-            userPs.setString(5, admin.getStLname());
-            userPs.setString(6, admin.getConNum());
+//            userPs.setString(3, admin.getStFname());
+//            userPs.setString(4, admin.getStMname());
+//            userPs.setString(5, admin.getStLname());
+//            userPs.setString(6, admin.getConNum());
+            userPs.setString(3, de.encrypt(admin.getStFname()));
+            userPs.setString(4, de.encrypt(admin.getStMname()));
+            userPs.setString(5, de.encrypt(admin.getStLname()));
+            userPs.setString(6, de.encrypt(admin.getConNum() ));
             userPs.setString(7, admin.getEmail());
-            userPs.setString(8, admin.getBarangay());
-            userPs.setString(9, admin.getMunicipal());
+//            userPs.setString(8, admin.getBarangay());
+//            userPs.setString(9, admin.getMunicipal());
+            userPs.setString(8, de.encrypt(admin.getBarangay()));
+            userPs.setString(9, de.encrypt(admin.getMunicipal()));
             userPs.setString(10, admin.getSx());
             userPs.setDate(11, new java.sql.Date(admin.getBday().getTime()));
             userPs.setBytes(12, admin.getImage());
@@ -100,7 +126,7 @@ public class AdminDAOImpl implements AdminDAO {
             authPs.setString(3, hash);
             authPs.execute();
 
-            String updateFingerprintSql = "INSERT into identification (user_id, finger_template, fingerprint_image) VALUES (?, ?)";
+            String updateFingerprintSql = "INSERT into identification (user_id, finger_template, fingerprint_image) VALUES (?, ?, ?)";
             PreparedStatement fingerprintPs = conn.prepareStatement(updateFingerprintSql);
             fingerprintPs.setString(1, admin.getStaff_id());
             fingerprintPs.setBytes(2, admin.getFingerprint());
@@ -109,6 +135,8 @@ public class AdminDAOImpl implements AdminDAO {
 
             saved = true;
         } catch (SQLException ex) {
+            Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return saved;
@@ -120,13 +148,19 @@ public class AdminDAOImpl implements AdminDAO {
         try {
             String userSql = "UPDATE user SET fname = ?, mname = ?, lname = ?, contact_num = ?, email = ?, barangay = ?, municipality = ?, sex = ?, birthdate = ?, image = ?, college = ? WHERE user_id = ?";
             PreparedStatement userPs = conn.prepareStatement(userSql);
-            userPs.setString(1, admin.getStFname());
-            userPs.setString(2, admin.getStMname());
-            userPs.setString(3, admin.getStLname());
-            userPs.setString(4, admin.getConNum());
+//            userPs.setString(1, admin.getStFname());
+//            userPs.setString(2, admin.getStMname());
+//            userPs.setString(3, admin.getStLname());
+            userPs.setString(1, de.encrypt(admin.getStFname()));
+            userPs.setString(2, de.encrypt(admin.getStMname()));
+            userPs.setString(3, de.encrypt(admin.getStLname()));
+//            userPs.setString(4, admin.getConNum());
+            userPs.setString(4, de.decrypt(admin.getConNum()));
             userPs.setString(5, admin.getEmail());
-            userPs.setString(6, admin.getBarangay());
-            userPs.setString(7, admin.getMunicipal());
+            userPs.setString(6, de.encrypt(admin.getBarangay()));
+            userPs.setString(7, de.encrypt(admin.getMunicipal()));
+//            userPs.setString(6, admin.getBarangay());
+//            userPs.setString(7, admin.getMunicipal());
             userPs.setString(8, admin.getSx());
             userPs.setDate(9, new java.sql.Date(admin.getBday().getTime()));
             userPs.setBytes(10, admin.getImage());
@@ -191,6 +225,8 @@ public class AdminDAOImpl implements AdminDAO {
             }
             update = true;
         } catch (SQLException ex) {
+            Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return update;

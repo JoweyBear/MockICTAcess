@@ -1,6 +1,8 @@
 package Student;
 
 import Connection.Ticket;
+import Utilities.Encryption;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +21,7 @@ public class StudentDAOImpl implements StudentDAO {
 
     Connection conn;
     ResultSet rs;
+    Encryption en = new Encryption();
 
     public StudentDAOImpl() {
         conn = Ticket.getConn();
@@ -50,7 +53,21 @@ public class StudentDAOImpl implements StudentDAO {
             while (rs.next()) {
                 Vector<Object> row = new Vector<>();
                 for (int i = 1; i <= columnCount; i++) {
-                    row.add(rs.getObject(i));
+                    String col = md.getColumnLabel(i);
+                    Object val = rs.getObject(i);
+
+                    if (val != null && Arrays.asList(
+                            "First Name", "Middle Name", "Last Name",
+                            "Municipality", "Barangay", "Contact Number"
+                    ).contains(col)) {
+                        try {
+                            val = en.decrypt(val.toString());
+                        } catch (Exception ex) {
+                            System.err.println("Decryption failed for " + col + ": " + ex.getMessage());
+                        }
+                    }
+
+                    row.add(val);
                 }
                 data.add(row);
             }
@@ -73,13 +90,19 @@ public class StudentDAOImpl implements StudentDAO {
             PreparedStatement userPs = conn.prepareStatement(userSql);
             userPs.setString(1, student.getStud_id());
             userPs.setString(2, "student");
-            userPs.setString(3, student.getFname());
-            userPs.setString(4, student.getMname());
-            userPs.setString(5, student.getLname());
-            userPs.setString(6, student.getCntctNmber());
+//            userPs.setString(3, student.getFname());
+//            userPs.setString(4, student.getMname());
+//            userPs.setString(5, student.getLname());
+//            userPs.setString(6, student.getCntctNmber());
+            userPs.setString(3, en.encrypt(student.getFname()));
+            userPs.setString(4, en.encrypt(student.getMname()));
+            userPs.setString(5, en.encrypt(student.getLname()));
+            userPs.setString(6, en.encrypt(student.getCntctNmber()));
             userPs.setString(7, student.getEmail());
-            userPs.setString(8, student.getBrgy());
-            userPs.setString(9, student.getMunicipal());
+            userPs.setString(8, en.encrypt(student.getBrgy()));
+            userPs.setString(9, en.encrypt(student.getMunicipal()));
+//            userPs.setString(8, student.getBrgy());
+//            userPs.setString(9, student.getMunicipal());
             userPs.setString(10, student.getSx());
             userPs.setDate(11, new java.sql.Date(student.getBday().getTime()));
             userPs.setBytes(12, student.getImage());
@@ -102,6 +125,8 @@ public class StudentDAOImpl implements StudentDAO {
             save = true;
         } catch (SQLException ex) {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return save;
     }
@@ -112,13 +137,17 @@ public class StudentDAOImpl implements StudentDAO {
         try {
             String userSql = "UPDATE user SET fname = ?, mname = ?, lname = ?, contact_num = ?, email = ?, barangay = ?, municipality = ?, sex = ?, birthdate = ?, image = ?, college = ? WHERE user_id = ?";
             PreparedStatement userPs = conn.prepareStatement(userSql);
-            userPs.setString(1, student.getFname());
-            userPs.setString(2, student.getMname());
-            userPs.setString(3, student.getLname());
-            userPs.setString(4, student.getCntctNmber());
+            userPs.setString(1, en.encrypt(student.getFname()));
+            userPs.setString(2, en.encrypt(student.getMname()));
+            userPs.setString(3, en.encrypt(student.getLname()));
+            userPs.setString(4, en.encrypt(student.getCntctNmber()));
+//            userPs.setString(1, student.getFname());
+//            userPs.setString(2, student.getMname());
+//            userPs.setString(3, student.getLname());
+//            userPs.setString(4, student.getCntctNmber());
             userPs.setString(5, student.getEmail());
-            userPs.setString(6, student.getBrgy());
-            userPs.setString(7, student.getMunicipal());
+            userPs.setString(6, en.encrypt(student.getBrgy()));
+            userPs.setString(7, en.encrypt(student.getMunicipal()));
             userPs.setString(8, student.getSx());
             userPs.setDate(9, new java.sql.Date(student.getBday().getTime()));
             userPs.setBytes(10, student.getImage());
@@ -173,6 +202,8 @@ public class StudentDAOImpl implements StudentDAO {
             }
             update = true;
         } catch (SQLException ex) {
+            Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return update;

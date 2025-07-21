@@ -1,6 +1,8 @@
 package Faculty;
 
 import Connection.Ticket;
+import Utilities.Encryption;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +21,7 @@ public class FacultyDAOImpl implements FacultyDAO {
 
     Connection conn;
     ResultSet rs;
+    Encryption en = new Encryption();
 
     public FacultyDAOImpl() {
         conn = Ticket.getConn();
@@ -51,7 +54,21 @@ public class FacultyDAOImpl implements FacultyDAO {
             while (rs.next()) {
                 Vector<Object> row = new Vector<>();
                 for (int i = 1; i <= columnCount; i++) {
-                    row.add(rs.getObject(i));
+                    String col = md.getColumnLabel(i);
+                    Object val = rs.getObject(i);
+
+                    if (val != null && Arrays.asList(
+                            "First Name", "Middle Name", "Last Name",
+                            "Municipality", "Barangay", "Contact Number"
+                    ).contains(col)) {
+                        try {
+                            val = en.decrypt(val.toString());
+                        } catch (Exception ex) {
+                            System.err.println("Decryption failed for " + col + ": " + ex.getMessage());
+                        }
+                    }
+
+                    row.add(val);
                 }
                 data.add(row);
             }
@@ -74,19 +91,24 @@ public class FacultyDAOImpl implements FacultyDAO {
             PreparedStatement userPs = conn.prepareStatement(userSql);
             userPs.setString(1, faculty.getFaculty_id());
             userPs.setString(2, "faculty");
-            userPs.setString(3, faculty.getFname());
-            userPs.setString(4, faculty.getMname());
-            userPs.setString(5, faculty.getLname());
+//            userPs.setString(3, faculty.getFname());
+//            userPs.setString(4, faculty.getMname());
+//            userPs.setString(5, faculty.getLname());
+            userPs.setString(3, en.encrypt(faculty.getFname()));
+            userPs.setString(4, en.encrypt(faculty.getMname()));
+            userPs.setString(5, en.encrypt(faculty.getLname()));
             userPs.setString(6, faculty.getCntctNmber());
             userPs.setString(7, faculty.getEmail());
-            userPs.setString(8, faculty.getBrgy());
-            userPs.setString(9, faculty.getMunicipal());
+            userPs.setString(8, en.encrypt(faculty.getBrgy()));
+            userPs.setString(9, en.encrypt(faculty.getMunicipal()));
+//            userPs.setString(8, faculty.getBrgy());
+//            userPs.setString(9, faculty.getMunicipal());
             userPs.setString(10, faculty.getSx());
             userPs.setDate(11, new java.sql.Date(faculty.getBday().getTime()));
             userPs.setBytes(12, faculty.getImage());
             userPs.setString(13, faculty.getCollege());
             System.out.println(faculty.getImage().length);
-            
+
             userPs.executeUpdate();
 
             String infoSql = "INSERT INTO faculty_info(user_id, position) VALUES (?, ?)";
@@ -101,9 +123,11 @@ public class FacultyDAOImpl implements FacultyDAO {
             fingerprintPs.setBytes(2, faculty.getFingerprint());
             fingerprintPs.setBytes(3, faculty.getFingerprintImage());
             fingerprintPs.executeUpdate();
-            
+
             save = true;
         } catch (SQLException ex) {
+            Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return save;
@@ -111,17 +135,22 @@ public class FacultyDAOImpl implements FacultyDAO {
 
     @Override
     public boolean update(FacultyModel faculty) {
-        boolean update =  false;
+        boolean update = false;
         try {
             String userSql = "UPDATE user SET fname = ?, mname = ?, lname = ?, contact_num = ?, email = ?, barangay = ?, municipality = ?, sex = ?, birthdate = ?, image = ?, college = ? WHERE user_id = ?";
             PreparedStatement userPs = conn.prepareStatement(userSql);
-            userPs.setString(1, faculty.getFname());
-            userPs.setString(2, faculty.getMname());
-            userPs.setString(3, faculty.getLname());
-            userPs.setString(4, faculty.getCntctNmber());
+//            userPs.setString(1, faculty.getFname());
+//            userPs.setString(2, faculty.getMname());
+//            userPs.setString(3, faculty.getLname());
+            userPs.setString(1, en.encrypt(faculty.getFname()));
+            userPs.setString(2, en.encrypt(faculty.getMname()));
+            userPs.setString(3, en.encrypt(faculty.getLname()));
+            userPs.setString(4, en.encrypt(faculty.getCntctNmber()));
             userPs.setString(5, faculty.getEmail());
-            userPs.setString(6, faculty.getBrgy());
-            userPs.setString(7, faculty.getMunicipal());
+//            userPs.setString(6, faculty.getBrgy());
+//            userPs.setString(7, faculty.getMunicipal());
+            userPs.setString(6, en.encrypt(faculty.getBrgy()));
+            userPs.setString(7, en.encrypt(faculty.getMunicipal()));
             userPs.setString(8, faculty.getSx());
             userPs.setDate(9, new java.sql.Date(faculty.getBday().getTime()));
             userPs.setBytes(10, faculty.getImage());
@@ -175,6 +204,8 @@ public class FacultyDAOImpl implements FacultyDAO {
             }
             update = true;
         } catch (SQLException ex) {
+            Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return update;
