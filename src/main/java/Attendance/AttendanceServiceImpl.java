@@ -8,8 +8,11 @@ import Utilities.TableDateFilter;
 //import Utilities.*;
 import java.awt.CardLayout;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -284,31 +287,35 @@ public class AttendanceServiceImpl implements AttendanceService {
         JComboBox<String> studentCombo = new JComboBox<>();
         studentCombo.setEditable(true);
 
-        studentCombo.getEditor().getEditorComponent().addKeyListener(new StudentCBHandler(studentCombo));
-        int selectedRow = att.jTable2.getSelectedRow();
-        int classScheduleId = (int) att.jTable2.getValueAt(selectedRow, 0);
-        int result = JOptionPane.showConfirmDialog(
-                null,
-                studentCombo,
-                "Select Student to Add",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-        );
+        try {
+            studentCombo.getEditor().getEditorComponent().addKeyListener(new StudentCBHandler(studentCombo));
+            int selectedRow = att.jTable2.getSelectedRow();
+            int classScheduleId = (int) att.jTable2.getValueAt(selectedRow, 0);
+            int result = JOptionPane.showConfirmDialog(
+                    null,
+                    studentCombo,
+                    "Select Student to Add",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
+            );
 
-        if (result == JOptionPane.OK_OPTION) {
-            String selected = (String) studentCombo.getSelectedItem();
-            if (selected != null) {
-                int idStart = selected.indexOf("ID:") + 3;
-                int idEnd = selected.indexOf(" -");
-                String studentId = selected.substring(idStart, idEnd).trim();
+            if (result == JOptionPane.OK_OPTION) {
+                String selected = (String) studentCombo.getSelectedItem();
+                if (selected != null) {
+                    int idStart = selected.indexOf("ID:") + 3;
+                    int idEnd = selected.indexOf(" -");
+                    String studentId = selected.substring(idStart, idEnd).trim();
 
-                boolean added = dao.addStudentToClassSchedule(classScheduleId, studentId);
-                if (added) {
-                    JOptionPane.showMessageDialog(null, "Student added successfully.");
-                } else {
-                    JOptionPane.showMessageDialog(null, "Student is already in this class.");
+                    boolean added = dao.addStudentToClassSchedule(classScheduleId, studentId);
+                    if (added) {
+                        JOptionPane.showMessageDialog(null, "Student added successfully.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Student is already in this class.");
+                    }
                 }
             }
+        } catch (IOException ex) {
+            Logger.getLogger(AttendanceServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }

@@ -1,6 +1,10 @@
 package Admin;
 
 import Admin.Views.*;
+import Fingerprint.EnrollmentThread;
+import Fingerprint.FingerprintModel;
+import Fingerprint.PromptSwing;
+import Utilities.ImageExtractor;
 import Utilities.ImageUploader;
 import Utilities.SearchDefaultModel;
 import com.digitalpersona.uareu.Compression;
@@ -10,6 +14,7 @@ import com.digitalpersona.uareu.Fmd;
 import com.digitalpersona.uareu.Reader;
 import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -107,6 +112,12 @@ public class AdminSerImpl implements AdminService {
 
             if (fingerprintTemplateAdd != null) {
                 admin.setFingerprint(fingerprintTemplateAdd);
+                byte[] imageBytes = ImageExtractor.extractImageBytes(addPanel.jLabelimage, "jpg");
+                if (imageBytes != null) {
+                    admin.setFingerprintImage(imageBytes);
+//                    admin.setFingerprintImage(fingerprintImageAdd);
+                }
+
                 admin.setFingerprintImage(fingerprintImageAdd);
             } else {
                 System.out.println("No fingerprint template captured.");
@@ -198,27 +209,11 @@ public class AdminSerImpl implements AdminService {
             admin.setCollge(editPanel.pstn.getText().trim());
 
             if (editPanel.jLabelimage != null && editPanel.jLabelimage.getIcon() != null) {
-                try {
-                    ImageIcon icon = (ImageIcon) editPanel.jLabelimage.getIcon();
-                    Image image = icon.getImage();
-
-                    BufferedImage bufferedImage = new BufferedImage(
-                            image.getWidth(null),
-                            image.getHeight(null),
-                            BufferedImage.TYPE_INT_RGB
-                    );
-                    Graphics2D g2d = bufferedImage.createGraphics();
-                    g2d.drawImage(image, 0, 0, null);
-                    g2d.dispose();
-
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(bufferedImage, "jpg", baos);
-                    byte[] imageBytes = baos.toByteArray();
-
+                byte[] imageBytes = ImageExtractor.extractImageBytes(editPanel.jLabelimage, "jpg");
+                if (imageBytes != null) {
                     admin.setImage(imageBytes);
-                } catch (IOException ex) {
-                    Logger.getLogger(AdminSerImpl.class.getName()).log(Level.SEVERE, null, ex);
                 }
+
             }
             if (fingerprintTemplateEdit != null) {
                 admin.setFingerprint(fingerprintTemplateEdit);
@@ -291,96 +286,55 @@ public class AdminSerImpl implements AdminService {
 
     @Override
     public void scanFingerAdd() {
-        JDialog progressDialog = new JDialog((JFrame) null, "Scan Fingerprint", true);
-        JProgressBar progressBar = new JProgressBar(0, 3);
-        progressBar.setValue(0);
-        progressBar.setString("Scan 1 of 3");
-        progressBar.setStringPainted(true);
-        progressDialog.add(progressBar);
-        progressDialog.setSize(300, 75);
-        progressDialog.setLocationRelativeTo(null);
+        addPanel.scn.setEnabled(false); // Disable panel while enrolling
 
-        SwingWorker<Void, Void> worker = new SwingWorker<>() {
-            final int requiredScans = 3;
-            final Fmd[] preEnrollFmds = new Fmd[requiredScans];
-            int scanCount = 0;
-            boolean allSuccessful = true;
-            Fid finalFid = null;
+        try {
+            String userIdToEnroll = addPanel.admin_id.getText().trim();
 
-            @Override
-            protected Void doInBackground() {
-                if (!scanner.initializeReader()) {
-                    JOptionPane.showMessageDialog(null, "Failed to initialize fingerprint reader.");
-                    allSuccessful = false;
-                    return null;
-                }
+            JDialog progressDialog = new JDialog((JFrame) null, "Scan Fingerprint", true);
+            progressDialog.setSize(300, 100);
+            progressDialog.setLocationRelativeTo(null);
+            progressDialog.setLayout(new BorderLayout());
 
-                while (scanCount < requiredScans) {
-                    progressBar.setValue(scanCount);
-                    progressBar.setString("Scan " + (scanCount + 1) + " of " + requiredScans);
+            JProgressBar progressBar = new JProgressBar(0, 2);
+            progressBar.setValue(0);
+            progressBar.setString("Starting fingerprint enrollment...");
+            progressBar.setStringPainted(true);
 
-                    boolean captured = scanner.captureFingerprint();
-                    if (!captured) {
-                        allSuccessful = false;
-                        break;
-                    }
+            progressDialog.add(progressBar, BorderLayout.CENTER);
+            progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+            progressDialog.setVisible(true);
 
-                    Fmd fmd = scanner.getCapturedFmd();
-                    if (fmd != null) {
-                        preEnrollFmds[scanCount] = fmd;
-                        finalFid = scanner.getCapturedFid();
-                        scanCount++;
+            PromptSwing.promptProgressBar = progressBar;
+
+            EnrollmentThread enrollmentThread = new EnrollmentThread(addPanel.jLabelfinger, userIdToEnroll, progressBar);
+            enrollmentThread.start();
+
+            new Thread(() -> {
+                while (enrollmentThread.isRunning()) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
                     }
                 }
-                progressBar.setValue(requiredScans);
-                progressBar.setString("Generating final fingerprint...");
-                if (scanCount == requiredScans) {
-                    Fmd finalFmd = preEnrollFmds[requiredScans - 1];
-                    fingerprintTemplateAdd = finalFmd.getData();
-                } else {
-                    allSuccessful = false;
+
+                FingerprintModel fpModel = enrollmentThread.getEnrollUser();
+                if (fpModel != null && fpModel.getTemplate() != null) {
+                    //template here
+                    fingerprintTemplateAdd = fpModel.getTemplate();
                 }
-                scanner.closeReader();
+                SwingUtilities.invokeLater(() -> {
+                    progressDialog.dispose();
+                    addPanel.scn.setEnabled(true);
+                    addPanel.setEnabled(true);
+                });
+            }).start();
 
-                return null;
-            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Invalid user ID.");
+        }
 
-            @Override
-            protected void done() {
-                progressDialog.dispose();
-
-                if (allSuccessful) {
-                    JOptionPane.showMessageDialog(null, "Fingerprint enrollment successful!");
-
-                    if (finalFid != null) {
-                        Fid.Fiv view = finalFid.getViews()[0];
-                        BufferedImage img = new BufferedImage(view.getWidth(), view.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-                        img.getRaster().setDataElements(0, 0, view.getWidth(), view.getHeight(), view.getImageData());
-                        ImageIcon icon = new ImageIcon(img.getScaledInstance(addPanel.jLabelfinger.getWidth(),
-                                addPanel.jLabelfinger.getHeight(), Image.SCALE_SMOOTH));
-                        SwingUtilities.invokeLater(() -> {
-                            addPanel.jLabelfinger.setText("");
-                            addPanel.jLabelfinger.setIcon(icon);
-                        });
-
-                        try {
-                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                            ImageIO.write(img, "png", baos);
-                            fingerprintImageAdd = baos.toByteArray();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            JOptionPane.showMessageDialog(null, "Error saving image: " + e.getMessage());
-                        }
-                    }
-
-                } else {
-                    JOptionPane.showMessageDialog(null, "Fingerprint enrollment failed.");
-                }
-            }
-        };
-
-        worker.execute();
-        progressDialog.setVisible(true);
     }
 
     @Override

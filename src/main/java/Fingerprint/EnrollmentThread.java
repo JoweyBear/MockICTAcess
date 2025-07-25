@@ -1,6 +1,5 @@
 package Fingerprint;
 
-
 import com.digitalpersona.uareu.*;
 import com.digitalpersona.uareu.Engine.PreEnrollmentFmd;
 import com.digitalpersona.uareu.Reader.CaptureResult;
@@ -12,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EnrollmentThread extends Thread implements Engine.EnrollmentCallback {
+
     private JLabel fingerprintLabel;
     private String userIdToEnroll;
     private JProgressBar progressBar;
@@ -20,7 +20,9 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
     public Engine engine = UareUGlobal.GetEngine();
     IdentificationThread identificationThread = new IdentificationThread();
     List<Fmd> fmdList = new ArrayList<>();
+    List<FingerprintModel> enrolledFingerprints = new ArrayList<>();
     boolean runThisThread = true;
+    FingerprintModel fpModel;
 
     public EnrollmentThread(JLabel fingerprintLabel, String userIdToEnroll, JProgressBar progressBar) {
         this.fingerprintLabel = fingerprintLabel;
@@ -59,13 +61,12 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
         }
 
         for (Fmd fmd : fmdList) {
-//            Fingerprint.insertFmd(userIdToEnroll, fmd);
-            FingerprintModel fp = new FingerprintModel();
-            fp.setUser_id(userIdToEnroll);
-            byte[] fmdData = fmd.getData();
-            fp.setTemplate(fmdData);
-            System.out.println("Added FMD to database");
+            FingerprintModel model = new FingerprintModel();
+            model.setUser_id(userIdToEnroll);
+            model.setTemplate(fmd.getData());
+            enrolledFingerprints.add(model);
         }
+        fpModel = enrolledFingerprints.get(0);
 
         fmdList.clear();
         PromptSwing.prompt(PromptSwing.DONE_CAPTURE);
@@ -80,8 +81,12 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
         while (prefmd == null) {
             CaptureResult captureResult = getCaptureResultFromCaptureThread(fingerprintLabel);
 
-            if (captureResult == null) continue;
-            if (Reader.CaptureQuality.CANCELED == captureResult.quality) break;
+            if (captureResult == null) {
+                continue;
+            }
+            if (Reader.CaptureQuality.CANCELED == captureResult.quality) {
+                break;
+            }
 
             if (Reader.CaptureQuality.GOOD == captureResult.quality) {
                 try {
@@ -126,12 +131,20 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
         }
     }
 
+    public boolean isRunning() {
+        return runThisThread;
+    }
+
     private void updateProgressBar(int value) {
         SwingUtilities.invokeLater(() -> {
             progressBar.setMaximum(requiredFmdToEnroll);
             progressBar.setValue(value);
             progressBar.setString("Scan attempt " + value + " of " + requiredFmdToEnroll);
         });
+    }
+
+    public FingerprintModel getEnrollUser() {
+        return fpModel;
     }
 
     @Override
