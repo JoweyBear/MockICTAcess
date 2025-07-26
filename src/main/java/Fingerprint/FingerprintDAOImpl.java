@@ -64,7 +64,7 @@ public class FingerprintDAOImpl implements FingerprintDAO {
     List<FingerprintModel> fingerprints = new ArrayList<>();
 
     try {
-        String query = "SELECT user_id, fingerprint_template, fingerprint_image FROM identification";
+        String query = "SELECT * FROM identification";
         PreparedStatement preparedStatement = conn.prepareStatement(query);
         rs = preparedStatement.executeQuery();
 
@@ -83,4 +83,5 @@ public class FingerprintDAOImpl implements FingerprintDAO {
     return fingerprints;
 }
 
+    
 }

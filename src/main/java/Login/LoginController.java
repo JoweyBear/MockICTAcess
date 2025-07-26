@@ -23,7 +23,8 @@ public class LoginController {
             frame.setVisible(true);
         });
         this.frameFP.lgn.addActionListener((ActionEvent e) ->{
-            service.authentication();
+//            service.authentication();
+            service.identifyAdmin();
         });
         this.frame.psswrd.addKeyListener(new KeyListener() {
             public void actionPerformed(KeyEvent evt) {

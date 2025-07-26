@@ -2,6 +2,7 @@ package Login;
 
 import Admin.AdminModel;
 import Connection.Ticket;
+import Fingerprint.FingerprintModel;
 import Utilities.Encryption;
 import java.io.IOException;
 import java.sql.Blob;
@@ -42,18 +43,18 @@ public class LoginDAOImpl implements LoginDAO {
 
                 if (rs.next()) {
                     String storedHash = rs.getString("hash");
-                    
-                     if (storedHash.equals(pass)) {
+
+                    if (storedHash.equals(pass)) {
 //                    if (BCrypt.checkpw(pass, storedHash)) {
                         String fName = en.decrypt(rs.getString("fname"));
                         String mName = en.decrypt(rs.getString("mname"));
                         String lName = en.decrypt(rs.getString("lname"));
                         String conNum = en.decrypt(rs.getString("contact_num"));
                         String email = en.decrypt(rs.getString("email"));
-                        String sx = rs.getString("sex"); 
+                        String sx = rs.getString("sex");
                         Date bday = rs.getDate("birthdate");
                         byte[] image = rs.getBytes("image");
-                        String coll = rs.getString("college"); 
+                        String coll = rs.getString("college");
 
                         admin = new AdminModel();
                         admin.setStFname(fName);
@@ -130,6 +131,24 @@ public class LoginDAOImpl implements LoginDAO {
         }
 
         return admins;
+    }
+
+    @Override
+    public AdminModel AdminInfo(FingerprintModel info) {
+        AdminModel admin = new AdminModel();
+        admin.setStaff_id(info.getUser_id());
+        admin.setStFname(info.getFname());
+        admin.setStLname(info.getLname());
+        admin.setFingerprint(info.getTemplate());
+        admin.setFingerprintImage(info.getTemplate_image());
+        admin.setSx(info.getSex());
+        admin.setConNum(info.getContact_num());
+        admin.setBday(info.getBirthdate());
+        admin.setCollge(info.getCollege());
+        admin.setEmail(info.getEmail());
+        admin.setImage(info.getImage());
+
+        return admin;
     }
 
 }

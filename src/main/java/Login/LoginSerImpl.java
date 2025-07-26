@@ -2,6 +2,8 @@ package Login;
 
 import Admin.AdminModel;
 import AdminDashboard.Dashboard;
+import Fingerprint.FingerprintModel;
+import Fingerprint.IdentificationThread;
 import Utilities.GlobalVar;
 import com.digitalpersona.uareu.Engine;
 import com.digitalpersona.uareu.Fmd;
@@ -150,6 +152,62 @@ public class LoginSerImpl implements LoginService {
         });
 
         dialog.setVisible(true);
+    }
+
+    @Override
+    public void identifyAdmin() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        JDialog dialog = new JDialog(frameFP, "Authenticating", true);
+        dialog.setLayout(new BorderLayout());
+        dialog.setSize(350, 150);
+        dialog.setLocationRelativeTo(frameFP);
+
+        JLabel messageLabel = new JLabel("Scanning... Please wait...", SwingConstants.CENTER);
+        dialog.add(messageLabel, BorderLayout.NORTH);
+
+        JProgressBar progressBar = new JProgressBar();
+        progressBar.setIndeterminate(true);
+        progressBar.setStringPainted(true);
+        progressBar.setString("Identifying...");
+        dialog.add(progressBar, BorderLayout.CENTER);
+
+        executor.submit(() -> {
+            IdentificationThread identificationThread = new IdentificationThread();
+            identificationThread.start();
+
+            try {
+                identificationThread.join(); // wait for thread to finish
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+
+            FingerprintModel matchedAdmin = identificationThread.getIdentifiedUser();
+
+            SwingUtilities.invokeLater(() -> {
+                dialog.dispose();
+
+                if (matchedAdmin != null) {
+                    String name = matchedAdmin.getFname() + " " + matchedAdmin.getLname();
+                    JOptionPane.showMessageDialog(null, "Welcome " + name + "!", "Authenticated", JOptionPane.INFORMATION_MESSAGE);
+                    AdminModel admin = dao.AdminInfo(matchedAdmin);
+                    GlobalVar.loggedInAdmin = admin;
+                    if (admin != null) {
+                        Dashboard dashboard = new Dashboard();
+                        dashboard.setVisible(true);
+                        frameFP.setVisible(false);
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "Authentication failed.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+
+            executor.shutdown();
+        });
+
+        dialog.setVisible(true);
+
     }
 
 }

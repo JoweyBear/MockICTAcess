@@ -22,6 +22,7 @@ public class IdentificationThread extends Thread {
     private boolean headlessMode = false;
     public boolean runThisThread = true;
     FingerprintDAO dao = new FingerprintDAOImpl();
+    private FingerprintModel identifiedUser;
 
     public IdentificationThread(JLabel fingerprintLabel) {
         this.fingerprintLabel = fingerprintLabel;
@@ -67,7 +68,7 @@ public class IdentificationThread extends Thread {
     }
 
     private Fmd[] getFmdsFromDatabase() throws UareUException {
-        fingerprintList = dao.getFingerprints(); 
+        fingerprintList = dao.getFingerprints();
         Fmd[] Fmds = new Fmd[fingerprintList.size()];
 
         for (int i = 0; i < fingerprintList.size(); i++) {
@@ -111,18 +112,27 @@ public class IdentificationThread extends Thread {
         }
     }
 
-    private void userIdentificationSuccess(String userId) {
-        FingerprintModel user = dao.getUserByUserId(userId); 
-        
+    private FingerprintModel userIdentificationSuccess(String userId) {
+        FingerprintModel user = dao.getUserByUserId(userId);
+        this.identifiedUser = user; 
+
         SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(null, "Identification successful for " + user.getFname() + user.getLname());
+            JOptionPane.showMessageDialog(null,
+                    "Identification successful for " + user.getFname() + " " + user.getLname());
         });
 
         try {
-            Thread.sleep(delayTimeInMs);
+            Thread.sleep(delayTimeInMs); 
         } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
             Logger.getLogger(IdentificationThread.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        return user;
+    }
+
+    public FingerprintModel getIdentifiedUser() {
+        return identifiedUser;
     }
 
     private void userIdentificationFailed() {
@@ -144,7 +154,6 @@ public class IdentificationThread extends Thread {
     }
 
     //note it's ArrayList<Fmd> fmdList before, need test
-    
     public boolean fmdIsAlreadyEnrolled(Fmd fmdToIdentify, List<Fmd> fmdList) throws UareUException {
         Fmd[] databaseFmds = getFmdsFromDatabase();
         Fmd[] combinedFmds = new Fmd[databaseFmds.length + fmdList.size()];
