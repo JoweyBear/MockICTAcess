@@ -60,9 +60,10 @@ public class IdentificationThread extends Thread {
         captureThread.join();
 
         CaptureThread.CaptureEvent evt = captureThread.getLastCapture();
-        if (evt != null && evt.captureResult.image != null) {
+        if (evt != null && evt.captureResult.image != null && Reader.CaptureQuality.GOOD == evt.captureResult.quality) {
             return engine.CreateFmd(evt.captureResult.image, Fmd.Format.ISO_19794_2_2005);
         } else {
+            System.out.println("Quality:" + evt.captureResult.quality);
             return null;
         }
     }
