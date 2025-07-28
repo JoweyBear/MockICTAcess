@@ -42,7 +42,7 @@ public class FacultyCBHandler extends KeyAdapter {
                 String item = String.format("Faculty ID: %s - %s %s %s", id, fname, middleInitial, lname);
                 list.add(item);
             }
-        } catch (SQLException | IOException ex) {
+        } catch (SQLException ex) {
             Logger.getLogger(FacultyCBHandler.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }

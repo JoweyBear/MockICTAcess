@@ -77,7 +77,7 @@ public class StudentDAOImpl implements StudentDAO {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Vector<String> columns = new Vector<>(List.of("ID", "College", "Year", "Section", "First Name", "Middle Name", "Last Name", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality"));
+        Vector<String> columns = new Vector<>(Arrays.asList("ID", "College", "Year", "Section", "First Name", "Middle Name", "Last Name", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -124,8 +124,6 @@ public class StudentDAOImpl implements StudentDAO {
             fingerprintPs.executeUpdate();
             save = true;
         } catch (SQLException ex) {
-            Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return save;
@@ -202,8 +200,6 @@ public class StudentDAOImpl implements StudentDAO {
             }
             update = true;
         } catch (SQLException ex) {
-            Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return update;

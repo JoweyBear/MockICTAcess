@@ -17,6 +17,7 @@ public class LoginController {
         service = new LoginSerImpl(frame, frameFP);
         this.frame.ntr.addActionListener((ActionEvent e) -> {
             service.login();
+            System.out.println("enter clicked");
         });
         this.frameFP.forPass.addActionListener((ActionEvent e) ->{
             frameFP.setVisible(false);
@@ -40,6 +41,7 @@ public class LoginController {
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     service.login();
+                    System.out.println("enter clicked");
                 }
             }
 

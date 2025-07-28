@@ -1,92 +1,154 @@
 package Fingerprint;
 
-import com.digitalpersona.uareu.*;
+import com.digitalpersona.uareu.Reader;
+import com.digitalpersona.uareu.ReaderCollection;
+import com.digitalpersona.uareu.UareUException;
+import com.digitalpersona.uareu.UareUGlobal;
 
-public class Selection extends Thread {
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-    public static volatile Reader reader;
+public class Selection extends Thread{
+    public static Reader reader;
 
-    // Get the first available reader
-    public static Reader getReader() {
+    public static ReaderCollection getReaderCollection() throws UareUException {
+        ReaderCollection readerCollection = UareUGlobal.GetReaderCollection();
+        readerCollection.GetReaders();
+
+        if (readerCollection == null) {
+            System.out.println("getReaderCollection: ReaderCollection is null!");
+        }
+        return readerCollection;
+    }
+
+    public static boolean readerIsConnected() {
         try {
-            ReaderCollection readers = UareUGlobal.GetReaderCollection();
-            readers.GetReaders();
-
-            if (!readers.isEmpty()) {
-                reader = readers.get(0);
-                return reader;
+            ReaderCollection readerCollection = getReaderCollection();
+            if (readerCollection == null) {
+                System.out.println("readerIsConnected: ReaderCollection is null!");
+                return false;
+            }
+            if (!readerCollection.isEmpty()) {
+                Reader reader = readerCollection.get(0);
+                if (reader == null) {
+                    System.out.println("readerIsConnected: Reader is null!");
+                    return false;
+                }
+                System.out.println("readerIsConnected method: Connected fingerprint reader: " + reader.GetDescription().name);
+                return true;
+            } else {
+                System.out.println("No fingerprint reader found.");
             }
         } catch (UareUException e) {
+            System.out.println("readerIsConnected: UareUException occurred!");
             e.printStackTrace();
         }
-        return null;
+        return false;
     }
 
-    // Check if a reader is connected (silent)
-    public static boolean isReaderConnected() {
+    public static boolean readerIsConnected_noLogging() {
         try {
-            ReaderCollection readers = UareUGlobal.GetReaderCollection();
-            readers.GetReaders();
-            return !readers.isEmpty();
+            ReaderCollection readerCollection = getReaderCollection();
+            if (readerCollection == null) {
+                return false;
+            }
+            if (!readerCollection.isEmpty()) {
+                Reader reader = readerCollection.get(0);
+                if (reader == null) {
+                    return false;
+                }
+                return true;
+            }
         } catch (UareUException e) {
-            return false;
+            // No logging as per method name
+        }
+        return false;
+    }
+
+    public static void getReader() {
+        try {
+            if (readerIsConnected()) {
+                ReaderCollection readerCollection = getReaderCollection();
+                if (readerCollection == null || readerCollection.isEmpty()) {
+                    System.out.println("getReader: ReaderCollection is null or empty!");
+                    reader = null;
+                    return;
+                }
+                reader = readerCollection.get(0);
+                if (reader == null) {
+                    System.out.println("getReader: Reader is null after get(0)!");
+                }
+            }
+        } catch (UareUException e) {
+            System.out.println("getReader: Exception occurred!");
+            e.printStackTrace();
         }
     }
 
-    // Open the reader safely
-    public static void openReader() {
-        try {
-            if (reader != null) {
+    public static void closeAndOpenReader() throws UareUException {
+        if (readerIsConnected_noLogging()) {
+            if (reader == null) {
+                System.out.println("closeAndOpenReader: reader is null!");
+                return;
+            }
+            try {
+                reader.Close();
+                reader.Open(Reader.Priority.COOPERATIVE);
+            } catch (UareUException ex) {
+                System.out.println("closeAndOpenReader: Exception on Close(), retrying Open()");
                 reader.Open(Reader.Priority.COOPERATIVE);
             }
-        } catch (UareUException e) {
-            e.printStackTrace();
+        } else {
+            System.out.println("closeAndOpenReader: No reader connected!");
         }
     }
 
-    // Close the reader safely
-    public static void closeReader() {
-        try {
-            if (reader != null) {
-                reader.Close();
-            }
-        } catch (UareUException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Reopen the reader (used for recovery)
-    public static void resetReader() {
-        try {
-            closeReader();
-            openReader();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    // 🧭 Restored: continuously monitor for reader connection
-    public static void waitAndGetReader() {
-        while (ThreadFlags.programIsRunning) {
-            getReader();
+    public static void closeReader() throws UareUException {
+        if (readerIsConnected_noLogging()) {
             if (reader == null) {
-                System.out.println("No fingerprint reader found. Waiting for a reader to be connected...");
-            } else {
-                System.out.println("Connected fingerprint reader: " + reader.GetDescription().name);
-                resetReader();
+                System.out.println("closeReader: reader is null!");
+                return;
             }
-
             try {
-                Thread.sleep(5000); // Wait 5 seconds before checking again
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                reader.Close();
+            } catch (UareUException ex) {
+                System.out.println("closeReader: Exception on Close(), retrying Open()");
+                reader.Open(Reader.Priority.COOPERATIVE);
             }
+        } else {
+            System.out.println("closeReader: No reader connected!");
         }
     }
 
-    // 🧵 Thread entry point
-    @Override
-    public void run() {
+    public static void waitAndGetReader() {
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        executor.execute(() -> {
+            while (true && ThreadFlags.programIsRunning) {
+                getReader();
+                if (reader == null) {
+                    System.out.println("No fingerprint reader found. Waiting for a reader to be connected...");
+                } else {
+                    System.out.println("Connected fingerprint reader: " + reader.GetDescription().name);
+                    try {
+                        closeAndOpenReader();
+                    } catch (UareUException e) {
+                        System.out.println("waitAndGetReader: Exception during closeAndOpenReader!");
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                try {
+                    TimeUnit.SECONDS.sleep(5); // You can adjust the sleep duration as needed
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+        // Do not shutdown executor here, keep thread running for detection
+    }
+
+    public void Run() {
         waitAndGetReader();
     }
 }

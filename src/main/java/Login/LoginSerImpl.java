@@ -4,6 +4,7 @@ import Admin.AdminModel;
 import AdminDashboard.Dashboard;
 import Fingerprint.FingerprintModel;
 import Fingerprint.IdentificationThread;
+import Fingerprint.PromptSwing;
 import Utilities.GlobalVar;
 import com.digitalpersona.uareu.Engine;
 import com.digitalpersona.uareu.Fmd;
@@ -35,11 +36,13 @@ public class LoginSerImpl implements LoginService {
 
     @Override
     public void login() {
+        System.out.println("I was here");
         String user = frame.srnm.getText();
         String pass = frame.psswrd.getText();
         AdminModel admin = dao.adminLogin(user, pass);
         GlobalVar.loggedInAdmin = admin;
         if (admin != null) {
+            System.out.println("Log in successful");
             Dashboard dashboard = new Dashboard();
             dashboard.setVisible(true);
             frame.setVisible(false);
@@ -163,26 +166,28 @@ public class LoginSerImpl implements LoginService {
         dialog.setSize(350, 150);
         dialog.setLocationRelativeTo(frameFP);
 
-        JLabel messageLabel = new JLabel("Scanning... Please wait...", SwingConstants.CENTER);
+        JLabel messageLabel = new JLabel("Initializing...", SwingConstants.CENTER);
         dialog.add(messageLabel, BorderLayout.NORTH);
 
         JProgressBar progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
         progressBar.setStringPainted(true);
-        progressBar.setString("Identifying...");
+        progressBar.setString("Preparing...");
         dialog.add(progressBar, BorderLayout.CENTER);
 
+        PromptSwing.promptProgressBar = progressBar;
+
         executor.submit(() -> {
-            IdentificationThread identificationThread = new IdentificationThread();
-            identificationThread.start();
+            IdentificationThread idThread = new IdentificationThread(progressBar, messageLabel);
+            idThread.start();
 
             try {
-                identificationThread.join(); // wait for thread to finish
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+                idThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
-            FingerprintModel matchedAdmin = identificationThread.getIdentifiedUser();
+            FingerprintModel matchedAdmin = idThread.getIdentifiedUser();
 
             SwingUtilities.invokeLater(() -> {
                 dialog.dispose();
@@ -190,23 +195,21 @@ public class LoginSerImpl implements LoginService {
                 if (matchedAdmin != null) {
                     String name = matchedAdmin.getFname() + " " + matchedAdmin.getLname();
                     JOptionPane.showMessageDialog(null, "Welcome " + name + "!", "Authenticated", JOptionPane.INFORMATION_MESSAGE);
+
                     AdminModel admin = dao.AdminInfo(matchedAdmin);
                     GlobalVar.loggedInAdmin = admin;
+
                     if (admin != null) {
-                        Dashboard dashboard = new Dashboard();
-                        dashboard.setVisible(true);
+                        new Dashboard().setVisible(true);
                         frameFP.setVisible(false);
                     }
-
                 } else {
                     JOptionPane.showMessageDialog(null, "Authentication failed.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
+
+                executor.shutdown();
             });
-
-            executor.shutdown();
         });
-
-        dialog.setVisible(true);
 
     }
 

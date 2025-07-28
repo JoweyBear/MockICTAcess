@@ -1,62 +1,78 @@
 package Fingerprint;
 
-import com.digitalpersona.uareu.*;
+import com.digitalpersona.uareu.Engine;
 import com.digitalpersona.uareu.Engine.Candidate;
-
-import javax.swing.*;
-import java.util.ArrayList;
+import com.digitalpersona.uareu.Fmd;
+import com.digitalpersona.uareu.UareUException;
+import com.digitalpersona.uareu.UareUGlobal;
 import java.util.List;
 
+import javax.swing.*;
+
 public class VerificationThread extends Thread {
+
     private Engine engine = UareUGlobal.GetEngine();
     private CaptureThread captureThread;
     private List<FingerprintModel> fingerprintList;
     private int falsePositiveRate = Engine.PROBABILITY_ONE / 100000;
     private int candidateCount = 1;
     private String userIdToMatch;
-    private int delayTimeInMs = 4000;
-
+    private int delayTimeInMs;
     public boolean userIsVerified;
     public boolean isCaptureCanceled;
-    public boolean runThisThread = true;
-    
-    FingerprintDAO dao =  new FingerprintDAOImpl();
+    boolean runThisThread = true;
+    FingerprintDAO dao = new FingerprintDAOImpl();
 
-    // Constructors
-    public VerificationThread(String userIdToMatch, int delayTimeInMs) {
+    // UI Feedback
+    private JProgressBar progressBar;
+    private JLabel statusLabel;
+
+    // Constructor
+    public VerificationThread(String userIdToMatch, int delayTimeInMs, JProgressBar progressBar, JLabel statusLabel) {
         this.userIdToMatch = userIdToMatch;
         this.delayTimeInMs = delayTimeInMs;
+        this.progressBar = progressBar;
+        this.statusLabel = statusLabel;
     }
 
-    public VerificationThread(String userIdToMatch) {
-        this.userIdToMatch = userIdToMatch;
+    public VerificationThread(String userIdToMatch, JProgressBar progressBar, JLabel statusLabel) {
+        this(userIdToMatch, 2000, progressBar, statusLabel);
     }
 
     public void startVerification() throws InterruptedException, UareUException {
-        Selection.resetReader();
+        Selection.closeAndOpenReader();
         ThreadFlags.runVerificationThread = true;
-        System.out.println("Verification Thread Started");
+        updateProgress(20, "Initializing...");
 
         while (runThisThread) {
+            updateProgress(40, "Capturing fingerprint...");
             Fmd fmdToIdentify = getFmdFromCaptureThread();
+
+            if (isCaptureCanceled) {
+                updateProgress(0, "Capture cancelled.");
+                break;
+            }
+
+            updateProgress(60, "Retrieving fingerprint data...");
             Fmd[] databaseFmds = getFmdsFromDatabase();
+
+            updateProgress(80, "Verifying fingerprint...");
             isFingerprintMatchWithUserId(fmdToIdentify, databaseFmds);
         }
 
+        updateProgress(100, userIsVerified ? "Verification successful!" : "Verification failed.");
         ThreadFlags.runVerificationThread = false;
-        System.out.println("Verification Thread Stopped");
     }
 
     private Fmd getFmdFromCaptureThread() throws UareUException, InterruptedException {
-        captureThread = new CaptureThread("Verification Thread", delayTimeInMs);
+        captureThread = new CaptureThread("Verification Thread", delayTimeInMs, statusLabel);
         captureThread.start();
         captureThread.join();
 
         isCaptureCanceled = captureThread.isCaptureCanceled;
-
         CaptureThread.CaptureEvent evt = captureThread.getLastCapture();
+
         if (evt == null || evt.captureResult.image == null) {
-            System.out.println("Capture failed or image is null");
             return null;
         }
 
@@ -64,7 +80,7 @@ public class VerificationThread extends Thread {
     }
 
     private Fmd[] getFmdsFromDatabase() throws UareUException {
-        fingerprintList = new ArrayList<>(dao.getFingerprints());
+        fingerprintList = dao.getFingerprints();
         Fmd[] fmds = new Fmd[fingerprintList.size()];
 
         for (int i = 0; i < fingerprintList.size(); i++) {
@@ -84,45 +100,43 @@ public class VerificationThread extends Thread {
         if (fmdToIdentify == null) {
             userIsVerified = false;
             runThisThread = false;
-            SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(null, "Verification failed: No fingerprint captured.");
-            });
             return;
         }
 
         Candidate[] candidateFmds = engine.Identify(fmdToIdentify, 0, databaseFmds, falsePositiveRate, candidateCount);
+        if (candidateFmds.length > 0) {
+            int matchIndex = candidateFmds[0].fmd_index;
+            String matchUserId = fingerprintList.get(matchIndex).getUser_id();
 
-        if (candidateFmds.length != 0) {
-            int topCandidateFmdIndex = candidateFmds[0].fmd_index;
-            String matchingUserId = fingerprintList.get(topCandidateFmdIndex).getUser_id();
-
-            if (matchingUserId == userIdToMatch) {
+            if (matchUserId == userIdToMatch) {
                 userIsVerified = true;
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(null, "Verification successful: Fingerprint matches user ID.");
-                });
             } else {
                 userIsVerified = false;
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(null, "Verification failed: Fingerprint does not match user ID.");
-                });
             }
         } else {
             userIsVerified = false;
-            SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(null, "Verification failed: No matching fingerprint found.");
-            });
         }
 
         runThisThread = false;
+    }
+
+    private void updateProgress(int value, String message) {
+        if (progressBar != null) {
+            progressBar.setValue(value);
+            progressBar.setString(message);
+        }
+        if (statusLabel != null) {
+            statusLabel.setText(message);
+        }
     }
 
     @Override
     public void run() {
         try {
             startVerification();
-        } catch (InterruptedException | UareUException ex) {
-            ex.printStackTrace();
+        } catch (InterruptedException | UareUException e) {
+            e.printStackTrace();
+            updateProgress(0, "Error: " + e.getMessage());
         }
     }
 }

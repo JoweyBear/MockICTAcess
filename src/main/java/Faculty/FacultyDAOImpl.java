@@ -127,8 +127,6 @@ public class FacultyDAOImpl implements FacultyDAO {
             save = true;
         } catch (SQLException ex) {
             Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return save;
     }
@@ -204,8 +202,6 @@ public class FacultyDAOImpl implements FacultyDAO {
             }
             update = true;
         } catch (SQLException ex) {
-            Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
             Logger.getLogger(FacultyDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return update;

@@ -136,8 +136,6 @@ public class AdminDAOImpl implements AdminDAO {
             saved = true;
         } catch (SQLException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return saved;
     }
@@ -225,8 +223,6 @@ public class AdminDAOImpl implements AdminDAO {
             }
             update = true;
         } catch (SQLException ex) {
-            Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return update;

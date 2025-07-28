@@ -53,8 +53,6 @@ public class FingerprintDAOImpl implements FingerprintDAO {
 
         } catch (SQLException ex) {
             Logger.getLogger(FingerprintDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(FingerprintDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return user;
     }

@@ -44,8 +44,8 @@ public class LoginDAOImpl implements LoginDAO {
                 if (rs.next()) {
                     String storedHash = rs.getString("hash");
 
-                    if (storedHash.equals(pass)) {
-//                    if (BCrypt.checkpw(pass, storedHash)) {
+//                    if (storedHash.equals(pass)) {
+                    if (BCrypt.checkpw(pass, storedHash)) {
                         String fName = en.decrypt(rs.getString("fname"));
                         String mName = en.decrypt(rs.getString("mname"));
                         String lName = en.decrypt(rs.getString("lname"));
@@ -75,8 +75,8 @@ public class LoginDAOImpl implements LoginDAO {
             } else {
                 JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (SQLException | IOException ex) {
-            ex.printStackTrace(); // helpful for debugging
+        } catch (SQLException ex) {
+            ex.printStackTrace();
             JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
 

@@ -12,12 +12,33 @@ public class PromptSwing {
     public static final String ALREADY_ENROLLED = "Already Enrolled, Try another finger";
     public static final String UNABLE_TO_ENROLL = "Unable to Enroll. Try again.";
     public static final String READER_DISCONNECTED = "Reader not connected.";
+    public static final String ANOTHER_CAPTURE = "Place another finger";
 
     public static void prompt(String message) {
         if (promptProgressBar != null) {
             SwingUtilities.invokeLater(() -> {
                 promptProgressBar.setStringPainted(true);
                 promptProgressBar.setString(message);
+            });
+        } else {
+            System.out.println("Prompt: " + message); // fallback log
+        }
+    }
+
+    public static void setProgress(int value) {
+        if (promptProgressBar != null) {
+            SwingUtilities.invokeLater(() -> {
+                promptProgressBar.setValue(value);
+            });
+        } else {
+            System.out.println("Progress value: " + value); // fallback log
+        }
+    }
+
+    public static void setIndeterminate(boolean indeterminate) {
+        if (promptProgressBar != null) {
+            SwingUtilities.invokeLater(() -> {
+                promptProgressBar.setIndeterminate(indeterminate);
             });
         }
     }
