@@ -69,7 +69,7 @@ public class AdminDAOImpl implements AdminDAO {
                         }
                     }
 
-                    row.add(val); 
+                    row.add(val);
                 }
                 data.add(row);
             }
@@ -105,7 +105,7 @@ public class AdminDAOImpl implements AdminDAO {
             userPs.setString(3, de.encrypt(admin.getStFname()));
             userPs.setString(4, de.encrypt(admin.getStMname()));
             userPs.setString(5, de.encrypt(admin.getStLname()));
-            userPs.setString(6, de.encrypt(admin.getConNum() ));
+            userPs.setString(6, de.encrypt(admin.getConNum()));
             userPs.setString(7, admin.getEmail());
 //            userPs.setString(8, admin.getBarangay());
 //            userPs.setString(9, admin.getMunicipal());
@@ -126,7 +126,7 @@ public class AdminDAOImpl implements AdminDAO {
             authPs.setString(3, hash);
             authPs.execute();
 
-            String updateFingerprintSql = "INSERT into identification (user_id, finger_template, fingerprint_image) VALUES (?, ?, ?)";
+            String updateFingerprintSql = "INSERT into identification (user_id, fingerprint_template, fingerprint_image) VALUES (?, ?, ?)";
             PreparedStatement fingerprintPs = conn.prepareStatement(updateFingerprintSql);
             fingerprintPs.setString(1, admin.getStaff_id());
             fingerprintPs.setBytes(2, admin.getFingerprint());
@@ -153,7 +153,7 @@ public class AdminDAOImpl implements AdminDAO {
             userPs.setString(2, de.encrypt(admin.getStMname()));
             userPs.setString(3, de.encrypt(admin.getStLname()));
 //            userPs.setString(4, admin.getConNum());
-            userPs.setString(4, de.decrypt(admin.getConNum()));
+            userPs.setString(4, de.encrypt(admin.getConNum()));
             userPs.setString(5, admin.getEmail());
             userPs.setString(6, de.encrypt(admin.getBarangay()));
             userPs.setString(7, de.encrypt(admin.getMunicipal()));
@@ -267,6 +267,23 @@ public class AdminDAOImpl implements AdminDAO {
             Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return admin;
+    }
+
+    @Override
+    public boolean isUsernameTaken(String username) {
+        try {
+            String sql = "SELECT COUNT(*) FROM auth WHERE username = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, username);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0; 
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(AdminDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
 }

@@ -96,6 +96,11 @@ public class AdminSerImpl implements AdminService {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             AdminModel admin = new AdminModel();
+            if (dao.isUsernameTaken(admin.getUsername())) {
+                JOptionPane.showMessageDialog(null, "Username already exists. Please choose another.", "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             admin.setStaff_id(addPanel.admin_id.getText().trim());
             admin.setStFname(addPanel.adfname.getText().trim());
             admin.setStMname(addPanel.admname.getText().trim());
@@ -114,13 +119,19 @@ public class AdminSerImpl implements AdminService {
 
             if (fingerprintTemplateAdd != null) {
                 admin.setFingerprint(fingerprintTemplateAdd);
-                byte[] imageBytes = ImageExtractor.extractImageBytes(addPanel.jLabelimage, "jpg");
+                System.out.println("Fingerprint Bytes: " + fingerprintTemplateAdd);
+                byte[] imageBytes = ImageExtractor.extractImageBytes(addPanel.jLabelimage, "png", 120, 120);
                 if (imageBytes != null) {
                     admin.setFingerprintImage(imageBytes);
 //                    admin.setFingerprintImage(fingerprintImageAdd);
-                }
 
-                admin.setFingerprintImage(fingerprintImageAdd);
+                }
+                byte[] fingerBytes = ImageExtractor.extractImageBytes(addPanel.jLabelfinger, "png", 120, 120);
+                if (fingerBytes != null) {
+                    admin.setFingerprintImage(fingerBytes);
+                    System.out.println("Fingerprint Image Bytes: " + fingerBytes);
+
+                }
             } else {
                 System.out.println("No fingerprint template captured.");
             }
@@ -194,6 +205,10 @@ public class AdminSerImpl implements AdminService {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             AdminModel admin = new AdminModel();
+            if (dao.isUsernameTaken(admin.getUsername())) {
+                JOptionPane.showMessageDialog(null, "Username already exists. Please choose another.", "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             int dataRow = adminPanel.jTable1.getSelectedRow();
             admin.setStaff_id((String) adminPanel.jTable1.getValueAt(dataRow, 0));
             admin.setStFname(editPanel.adfname.getText());
@@ -211,7 +226,7 @@ public class AdminSerImpl implements AdminService {
             admin.setCollge(editPanel.pstn.getText().trim());
 
             if (editPanel.jLabelimage != null && editPanel.jLabelimage.getIcon() != null) {
-                byte[] imageBytes = ImageExtractor.extractImageBytes(editPanel.jLabelimage, "jpg");
+                byte[] imageBytes = ImageExtractor.extractImageBytes(editPanel.jLabelimage, "jpg", 120, 120);
                 if (imageBytes != null) {
                     admin.setImage(imageBytes);
                 }
@@ -288,7 +303,7 @@ public class AdminSerImpl implements AdminService {
 
     @Override
     public void scanFingerAdd() {
-        addPanel.scn.setEnabled(false); // Disable scan button
+        addPanel.scn.setEnabled(false);
 
         try {
             String userIdToEnroll = addPanel.admin_id.getText();
@@ -316,7 +331,7 @@ public class AdminSerImpl implements AdminService {
             ReaderCollection readers;
             try {
                 readers = UareUGlobal.GetReaderCollection();
-                readers.GetReaders(); // Load devices
+                readers.GetReaders();
 
                 if (readers.size() == 0) {
                     JOptionPane.showMessageDialog(null, "No fingerprint reader found.");
@@ -329,7 +344,7 @@ public class AdminSerImpl implements AdminService {
                     return;
                 }
 
-                Selection.reader = readers.get(0); // Select the first reader
+                Selection.reader = readers.get(0);
             } catch (UareUException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error initializing fingerprint reader: " + e.getMessage());
@@ -337,23 +352,20 @@ public class AdminSerImpl implements AdminService {
                 return;
             }
 
-            // Start enrollment thread
             EnrollmentThread enrollmentThread = new EnrollmentThread(addPanel.jLabelfinger, progressBar, userIdToEnroll);
             enrollmentThread.start();
 
-            // Now show the dialog after threads are ready
             SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
 
-            // Monitor the enrollment thread
             new Thread(() -> {
                 try {
-                    enrollmentThread.join(); // wait for enrollment to finish
+                    enrollmentThread.join();
                     FingerprintModel model = enrollmentThread.getEnrollUser();
                     if (model != null && model.getTemplate() != null) {
                         System.out.println("Fingerprint enrollment done!");
                         System.out.println("User ID: " + model.getUser_id());
                         System.out.println("FMD Length: " + model.getTemplate().length);
-                        fingerprintTemplateAdd = model.getTemplate(); // Save template
+                        fingerprintTemplateAdd = model.getTemplate();
                     } else {
                         System.out.println("Enrollment failed or template is null.");
                     }
@@ -362,6 +374,7 @@ public class AdminSerImpl implements AdminService {
                 }
 
                 SwingUtilities.invokeLater(() -> {
+                    System.out.println("Disposing progressDialog...");
                     progressDialog.dispose();
                     addPanel.scn.setEnabled(true);
                     addPanel.setEnabled(true);

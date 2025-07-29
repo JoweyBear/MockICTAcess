@@ -3,8 +3,10 @@ package Fingerprint;
 import com.digitalpersona.uareu.*;
 import com.digitalpersona.uareu.Engine.PreEnrollmentFmd;
 import com.digitalpersona.uareu.Reader.CaptureResult;
+import java.awt.Image;
 
 import javax.swing.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -12,17 +14,17 @@ import java.util.logging.Logger;
 
 public class EnrollmentThread extends Thread implements Engine.EnrollmentCallback {
 
-    private JLabel fingerprintLabel;
-    private JProgressBar progressBar;
-    private String userIdToEnroll;
+    private final JLabel fingerprintLabel;
+    private final JProgressBar progressBar;
+    private final String userIdToEnroll;
     private CaptureThread captureThread;
-    private int requiredFmdToEnroll = 2;
-    public Engine engine = UareUGlobal.GetEngine();
-    private IdentificationThread identificationThread = new IdentificationThread();
-    private ArrayList<Fmd> fmdList = new ArrayList<>();
-    List<FingerprintModel> enrolledFingerprints = new ArrayList<>();
-    boolean runThisThread = true;
-    FingerprintModel fpModel;
+    private final int requiredFmdToEnroll = 2;
+    public final Engine engine = UareUGlobal.GetEngine();
+    private final IdentificationThread identificationThread = new IdentificationThread();
+    private final ArrayList<Fmd> fmdList = new ArrayList<>();
+    private final List<FingerprintModel> enrolledFingerprints = new ArrayList<>();
+    private boolean runThisThread = true;
+    private FingerprintModel fpModel;
 
     public EnrollmentThread(JLabel fingerprintLabel, JProgressBar progressBar, String userIdToEnroll) {
         this.fingerprintLabel = fingerprintLabel;
@@ -41,13 +43,20 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
         return fpModel;
     }
 
+    public CaptureThread.CaptureEvent getLastCapture() {
+        return (captureThread != null) ? captureThread.getLastCapture() : null;
+    }
+
     public void startEnrollment() throws UareUException {
         Selection.closeAndOpenReader();
         int counter = 0;
+        int maxAttempts = requiredFmdToEnroll * 3; // e.g. 3 times the required scans
+        int attempts = 0;
+
         PromptSwing.prompt(PromptSwing.START_CAPTURE);
 
-        while (counter < requiredFmdToEnroll && runThisThread) {
-            updateProgress("Capturing fingerprint " + (counter + 1) + " of " + requiredFmdToEnroll, counter);
+        while (counter < requiredFmdToEnroll && runThisThread && attempts < maxAttempts) {
+            updateProgress("Capturing fingerprint " + (counter + 1) + " of " + requiredFmdToEnroll + " (4 times each scan)", counter);
             System.out.println("User ID to Enroll: " + userIdToEnroll);
             System.out.println("Attempt " + counter);
 
@@ -55,14 +64,15 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
             System.out.println("About to call engine.CreateEnrollmentFmd. Format: " + Fmd.Format.ANSI_378_2004 + ", Callback: " + this);
             try {
                 fmdToEnroll = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, this);
+                attempts++;
 
-                // FMD Data Compatibility Check
                 if (fmdToEnroll == null || fmdToEnroll.getData() == null || fmdToEnroll.getData().length < 100) {
                     System.out.println("FMD created by CreateEnrollmentFmd is invalid! Data length: "
                             + (fmdToEnroll == null ? "null" : fmdToEnroll.getData() == null ? "null" : fmdToEnroll.getData().length));
                     continue;
                 }
             } catch (UareUException ex) {
+                attempts++;
                 PromptSwing.prompt(PromptSwing.UNABLE_TO_ENROLL);
                 updateProgress("Unable to enroll. Restarting capture...", counter);
                 stopEnrollmentThread();
@@ -72,6 +82,14 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
             fmdList.add(fmdToEnroll);
             counter++;
             PromptSwing.prompt(PromptSwing.ANOTHER_CAPTURE);
+        }
+
+        if (attempts >= maxAttempts) {
+            updateProgress("Enrollment cancelled: too many failed attempts.", -1);
+            PromptSwing.prompt(PromptSwing.UNABLE_TO_ENROLL);
+            stopEnrollmentThread();
+            System.out.println("Enrollment Thread Stopped due to max attempts.");
+            return;
         }
 
         // FMD List Compatibility Check before model creation
@@ -86,12 +104,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
             model.setTemplate(fmd.getData());
             enrolledFingerprints.add(model);
         }
-        if (!enrolledFingerprints.isEmpty()) {
-            fpModel = enrolledFingerprints.get(0);
-        } else {
-            System.out.println("No enrolled fingerprints found after enrollment!");
-            fpModel = null;
-        }
+        fpModel = enrolledFingerprints.isEmpty() ? null : enrolledFingerprints.get(0);
 
         fmdList.clear();
         updateProgress("Enrollment complete.", requiredFmdToEnroll);
@@ -104,7 +117,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
     public PreEnrollmentFmd GetFmd(Fmd.Format format) {
         Engine.PreEnrollmentFmd prefmd = null;
 
-        while (null == prefmd) {
+        while (prefmd == null) {
             CaptureResult captureResult = getCaptureResultFromCaptureThread(fingerprintLabel);
             if (captureResult == null) {
                 System.out.println("CaptureResult is null!");
@@ -118,7 +131,20 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
             if (Reader.CaptureQuality.GOOD == captureResult.quality) {
                 System.out.println("Fingerprint detected.");
 
-                if (captureResult.image == null) {
+                // Display fingerprint image in label (UI thread safe)
+                if (captureResult.image != null) {
+                    Fid.Fiv[] views = captureResult.image.getViews();
+                    if (views != null && views.length > 0) {
+                        int targetWidth = 120;
+                        int targetHeight = 120;
+
+                        BufferedImage img = Display.getFingerprintBufferedImage(views[0]);
+                        if (img != null && fingerprintLabel != null) {
+                            Image scaledImg = img.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+                            SwingUtilities.invokeLater(() -> fingerprintLabel.setIcon(new ImageIcon(scaledImg)));
+                        }
+                    }
+                } else {
                     System.out.println("CaptureResult.image is null! Skipping CreateFmd.");
                     continue;
                 }
@@ -134,15 +160,6 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
                     }
                     System.out.println("fmdToEnroll: " + fmdToEnroll);
                     System.out.println("fmdToEnroll data length: " + fmdToEnroll.getData().length);
-
-                    // FMD List Compatibility Check before enrollment check
-                    for (int i = 0; i < fmdList.size(); i++) {
-                        Fmd fmdCheck = fmdList.get(i);
-                        if (fmdCheck == null || fmdCheck.getData() == null || fmdCheck.getData().length < 100) {
-                            System.out.println("fmdList[" + i + "] is invalid! Data length: "
-                                    + (fmdCheck == null ? "null" : fmdCheck.getData() == null ? "null" : fmdCheck.getData().length));
-                        }
-                    }
 
                     System.out.println("About to check if FMD is already enrolled...");
                     if (!identificationThread.fmdIsAlreadyEnrolled(fmdToEnroll, fmdList)) {
@@ -167,7 +184,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
     }
 
     private CaptureResult getCaptureResultFromCaptureThread(JLabel label) {
-        captureThread = new CaptureThread(label); // Second param is null because we're not using progress bar here
+        captureThread = new CaptureThread(label);
         captureThread.start();
         try {
             captureThread.join();

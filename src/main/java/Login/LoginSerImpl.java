@@ -5,9 +5,12 @@ import AdminDashboard.Dashboard;
 import Fingerprint.FingerprintModel;
 import Fingerprint.IdentificationThread;
 import Fingerprint.PromptSwing;
+import Fingerprint.Selection;
 import Utilities.GlobalVar;
 import com.digitalpersona.uareu.Engine;
 import com.digitalpersona.uareu.Fmd;
+import com.digitalpersona.uareu.ReaderCollection;
+import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -177,6 +180,31 @@ public class LoginSerImpl implements LoginService {
 
         PromptSwing.promptProgressBar = progressBar;
 
+        // ⚠️ Ensure reader is selected BEFORE thread starts
+        ReaderCollection readers;
+        try {
+            readers = UareUGlobal.GetReaderCollection();
+            readers.GetReaders();
+
+            if (readers.size() == 0) {
+                JOptionPane.showMessageDialog(null, "No fingerprint reader found.");
+                frameFP.lgn.setEnabled(true);
+                return;
+            }
+            if (readers.get(0) == null) {
+                JOptionPane.showMessageDialog(null, "Fingerprint reader object is null.");
+                frameFP.lgn.setEnabled(true);
+                return;
+            }
+
+            Selection.reader = readers.get(0);
+        } catch (UareUException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error initializing fingerprint reader: " + e.getMessage());
+                frameFP.lgn.setEnabled(true);
+            return;
+        }
+
         executor.submit(() -> {
             IdentificationThread idThread = new IdentificationThread(progressBar, messageLabel);
             idThread.start();
@@ -210,6 +238,8 @@ public class LoginSerImpl implements LoginService {
                 executor.shutdown();
             });
         });
+
+        dialog.setVisible(true);
 
     }
 

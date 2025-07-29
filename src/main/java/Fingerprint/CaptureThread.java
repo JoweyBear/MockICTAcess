@@ -7,7 +7,9 @@ import com.digitalpersona.uareu.UareUException;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 public class CaptureThread extends Thread {
 
@@ -86,14 +88,14 @@ public class CaptureThread extends Thread {
                     System.out.println("startCapture: Selection.reader.GetCapabilities() is null!");
                     break;
                 }
-                if (Selection.reader.GetCapabilities().resolutions == null ||
-                    Selection.reader.GetCapabilities().resolutions.length == 0) {
+                if (Selection.reader.GetCapabilities().resolutions == null
+                        || Selection.reader.GetCapabilities().resolutions.length == 0) {
                     System.out.println("startCapture: No resolutions available in reader capabilities!");
                     break;
                 }
 
-                System.out.println("About to call Selection.reader.Capture with format ANSI_381_2004, resolution: " +
-                        Selection.reader.GetCapabilities().resolutions[0]);
+                System.out.println("About to call Selection.reader.Capture with format ANSI_381_2004, resolution: "
+                        + Selection.reader.GetCapabilities().resolutions[0]);
 
                 Reader.CaptureResult captureResult = Selection.reader.Capture(
                         Fid.Format.ANSI_381_2004,
@@ -115,6 +117,12 @@ public class CaptureThread extends Thread {
                     Fid.Fiv[] views = captureResult.image.getViews();
                     if (views != null && views.length > 0) {
                         view = views[0];
+                        BufferedImage img = Display.getFingerprintBufferedImage(view);
+                        if (img != null && fingerprintLabel != null) {
+                            SwingUtilities.invokeLater(() -> {
+                                fingerprintLabel.setIcon(new ImageIcon(img));
+                            });
+                        }
                     } else {
                         System.out.println("startCapture: No views available in captureResult.image!");
                     }

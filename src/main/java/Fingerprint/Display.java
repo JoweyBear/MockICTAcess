@@ -1,14 +1,12 @@
 package Fingerprint;
 
-import com.digitalpersona.uareu.Fid;
 import com.digitalpersona.uareu.Fid.Fiv;
 
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 
 public class Display {
-    public static BufferedImage getFingerprintBufferedImage(Fid.Fiv view) {
-        if (view == null) return null;
+    public static BufferedImage getFingerprintBufferedImage(Fiv view) {
+        if (view == null || view.getImageData() == null) return null;
 
         byte[] imageData = view.getImageData();
         int width = view.getWidth();
@@ -19,4 +17,3 @@ public class Display {
         return image;
     }
 }
-

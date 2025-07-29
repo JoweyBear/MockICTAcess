@@ -39,13 +39,29 @@ public class ImageExtractor {
             ImageIO.write(bufferedImage, format, baos);
             return baos.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace(); 
+            e.printStackTrace();
             return null;
         }
     }
 
-    public static byte[] extractImageBytes(JLabel label, String format) {
-        BufferedImage bufferedImage = extractBufferedImage(label);
-        return toByteArray(bufferedImage, format);
+//    public static byte[] extractImageBytes(JLabel label, String format) {
+//        BufferedImage bufferedImage = extractBufferedImage(label);
+//        return toByteArray(bufferedImage, format);
+//    }
+    public static byte[] extractImageBytes(JLabel label, String format, int targetWidth, int targetHeight) {
+        BufferedImage original = extractBufferedImage(label);
+        if (original == null) {
+            return null;
+        }
+
+        Image scaledImage = original.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+
+        BufferedImage resized = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.drawImage(scaledImage, 0, 0, null);
+        g2d.dispose();
+
+        return toByteArray(resized, format);
     }
+
 }

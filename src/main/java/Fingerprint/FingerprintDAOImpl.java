@@ -8,7 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,8 +45,8 @@ public class FingerprintDAOImpl implements FingerprintDAO {
                 user.setEmail(rs.getString("email"));
                 user.setSex(rs.getString("sex"));
                 java.sql.Date sqlBirthDate = rs.getDate("birthdate");
-                Date birthDate = new Date(sqlBirthDate.getTime()); 
-                user.setBirthdate((java.sql.Date) birthDate);
+//                Date birthDate = new Date(sqlBirthDate.getTime()); 
+                user.setBirthdate(sqlBirthDate);
                 user.setImage(rs.getBytes("image"));
                 user.setCollege(rs.getString("college"));
             }
@@ -70,7 +70,7 @@ public class FingerprintDAOImpl implements FingerprintDAO {
             FingerprintModel fp = new FingerprintModel();
             fp.setUser_id(rs.getString("user_id"));
             fp.setTemplate(rs.getBytes("fingerprint_template"));
-            fp.setTemplate_image(rs.getBytes("fingerprint_imaage"));
+            fp.setTemplate_image(rs.getBytes("fingerprint_image"));
             fingerprints.add(fp);
         }
 
