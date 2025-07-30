@@ -166,7 +166,7 @@ public class LoginSerImpl implements LoginService {
 
         JDialog dialog = new JDialog(frameFP, "Authenticating", true);
         dialog.setLayout(new BorderLayout());
-        dialog.setSize(350, 150);
+        dialog.setSize(350, 350);
         dialog.setLocationRelativeTo(frameFP);
 
         JLabel messageLabel = new JLabel("Initializing...", SwingConstants.CENTER);
@@ -180,7 +180,6 @@ public class LoginSerImpl implements LoginService {
 
         PromptSwing.promptProgressBar = progressBar;
 
-        // ⚠️ Ensure reader is selected BEFORE thread starts
         ReaderCollection readers;
         try {
             readers = UareUGlobal.GetReaderCollection();
@@ -201,7 +200,7 @@ public class LoginSerImpl implements LoginService {
         } catch (UareUException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error initializing fingerprint reader: " + e.getMessage());
-                frameFP.lgn.setEnabled(true);
+            frameFP.lgn.setEnabled(true);
             return;
         }
 
@@ -218,25 +217,35 @@ public class LoginSerImpl implements LoginService {
             FingerprintModel matchedAdmin = idThread.getIdentifiedUser();
 
             SwingUtilities.invokeLater(() -> {
-                dialog.dispose();
 
                 if (matchedAdmin != null) {
-                    String name = matchedAdmin.getFname() + " " + matchedAdmin.getLname();
-                    JOptionPane.showMessageDialog(null, "Welcome " + name + "!", "Authenticated", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println("Role: " + matchedAdmin.getRole());
 
-                    AdminModel admin = dao.AdminInfo(matchedAdmin);
-                    GlobalVar.loggedInAdmin = admin;
+                    if (matchedAdmin.getRole().equals("admin")) {
+                        AdminModel admin = dao.AdminInfo(matchedAdmin);
+                        GlobalVar.loggedInAdmin = admin;
+                        if (admin != null) {
+                            progressBar.setString("Loading admin dashboard...");
+                            messageLabel.setText("Access granted. Redirecting...");
 
-                    if (admin != null) {
-                        new Dashboard().setVisible(true);
-                        frameFP.setVisible(false);
+                            String name = matchedAdmin.getFname() + " " + matchedAdmin.getLname();
+                            JOptionPane.showMessageDialog(null, "Welcome " + name + "!", "Authenticated", JOptionPane.INFORMATION_MESSAGE);
+                            new Dashboard().setVisible(true);
+                            frameFP.setVisible(false);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Access denied. You are not an admin.");
                     }
                 } else {
+                    progressBar.setString("Authentication failed.");
+                    messageLabel.setText("Unknown fingerprint.");
                     JOptionPane.showMessageDialog(null, "Authentication failed.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
+                dialog.dispose();
                 executor.shutdown();
             });
+
         });
 
         dialog.setVisible(true);

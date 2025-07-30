@@ -56,6 +56,7 @@ public class IdentificationThread extends Thread {
                 continue;
             }
             Fmd[] databaseFmds = getFmdsFromDatabase();
+
             if (!isValidFmdArray(databaseFmds, "startIdentification: databaseFmds")) {
                 System.out.println("startIdentification: databaseFmds is invalid or empty, skipping iteration.");
                 continue;
@@ -116,8 +117,8 @@ public class IdentificationThread extends Thread {
         for (int i = 0; i < fingerprintList.size(); i++) {
             byte[] fmdBytes = fingerprintList.get(i).getTemplate();
             if (fmdBytes == null || fmdBytes.length < 100) {
-                System.out.println("getFmdsFromDatabase: fingerprintList.get(" + i + ").getTemplate() is null/invalid! Length: " +
-                        (fmdBytes == null ? "null" : fmdBytes.length));
+                System.out.println("getFmdsFromDatabase: fingerprintList.get(" + i + ").getTemplate() is null/invalid! Length: "
+                        + (fmdBytes == null ? "null" : fmdBytes.length));
                 continue;
             }
             Fmd importedFmd = null;
@@ -178,6 +179,8 @@ public class IdentificationThread extends Thread {
             if (!headlessMode) {
                 userIdentificationSuccess(matchingUserId);
             }
+
+//            runThisThread = false;
             return true;
         } else {
             if (!headlessMode) {
@@ -236,10 +239,26 @@ public class IdentificationThread extends Thread {
         FingerprintModel user = dao.getUserByUserId(userId);
         this.identifiedUser = user;
 
+        runThisThread = false;
+
         SwingUtilities.invokeLater(() -> {
+            fingerprintLabel.setIcon(null);
             System.out.println("Identification Success: " + (user != null ? user.getFname() : "Unknown User"));
             if (progressBar != null) {
-                progressBar.setString("Success");
+                new Thread(() -> {
+                    try {
+                        SwingUtilities.invokeLater(() -> progressBar.setString("Fingerprint matched!"));
+                        Thread.sleep(1000);
+
+                        SwingUtilities.invokeLater(() -> progressBar.setString("Success"));
+                        Thread.sleep(1000);
+
+                        SwingUtilities.invokeLater(() -> progressBar.setString("Access granted. Preparing dashboard..."));
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }).start();
+
             }
         });
 
@@ -263,11 +282,17 @@ public class IdentificationThread extends Thread {
     }
 
     private void userIdentificationFailed() {
+        this.identifiedUser = null;
+        runThisThread = false;
+
         SwingUtilities.invokeLater(() -> {
             if (progressBar != null) {
-                progressBar.setString("Failed");
+                progressBar.setString("Unknown Fingerprint");
             }
+            JOptionPane.showMessageDialog(null, "Fingerprint not recognized.", "Authentication Failed", JOptionPane.WARNING_MESSAGE);
         });
+
+        System.out.println("Identification failed: Unknown fingerprint.");
     }
 
     public boolean fmdIsAlreadyEnrolled(Fmd fmdToIdentify) throws UareUException {
@@ -312,7 +337,6 @@ public class IdentificationThread extends Thread {
     }
 
     // ----- Utility validation methods -----
-
     private boolean isValidFmd(Fmd fmd, String context) {
         if (fmd == null) {
             System.out.println(context + ": FMD is null!");
