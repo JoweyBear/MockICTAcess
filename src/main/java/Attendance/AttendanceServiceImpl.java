@@ -196,6 +196,13 @@ public class AttendanceServiceImpl implements AttendanceService {
                 || addclass.sctn.getSelectedItem().equals("Section")) {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
+
+//            uncheck autoincrement in db
+//            String subjectCode = addclass.crsID.getText().toUpperCase();
+//            String section = addclass.sctn.getSelectedItem().toString().toUpperCase();
+//            String yrLvl =  addclass.yr.getSelectedItem().toString().toUpperCase();
+//            String track = addclass.trck;
+//            ask for tracks, further clarification
             AttModel att = new AttModel();
             att.setClass_type(addclass.clssTyp.getText().trim());
             att.setDay(addclass.day.getSelectedItem().toString());
@@ -496,4 +503,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
     }
 
+    public String generateScheduleId(String subjectCode, String section, String yearLevel, String track) {
+        return subjectCode.toUpperCase() + section.toUpperCase() + yearLevel + track.toUpperCase();
+    }
 }
