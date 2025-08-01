@@ -46,7 +46,7 @@ public class IdentificationThread extends Thread {
     }
 
     public void startIdentification() throws InterruptedException, UareUException {
-        Selection.closeAndOpenReader();
+        Selection.resetReader();
         System.out.println("Identification Thread Started");
 
         while (runThisThread) {

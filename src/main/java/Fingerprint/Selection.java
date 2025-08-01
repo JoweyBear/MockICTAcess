@@ -9,7 +9,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class Selection extends Thread{
+public class Selection extends Thread {
+
     public static Reader reader;
 
     public static ReaderCollection getReaderCollection() throws UareUException {
@@ -86,6 +87,29 @@ public class Selection extends Thread{
         }
     }
 
+    public static void resetReader() {
+        try {
+            ReaderCollection readers = getReaderCollection();
+            if (readers != null && !readers.isEmpty()) {
+                if (reader != null) {
+                    try {
+                        reader.Close(); 
+                    } catch (UareUException e) {
+                        System.out.println("resetReader: Failed to close old reader.");
+                    }
+                }
+                reader = readers.get(0); 
+                reader.Open(Reader.Priority.COOPERATIVE);
+                System.out.println("resetReader: Reader has been reset and reopened.");
+            } else {
+                System.out.println("resetReader: No readers found.");
+            }
+        } catch (UareUException e) {
+            System.out.println("resetReader: Exception occurred.");
+            e.printStackTrace();
+        }
+    }
+
     public static void closeAndOpenReader() throws UareUException {
         if (readerIsConnected_noLogging()) {
             if (reader == null) {
@@ -130,12 +154,8 @@ public class Selection extends Thread{
                     System.out.println("No fingerprint reader found. Waiting for a reader to be connected...");
                 } else {
                     System.out.println("Connected fingerprint reader: " + reader.GetDescription().name);
-                    try {
-                        closeAndOpenReader();
-                    } catch (UareUException e) {
-                        System.out.println("waitAndGetReader: Exception during closeAndOpenReader!");
-                        throw new RuntimeException(e);
-                    }
+                    //                        closeAndOpenReader();
+                    resetReader();
                 }
 
                 try {
@@ -148,7 +168,8 @@ public class Selection extends Thread{
         // Do not shutdown executor here, keep thread running for detection
     }
 
-    public void Run() {
+    @Override
+    public void run() {
         waitAndGetReader();
     }
 }

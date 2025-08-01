@@ -40,7 +40,7 @@ public class VerificationThread extends Thread {
     }
 
     public void startVerification() throws InterruptedException, UareUException {
-        Selection.closeAndOpenReader();
+        Selection.resetReader();
         ThreadFlags.runVerificationThread = true;
         updateProgress(20, "Initializing...");
 

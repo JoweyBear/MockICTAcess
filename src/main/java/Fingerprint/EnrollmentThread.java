@@ -48,7 +48,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
     }
 
     public void startEnrollment() throws UareUException {
-        Selection.closeAndOpenReader();
+        Selection.resetReader();
         int counter = 0;
         int maxAttempts = requiredFmdToEnroll * 3; // e.g. 3 times the required scans
         int attempts = 0;
@@ -75,7 +75,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
                 attempts++;
                 PromptSwing.prompt(PromptSwing.UNABLE_TO_ENROLL);
                 updateProgress("Unable to enroll. Restarting capture...", counter);
-                stopEnrollmentThread();
+//                stopEnrollmentThread();
                 continue;
             }
 
@@ -125,7 +125,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
             }
 
             if (Reader.CaptureQuality.CANCELED == captureResult.quality) {
-                break;
+                continue;
             }
 
             if (Reader.CaptureQuality.GOOD == captureResult.quality) {
@@ -208,6 +208,11 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
         runThisThread = false;
         if (captureThread != null) {
             captureThread.stopThread();
+            try {
+                captureThread.join();  
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
         updateProgress("Enrollment stopped.", -1);
     }
