@@ -28,20 +28,26 @@ public class StudentDAOImpl implements StudentDAO {
     }
 
     @Override
-    public DefaultTableModel fetchAll() {
+    public DefaultTableModel fetchAll(String collegeOfLoggedInAdmin) {
         try {
-            String sql = "SELECT u.user_id AS 'ID', u.college AS 'College' , a.section AS 'Section', a.year AS 'Year', "
+            List<String> collegesWithTracks = Arrays.asList("CICT");
+
+            boolean usesTrack = collegesWithTracks.contains(collegeOfLoggedInAdmin);
+
+            String sql = "SELECT u.user_id AS 'ID', u.college AS 'College', a.section AS 'Section', a.year AS 'Year', "
                     + "u.fname AS 'First Name', u.mname AS 'Middle Name', u.lname AS 'Last Name', "
+                    + (usesTrack ? "a.track AS 'Track'," : "'N/A' AS 'Track',") // Conditional column
                     + "u.sex AS 'Sex', u.birthdate AS 'Birthdate', u.contact_num AS 'Contact Number', "
-                    + "u.email AS 'Email', u.barangay AS 'Barangay', u.municipality AS 'Municipality',"
+                    + "u.email AS 'Email', u.barangay AS 'Barangay', u.municipality AS 'Municipality', "
                     + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS 'Status' "
                     + "FROM user u "
                     + "JOIN student_info a ON u.user_id = a.user_id "
-                    + "WHERE u.role = 'student'";
+                    + "WHERE u.role = 'student' AND u.college = ?";
 
-            Statement stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            ResultSetMetaData md = (ResultSetMetaData) rs.getMetaData();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, collegeOfLoggedInAdmin);
+            rs = stmt.executeQuery();
+            ResultSetMetaData md = rs.getMetaData();
             int columnCount = md.getColumnCount();
 
             Vector<String> columnNames = new Vector<>();
@@ -77,7 +83,11 @@ public class StudentDAOImpl implements StudentDAO {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Vector<String> columns = new Vector<>(Arrays.asList("ID", "College", "Year", "Section", "First Name", "Middle Name", "Last Name", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality"));
+        // fallback model
+        Vector<String> columns = new Vector<>(Arrays.asList(
+                "ID", "College", "Section", "Year", "First Name", "Middle Name", "Last Name",
+                "Track", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality", "Status"
+        ));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 

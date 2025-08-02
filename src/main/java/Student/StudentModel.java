@@ -18,6 +18,7 @@ public class StudentModel {
     private String brgy;
     private String municipal;
     private String college;
+    private String track;
     private String program;
     private String year;
     private String section;
@@ -183,6 +184,14 @@ public class StudentModel {
 
     public void setFngrprntImageData(byte[] fngrprntImageData) {
         this.fngrprntImageData = fngrprntImageData;
+    }
+
+    public String getTrack() {
+        return track;
+    }
+
+    public void setTrack(String track) {
+        this.track = track;
     }
 
 }

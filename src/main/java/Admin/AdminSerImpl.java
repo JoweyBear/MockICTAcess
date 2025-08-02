@@ -121,12 +121,6 @@ public class AdminSerImpl implements AdminService {
             if (fingerprintTemplateAdd != null) {
                 admin.setFingerprint(fingerprintTemplateAdd);
                 System.out.println("Fingerprint Bytes: " + fingerprintTemplateAdd);
-                byte[] imageBytes = ImageExtractor.extractImageBytes(addPanel.jLabelimage, "png", 120, 120);
-                if (imageBytes != null) {
-                    admin.setFingerprintImage(imageBytes);
-//                    admin.setFingerprintImage(fingerprintImageAdd);
-
-                }
                 byte[] fingerBytes = ImageExtractor.extractImageBytes(addPanel.jLabelfinger, "png", 120, 120);
                 if (fingerBytes != null) {
                     admin.setFingerprintImage(fingerBytes);
@@ -135,6 +129,13 @@ public class AdminSerImpl implements AdminService {
                 }
             } else {
                 System.out.println("No fingerprint template captured.");
+
+            }
+            byte[] imageBytes = ImageExtractor.extractImageBytes(addPanel.jLabelimage, "png", 120, 120);
+            if (imageBytes != null) {
+                admin.setFingerprintImage(imageBytes);
+//                    admin.setFingerprintImage(fingerprintImageAdd);
+
             }
             boolean saved = dao.save(admin);
             if (saved) {
@@ -235,7 +236,8 @@ public class AdminSerImpl implements AdminService {
             }
             if (fingerprintTemplateEdit != null) {
                 admin.setFingerprint(fingerprintTemplateEdit);
-                admin.setFingerprintImage(fingerprintImageEdit);
+                byte[] fingerBytes = ImageExtractor.extractImageBytes(editPanel.jLabelfinger, "jpg", 120, 120);
+                admin.setFingerprintImage(fingerBytes);
             } else {
                 System.out.println("No fingerprint template captured.");
             }
@@ -302,7 +304,7 @@ public class AdminSerImpl implements AdminService {
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
 
-        JDialog progressDialog = new JDialog((JFrame)  null, "Scan Fingerprint", false);
+        JDialog progressDialog = new JDialog((JFrame) null, "Scan Fingerprint", false);
         progressDialog.setSize(300, 100);
         progressDialog.setLocationRelativeTo(null);
         progressDialog.setLayout(new BorderLayout());

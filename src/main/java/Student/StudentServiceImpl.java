@@ -5,21 +5,20 @@ import Fingerprint.FingerprintModel;
 import Fingerprint.PromptSwing;
 import Fingerprint.Selection;
 import Student.Views.*;
+import Utilities.GlobalVar;
+import Utilities.ImageExtractor;
 import Utilities.ImageUploader;
 import Utilities.SearchDefaultModel;
-import com.digitalpersona.uareu.Fmd;
 import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
-import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,7 +26,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -35,6 +33,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import utilities.FingerprintCapture;
 
@@ -53,6 +52,7 @@ public class StudentServiceImpl implements StudentService {
     private byte[] fingerprintTemplateEdit;
     private byte[] fingerprintImageEdit;
     FingerprintCapture scanner;
+    String collegeOfLoggedInAdmin = GlobalVar.loggedInAdmin.getCollge();
 
     public StudentServiceImpl(AddStudPanel sAdd, EditStudPanel sEdit, StudentPanel sPanel, ViewStudentDialog viewDialog) {
         this.sAdd = sAdd;
@@ -66,8 +66,28 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void setTableData() {
-        DefaultTableModel model = dao.fetchAll();
+        DefaultTableModel model = dao.fetchAll(collegeOfLoggedInAdmin);
         sPanel.jTable1.setModel(model);
+
+        sPanel.jTable1.getColumn("Track").setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                    boolean isSelected, boolean hasFocus, int row, int column) {
+
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if ("N/A".equalsIgnoreCase(String.valueOf(value))) {
+                    c.setForeground(Color.GRAY);
+                    setToolTipText("This college does not require a track");
+                } else {
+                    c.setForeground(Color.BLACK);
+                    setToolTipText(null);
+                }
+
+                return c;
+            }
+        });
+
         new SearchDefaultModel(sPanel, sPanel.jTable1, sPanel.srchtxtfld, model);
     }
 
@@ -100,11 +120,28 @@ public class StudentServiceImpl implements StudentService {
             student.setImage(uploadedImageForAdd);
             student.setSection(sAdd.sctn.getSelectedItem().toString());
             student.setYear(sAdd.yr.getSelectedItem().toString());
-            student.setCollege(sAdd.cllg.getSelectedItem().toString());
+
+//            student.setCollege(sAdd.cllg.getSelectedItem().toString());
+            String studentCollege = sAdd.cllg.getSelectedItem().toString();
+            String track = sAdd.trck.getText().trim();
+
+            if (studentCollege.equals("CICT")) {
+                student.setCollege(studentCollege);
+                student.setTrack(track);
+            } else {
+                student.setCollege(studentCollege);
+                student.setTrack("N/A");
+            }
+
+            byte[] imageBytes = ImageExtractor.extractImageBytes(sAdd.jLabelimage, "jpg", 120, 120);
+            if (imageBytes != null) {
+                student.setImage(imageBytes);
+            }
 
             if (fingerprintTemplateAdd != null) {
                 student.setFingerprint(fingerprintTemplateAdd);
-                student.setFingerprintImage(fingerprintImageAdd);
+                byte[] fingerBytes = ImageExtractor.extractImageBytes(sAdd.jLabelfinger, "jpg", 120, 120);
+                student.setFingerprintImage(fingerBytes);
             } else {
                 JOptionPane.showMessageDialog(null, "No fingerprint captured.");
             }
@@ -265,6 +302,7 @@ public class StudentServiceImpl implements StudentService {
         sAdd.jLabelfinger.setText("");
         sAdd.brgy.setText("");
         sAdd.municipal.setText("");
+        sAdd.trck.setText("");
     }
 
     @Override
@@ -283,6 +321,7 @@ public class StudentServiceImpl implements StudentService {
         sEdit.jLabelfinger.setText("");
         sEdit.brgy.setText("");
         sEdit.municipal.setText("");
+        sEdit.trck.setText("");
     }
 
     @Override
@@ -304,44 +343,50 @@ public class StudentServiceImpl implements StudentService {
             StudentModel student = new StudentModel();
             int dataRow = sPanel.jTable1.getSelectedRow();
             student.setStud_id((String) sPanel.jTable1.getValueAt(dataRow, 0));
-            student.setFname(sAdd.adfname.getText().trim());
-            student.setMname(sAdd.admname.getText().trim());
-            student.setLname(sAdd.adlname.getText().trim());
+            student.setFname(sEdit.adfname.getText().trim());
+            student.setMname(sEdit.admname.getText().trim());
+            student.setLname(sEdit.adlname.getText().trim());
 //            admin.setPosition(addPanel.pstn.getText()); 
-            student.setCntctNmber(sAdd.nmbr.getText().trim());
-            student.setEmail(sAdd.ml.getText().trim());
-            student.setSx(sAdd.sx.getSelectedItem().toString());
-            student.setBday(sAdd.bdy.getDate());
-            student.setImage(uploadedImageForAdd);
-            student.setSection(sAdd.sctn.getSelectedItem().toString());
-            student.setYear(sAdd.yr.getSelectedItem().toString());
-            student.setCollege(sAdd.cllg.getSelectedItem().toString());
+            student.setCntctNmber(sEdit.nmbr.getText().trim());
+            student.setEmail(sEdit.ml.getText().trim());
+            student.setSx(sEdit.sx.getSelectedItem().toString());
+            student.setBday(sEdit.bdy.getDate());
+            student.setImage(uploadedImageForEdit);
+            student.setSection(sEdit.sctn.getSelectedItem().toString());
+            student.setYear(sEdit.yr.getSelectedItem().toString());
+//            student.setCollege(sAdd.cllg.getSelectedItem().toString());
+            String studentCollege = sEdit.cllg.getSelectedItem().toString();
+            String track = sEdit.trck.getText().trim();
 
-//            DPFPTemplate template = fingerprintCapture.getTemplate();
-//            if (template != null) {
-//                student.setFingerprint(template.serialize());
-//
-//                // Convert fingerprint sample to image byte[]
-//                Image img = DPFPGlobal.getSampleConversionFactory().createImage(fingerprintCapture.getLastSample());  
-//                BufferedImage bufferedImg = new BufferedImage(
-//                        img.getWidth(null),
-//                        img.getHeight(null),
-//                        BufferedImage.TYPE_INT_RGB
-//                );
-//
-//                Graphics2D g2 = bufferedImg.createGraphics();
-//                g2.drawImage(img, 0, 0, null);
-//                g2.dispose();
-//
-//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                ImageIO.write(bufferedImg, "png", baos);
-//                student.setFingerprintImage(baos.toByteArray());
-//            } else {
-//                System.out.println("No fingerprint template captured.");
-//            }
-            dao.update(student);
-            setTableData();
-            clearEdit();
+            if (studentCollege.equals("CICT")) {
+                student.setCollege(studentCollege);
+                student.setTrack(track);
+            } else {
+                student.setCollege(studentCollege);
+                student.setTrack("N/A");
+            }
+
+            byte[] imageBytes = ImageExtractor.extractImageBytes(sEdit.jLabelimage, "jpg", 120, 120);
+            if (imageBytes != null) {
+                student.setImage(imageBytes);
+            }
+
+            if (fingerprintTemplateAdd != null) {
+                student.setFingerprint(fingerprintTemplateAdd);
+                byte[] fingerBytes = ImageExtractor.extractImageBytes(sEdit.jLabelfinger, "jpg", 120, 120);
+                student.setFingerprintImage(fingerBytes);
+            } else {
+                JOptionPane.showMessageDialog(null, "No fingerprint captured.");
+            }
+            boolean updated = dao.update(student);
+            if (updated) {
+                setTableData();
+                clearEdit();
+                JOptionPane.showMessageDialog(null, "Student added successfully.");
+            } else {
+                JOptionPane.showMessageDialog(null, "An error occured. Student can't be added.");
+            }
+
         }
     }
 

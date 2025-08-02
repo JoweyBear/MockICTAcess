@@ -22,7 +22,7 @@ public class EditStudPanel extends javax.swing.JPanel {
         municipal.putClientProperty("JTextField.placeholderText", "Municipality");
 //        sx.putClientProperty("JTextField.placeholderText", "SSHHH");
 //        bdy.putClientProperty("JDateChooser.placeholderText", "Birthday");
-
+        trck.putClientProperty("JTextField.placeholderText", "Track(for courses with track only)");
 
         jLabelimage.setText("");
         jLabelfinger.setText("");
@@ -61,6 +61,7 @@ public class EditStudPanel extends javax.swing.JPanel {
         brgy = new javax.swing.JTextField();
         municipal = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        trck = new javax.swing.JTextField();
 
         jPanel1.setBackground(new java.awt.Color(119, 141, 169));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(13, 27, 42), 2, true), "Edit Student", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("SansSerif", 1, 36))); // NOI18N
@@ -107,6 +108,11 @@ public class EditStudPanel extends javax.swing.JPanel {
         ml.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         cllg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "College", "CICT", "CIT", "CM", "CHM", "CTM", "COED" }));
+        cllg.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cllgActionPerformed(evt);
+            }
+        });
 
         yr.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Year", "I", "II", "III", "IV" }));
 
@@ -118,6 +124,8 @@ public class EditStudPanel extends javax.swing.JPanel {
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel3.setText("Birthday:");
+
+        trck.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -154,7 +162,8 @@ public class EditStudPanel extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(bdy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(bdy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(trck, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addGap(36, 36, 36))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(105, 105, 105)
@@ -166,7 +175,7 @@ public class EditStudPanel extends javax.swing.JPanel {
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(student_id, javax.swing.GroupLayout.PREFERRED_SIZE, 20, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -174,8 +183,10 @@ public class EditStudPanel extends javax.swing.JPanel {
                     .addComponent(cllg)
                     .addComponent(yr)
                     .addComponent(sctn))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(trck)
+                .addGap(16, 16, 16)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
                 .addComponent(adfname, javax.swing.GroupLayout.PREFERRED_SIZE, 20, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -240,14 +251,27 @@ public class EditStudPanel extends javax.swing.JPanel {
         jLabelfinger.setText("");
         brgy.setText("");
         municipal.setText("");
+        trck.setText("");
     }//GEN-LAST:event_clrActionPerformed
+
+    private void cllgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cllgActionPerformed
+        String selectedCollege = cllg.getSelectedItem().toString();
+
+        if ("CICT".equals(selectedCollege)) {
+            trck.setEnabled(true);
+            trck.requestFocus();
+        } else {
+            trck.setEnabled(false);
+            trck.setText("");
+        }
+    }//GEN-LAST:event_cllgActionPerformed
     public void buttonListener(ActionListener a) {
         pdt.addActionListener(a);
         scn.addActionListener(a);
         chssmg.addActionListener(a);
     }
-    
-    public void keyListener(KeyListener evt){
+
+    public void keyListener(KeyListener evt) {
         nmbr.addKeyListener(evt);
     }
 
@@ -275,6 +299,7 @@ public class EditStudPanel extends javax.swing.JPanel {
     public javax.swing.JComboBox<String> sctn;
     public javax.swing.JTextField student_id;
     public javax.swing.JComboBox<String> sx;
+    public javax.swing.JTextField trck;
     public javax.swing.JComboBox<String> yr;
     // End of variables declaration//GEN-END:variables
 }
