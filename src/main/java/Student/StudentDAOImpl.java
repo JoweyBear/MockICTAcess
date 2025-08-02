@@ -34,9 +34,10 @@ public class StudentDAOImpl implements StudentDAO {
 
             boolean usesTrack = collegesWithTracks.contains(collegeOfLoggedInAdmin);
 
-            String sql = "SELECT u.user_id AS 'ID', u.college AS 'College', a.section AS 'Section', a.year AS 'Year', "
+            String sql = "SELECT u.user_id AS 'ID', u.college AS 'College',"
+                    + (usesTrack ? "a.track AS 'Track'," : "'N/A' AS 'Track',")
+                    + " a.section AS 'Section', a.year AS 'Year', "
                     + "u.fname AS 'First Name', u.mname AS 'Middle Name', u.lname AS 'Last Name', "
-                    + (usesTrack ? "a.track AS 'Track'," : "'N/A' AS 'Track',") // Conditional column
                     + "u.sex AS 'Sex', u.birthdate AS 'Birthdate', u.contact_num AS 'Contact Number', "
                     + "u.email AS 'Email', u.barangay AS 'Barangay', u.municipality AS 'Municipality', "
                     + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS 'Status' "
@@ -83,10 +84,9 @@ public class StudentDAOImpl implements StudentDAO {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        // fallback model
         Vector<String> columns = new Vector<>(Arrays.asList(
-                "ID", "College", "Section", "Year", "First Name", "Middle Name", "Last Name",
-                "Track", "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality", "Status"
+                "ID", "College", "Track", "Section", "Year", "First Name", "Middle Name", "Last Name",
+                "Sex", "Birthdate", "Contact Number", "Email", "Barangay", "Municipality", "Status"
         ));
         return new DefaultTableModel(new Vector<>(), columns);
     }
@@ -119,11 +119,12 @@ public class StudentDAOImpl implements StudentDAO {
             userPs.setString(13, student.getCollege());
             userPs.executeUpdate();
 
-            String infoSql = "INSERT INTO student_info(user_id, year, section) VALUES (?, ?, ?)";
+            String infoSql = "INSERT INTO student_info(user_id, year, section, track) VALUES (?, ?, ?, ?)";
             PreparedStatement infoPs = conn.prepareStatement(infoSql);
             infoPs.setString(1, student.getStud_id());
             infoPs.setString(2, student.getYear());
             infoPs.setString(3, student.getSection());
+            infoPs.setString(4, student.getTrack());
             infoPs.executeUpdate();
 
             String updateFingerprintSql = "INSERT into identification (user_id, fingerprint_template, fingerprint_image) VALUES (?, ?, ?)";
@@ -163,11 +164,12 @@ public class StudentDAOImpl implements StudentDAO {
             userPs.setString(12, student.getStud_id());
             userPs.executeUpdate();
 
-            String infoSql = "UPDATE student_info SET year = ?, section = ? WHERE user_id = ?";
+            String infoSql = "UPDATE student_info SET year = ?, section = ?, track = ? WHERE user_id = ?";
             PreparedStatement infoPs = conn.prepareStatement(infoSql);
             infoPs.setString(1, student.getYear());
             infoPs.setString(2, student.getSection());
             infoPs.setString(3, student.getStud_id());
+            infoPs.setString(4, student.getTrack());
             infoPs.executeUpdate();
 
             if (student.getFingerprint() != null && student.getFingerprintImage() != null) {

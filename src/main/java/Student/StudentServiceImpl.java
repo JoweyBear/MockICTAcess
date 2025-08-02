@@ -221,17 +221,18 @@ public class StudentServiceImpl implements StudentService {
 
                         viewDialog.studentID.setText(student_id);
                         viewDialog.college.setText(getCellValue(dataRow, 1));
-                        viewDialog.year.setText(getCellValue(dataRow, 2));
-                        viewDialog.section.setText(getCellValue(dataRow, 3));
-                        viewDialog.fName.setText(getCellValue(dataRow, 4));
-                        viewDialog.mName.setText(getCellValue(dataRow, 5));
-                        viewDialog.lName.setText(getCellValue(dataRow, 6));
-                        viewDialog.sex.setText(getCellValue(dataRow, 7));
-                        viewDialog.bDay.setText(getCellValue(dataRow, 8));
-                        viewDialog.cntctNumber.setText(getCellValue(dataRow, 9));
-                        viewDialog.email.setText(getCellValue(dataRow, 10));
-                        viewDialog.brgy.setText(getCellValue(dataRow, 11));
-                        viewDialog.municipal.setText(getCellValue(dataRow, 12));
+                        viewDialog.track.setText(getCellValue(dataRow, 2));
+                        viewDialog.year.setText(getCellValue(dataRow, 3));
+                        viewDialog.section.setText(getCellValue(dataRow, 4));
+                        viewDialog.fName.setText(getCellValue(dataRow, 5));
+                        viewDialog.mName.setText(getCellValue(dataRow, 6));
+                        viewDialog.lName.setText(getCellValue(dataRow, 7));
+                        viewDialog.sex.setText(getCellValue(dataRow, 8));
+                        viewDialog.bDay.setText(getCellValue(dataRow, 9));
+                        viewDialog.cntctNumber.setText(getCellValue(dataRow, 10));
+                        viewDialog.email.setText(getCellValue(dataRow, 11));
+                        viewDialog.brgy.setText(getCellValue(dataRow, 12));
+                        viewDialog.municipal.setText(getCellValue(dataRow, 13));
 
                         if (student.getImage() != null) {
                             ImageIcon icon = new ImageIcon(student.getImage());
