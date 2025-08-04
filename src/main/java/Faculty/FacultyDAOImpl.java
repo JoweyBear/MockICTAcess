@@ -2,6 +2,7 @@ package Faculty;
 
 import Connection.Ticket;
 import Utilities.Encryption;
+import Utilities.GlobalVar;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,6 +23,7 @@ public class FacultyDAOImpl implements FacultyDAO {
     Connection conn;
     ResultSet rs;
     Encryption en = new Encryption();
+    String college =  GlobalVar.loggedInAdmin.getCollge();
 
     public FacultyDAOImpl() {
         conn = Ticket.getConn();
@@ -38,11 +40,12 @@ public class FacultyDAOImpl implements FacultyDAO {
                     + "CASE WHEN u.is_active = 1 THEN 'Active' ELSE 'Inactive' END AS 'Status' "
                     + "FROM user u "
                     + "JOIN faculty_info a ON u.user_id = a.user_id "
-                    + "WHERE u.role = 'faculty'";
+                    + "WHERE u.role = 'faculty' AND u.college = ?";
 
-            Statement stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            ResultSetMetaData md = (ResultSetMetaData) rs.getMetaData();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, college);
+            rs = stmt.executeQuery();
+            ResultSetMetaData md = rs.getMetaData();
             int columnCount = md.getColumnCount();
 
             Vector<String> columnNames = new Vector<>();

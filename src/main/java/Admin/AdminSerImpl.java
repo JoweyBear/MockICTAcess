@@ -131,12 +131,12 @@ public class AdminSerImpl implements AdminService {
                 System.out.println("No fingerprint template captured.");
 
             }
-            byte[] imageBytes = ImageExtractor.extractImageBytes(addPanel.jLabelimage, "png", 120, 120);
-            if (imageBytes != null) {
-                admin.setFingerprintImage(imageBytes);
-//                    admin.setFingerprintImage(fingerprintImageAdd);
-
-            }
+//            byte[] imageBytes = ImageExtractor.extractImageBytes(addPanel.jLabelimage, "png", 120, 120);
+//            if (imageBytes != null) {
+//                admin.setFingerprintImage(imageBytes);
+////                    admin.setFingerprintImage(fingerprintImageAdd);
+//
+//            }
             boolean saved = dao.save(admin);
             if (saved) {
                 setTableData();
@@ -222,7 +222,7 @@ public class AdminSerImpl implements AdminService {
             admin.setBday(editPanel.bdy.getDate());
             admin.setUsername(editPanel.usrnm.getText().trim());
             admin.setPass(editPanel.cnfrm.getText().trim());
-            admin.setImage(uploadedImageForEdit);
+
             admin.setBarangay(editPanel.brgy.getText().trim());
             admin.setMunicipal(editPanel.mncplty.getText().trim());
             admin.setCollge(editPanel.pstn.getText().trim());
@@ -232,7 +232,8 @@ public class AdminSerImpl implements AdminService {
                 if (imageBytes != null) {
                     admin.setImage(imageBytes);
                 }
-
+            } else {
+                admin.setImage(uploadedImageForEdit);
             }
             if (fingerprintTemplateEdit != null) {
                 admin.setFingerprint(fingerprintTemplateEdit);

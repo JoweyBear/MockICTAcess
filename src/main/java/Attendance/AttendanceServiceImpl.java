@@ -37,6 +37,12 @@ public class AttendanceServiceImpl implements AttendanceService {
         this.att = att;
 
         this.dateFilter = new TableDateFilter(att.jTable2, 5);
+
+        if (college.equals("CICT")) {
+            addclass.track.setEditable(true);
+        } else {
+            addclass.track.setEditable(false);
+        }
     }
 
     @Override
@@ -196,14 +202,23 @@ public class AttendanceServiceImpl implements AttendanceService {
                 || addclass.sctn.getSelectedItem().equals("Section")) {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
-
-//            uncheck autoincrement in db
-//            String subjectCode = addclass.crsID.getText().toUpperCase();
-//            String section = addclass.sctn.getSelectedItem().toString().toUpperCase();
-//            String yrLvl =  addclass.yr.getSelectedItem().toString().toUpperCase();
-//            String track = addclass.trck;
-//            ask for tracks, further clarification
             AttModel att = new AttModel();
+//            uncheck autoincrement in db
+            String subjectCode = addclass.crsID.getText().toUpperCase();
+            String section = addclass.sctn.getSelectedItem().toString().toUpperCase();
+            String yrLvl = addclass.yr.getSelectedItem().toString().toUpperCase();
+            String track = addclass.track.getText().trim();
+//            ask for tracks, further clarification
+            String crsIDwithTrack = generateScheduleId(subjectCode, section, yrLvl, track);
+            String crsID = generateScheduleId(subjectCode, section, yrLvl, null);
+
+            if (college.equals("CICT")) {
+                att.setCs_id(crsIDwithTrack);
+            } else {
+                System.out.println("CourseId: " + crsID);
+                att.setCs_id(crsID);
+            }
+
             att.setClass_type(addclass.clssTyp.getText().trim());
             att.setDay(addclass.day.getSelectedItem().toString());
             att.setTime_strt(addclass.time1.getTime());
@@ -237,6 +252,23 @@ public class AttendanceServiceImpl implements AttendanceService {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             AttModel att = new AttModel();
+
+            
+            att.setOldCS_ID(editclass.csID.getText().trim()); 
+            String subjectCode = editclass.crsID.getText().toUpperCase();
+            String section = editclass.sctn.getSelectedItem().toString().toUpperCase();
+            String yrLvl = editclass.yr.getSelectedItem().toString().toUpperCase();
+            String track = editclass.track.getText().trim();
+//            ask for tracks, further clarification
+            String crsIDwithTrack = generateScheduleId(subjectCode, section, yrLvl, track);
+            String crsID = generateScheduleId(subjectCode, section, yrLvl, null);
+            
+            if (college.equals("CICT")) {
+                att.setCs_id(crsIDwithTrack);
+            } else {
+                System.out.println("CourseId: " + crsID);
+                att.setCs_id(crsID);
+            }
             att.setClass_type(editclass.clssTyp.getText().trim());
             att.setDay(editclass.day.getSelectedItem().toString());
             att.setTime_strt(editclass.time1.getTime());
@@ -430,7 +462,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         int dataRow = att.jTable1.getSelectedRow();
         if (dataRow >= 0) {
             String cs_id = getCellValue(dataRow, 0);
-            editclass.jLabel4.setText(cs_id);
+            editclass.csID.setText(cs_id);
             editclass.clssTyp.setText(getCellValue(dataRow, 1));
             editclass.crsID.setText(getCellValue(dataRow, 5));
             editclass.sctn.setSelectedItem(getCellValue(dataRow, 6));

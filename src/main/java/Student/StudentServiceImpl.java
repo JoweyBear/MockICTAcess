@@ -133,10 +133,10 @@ public class StudentServiceImpl implements StudentService {
                 student.setTrack("N/A");
             }
 
-            byte[] imageBytes = ImageExtractor.extractImageBytes(sAdd.jLabelimage, "jpg", 120, 120);
-            if (imageBytes != null) {
-                student.setImage(imageBytes);
-            }
+//            byte[] imageBytes = ImageExtractor.extractImageBytes(sAdd.jLabelimage, "jpg", 120, 120);
+//            if (imageBytes != null) {
+//                student.setImage(imageBytes);
+//            }
 
             if (fingerprintTemplateAdd != null) {
                 student.setFingerprint(fingerprintTemplateAdd);
@@ -171,6 +171,9 @@ public class StudentServiceImpl implements StudentService {
         sEdit.sctn.setSelectedItem(viewDialog.section.getText());
         sEdit.brgy.setText(viewDialog.brgy.getText().trim());
         sEdit.municipal.setText(viewDialog.municipal.getText());
+        sEdit.cllg.setSelectedItem(viewDialog.college.getText());
+        sEdit.trck.setText(viewDialog.track.getText());
+
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date parsedDate = format.parse(viewDialog.bDay.getText());
@@ -358,18 +361,26 @@ public class StudentServiceImpl implements StudentService {
 //            student.setCollege(sAdd.cllg.getSelectedItem().toString());
             String studentCollege = sEdit.cllg.getSelectedItem().toString();
             String track = sEdit.trck.getText().trim();
-
+            student.setCollege(studentCollege);
             if (studentCollege.equals("CICT")) {
-                student.setCollege(studentCollege);
                 student.setTrack(track);
             } else {
-                student.setCollege(studentCollege);
+//                student.setCollege(studentCollege);
                 student.setTrack("N/A");
             }
 
-            byte[] imageBytes = ImageExtractor.extractImageBytes(sEdit.jLabelimage, "jpg", 120, 120);
-            if (imageBytes != null) {
-                student.setImage(imageBytes);
+//            byte[] imageBytes = ImageExtractor.extractImageBytes(sEdit.jLabelimage, "jpg", 120, 120);
+//            if (imageBytes != null) {
+//                student.setImage(imageBytes);
+//            }
+
+            if (sEdit.jLabelimage != null && sEdit.jLabelimage.getIcon() != null) {
+                byte[] imageBytes = ImageExtractor.extractImageBytes(sEdit.jLabelimage, "jpg", 120, 120);
+                if (imageBytes != null) {
+                    student.setImage(imageBytes);
+                }
+            } else {
+                student.setImage(uploadedImageForEdit);
             }
 
             if (fingerprintTemplateAdd != null) {

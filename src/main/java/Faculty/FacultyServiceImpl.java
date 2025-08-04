@@ -5,6 +5,7 @@ import Fingerprint.EnrollmentThread;
 import Fingerprint.FingerprintModel;
 import Fingerprint.PromptSwing;
 import Fingerprint.Selection;
+import Utilities.ImageExtractor;
 import Utilities.ImageUploader;
 import Utilities.SearchDefaultModel;
 import com.digitalpersona.uareu.Fmd;
@@ -100,9 +101,16 @@ public class FacultyServiceImpl implements FacultyService {
             faculty.setBrgy(fAdd.brgy.getText().trim());
             faculty.setMunicipal(fAdd.municipal.getText().trim());
 
+//            byte[] imageBytes = ImageExtractor.extractImageBytes(fAdd.jLabelimage, "jpg", 120, 120);
+//            if(imageBytes != null){
+//                faculty.setImage(imageBytes);
+//                
+//            }
             if (fingerprintTemplateAdd != null) {
                 faculty.setFingerprint(fingerprintTemplateAdd);
-                faculty.setFingerprintImage(fingerprintImageAdd);
+//                faculty.setFingerprintImage(fingerprintImageAdd);
+                byte[] fingerBytes = ImageExtractor.extractImageBytes(fAdd.jLabelfinger, "jpg", 120, 120);
+                faculty.setFingerprintImage(fingerBytes);
             } else {
                 System.out.println("No fingerprint template captured.");
             }
@@ -312,15 +320,27 @@ public class FacultyServiceImpl implements FacultyService {
             faculty.setEmail(fEdit.ml.getText().trim());
             faculty.setSx(fEdit.sx.getSelectedItem().toString());
             faculty.setBday(fEdit.bdy.getDate());
-            faculty.setImage(uploadedImageForEdit);
+
             faculty.setCollege(fEdit.cllg.getSelectedItem().toString());
             faculty.setBrgy(fEdit.brgy.getText().trim());
             faculty.setMunicipal(fEdit.municipal.getText().trim());
-            if (fingerprintTemplateEdit != null) {
-                faculty.setFingerprint(fingerprintTemplateEdit);
-                faculty.setFingerprintImage(fingerprintImageEdit);
+
+            if (fEdit.jLabelimage != null && fEdit.jLabelimage.getIcon() != null) {
+                byte[] imageBytes = ImageExtractor.extractImageBytes(fEdit.jLabelimage, "jpg", 120, 120);
+                if (imageBytes != null) {
+                    faculty.setImage(imageBytes);
+                }
             } else {
-                System.out.println("No fingerprint template captured");
+                faculty.setImage(uploadedImageForEdit);
+            }
+
+            if (fingerprintTemplateAdd != null) {
+                faculty.setFingerprint(fingerprintTemplateAdd);
+//                faculty.setFingerprintImage(fingerprintImageAdd);
+                byte[] fingerBytes = ImageExtractor.extractImageBytes(fAdd.jLabelfinger, "jpg", 120, 120);
+                faculty.setFingerprintImage(fingerBytes);
+            } else {
+                System.out.println("No fingerprint template captured.");
             }
             boolean update = dao.update(faculty);
             if (update) {
@@ -372,13 +392,13 @@ public class FacultyServiceImpl implements FacultyService {
 
     @Override
     public void scanFingerAdd() {
-       fAdd.scn.setEnabled(false);
+        fAdd.scn.setEnabled(false);
 
         try {
-            String userIdToEnroll =fAdd.faculty_id.getText();
+            String userIdToEnroll = fAdd.faculty_id.getText();
             if (userIdToEnroll == null || userIdToEnroll.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Invalid user ID.");
-               fAdd.scn.setEnabled(true);
+                fAdd.scn.setEnabled(true);
                 return;
             }
             userIdToEnroll = userIdToEnroll.trim();
@@ -404,12 +424,12 @@ public class FacultyServiceImpl implements FacultyService {
 
                 if (readers.size() == 0) {
                     JOptionPane.showMessageDialog(null, "No fingerprint reader found.");
-                   fAdd.scn.setEnabled(true);
+                    fAdd.scn.setEnabled(true);
                     return;
                 }
                 if (readers.get(0) == null) {
                     JOptionPane.showMessageDialog(null, "Fingerprint reader object is null.");
-                   fAdd.scn.setEnabled(true);
+                    fAdd.scn.setEnabled(true);
                     return;
                 }
 
@@ -417,7 +437,7 @@ public class FacultyServiceImpl implements FacultyService {
             } catch (UareUException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error initializing fingerprint reader: " + e.getMessage());
-               fAdd.scn.setEnabled(true);
+                fAdd.scn.setEnabled(true);
                 return;
             }
 
@@ -445,14 +465,14 @@ public class FacultyServiceImpl implements FacultyService {
                 SwingUtilities.invokeLater(() -> {
                     System.out.println("Disposing progressDialog...");
                     progressDialog.dispose();
-                   fAdd.scn.setEnabled(true);
-                   fAdd.setEnabled(true);
+                    fAdd.scn.setEnabled(true);
+                    fAdd.setEnabled(true);
                 });
             }).start();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Invalid user ID.");
-           fAdd.scn.setEnabled(true);
+            fAdd.scn.setEnabled(true);
         }
     }
 

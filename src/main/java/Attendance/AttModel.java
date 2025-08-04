@@ -13,7 +13,8 @@ public class AttModel {
     private String type;
     private String desc;
 
-    private int cs_id;
+    private String cs_id;
+    private String oldCS_ID;
     private String class_type;
     private String day;
     private LocalTime time_strt;
@@ -89,14 +90,6 @@ public class AttModel {
 
     public void setDesc(String desc) {
         this.desc = desc;
-    }
-
-    public int getCs_id() {
-        return cs_id;
-    }
-
-    public void setCs_id(int cs_id) {
-        this.cs_id = cs_id;
     }
 
     public String getClass_type() {
@@ -217,6 +210,22 @@ public class AttModel {
 
     public void setSection(String section) {
         this.section = section;
+    }
+
+    public String getCs_id() {
+        return cs_id;
+    }
+
+    public void setCs_id(String cs_id) {
+        this.cs_id = cs_id;
+    }
+
+    public String getOldCS_ID() {
+        return oldCS_ID;
+    }
+
+    public void setOldCS_ID(String oldCS_ID) {
+        this.oldCS_ID = oldCS_ID;
     }
 
 }

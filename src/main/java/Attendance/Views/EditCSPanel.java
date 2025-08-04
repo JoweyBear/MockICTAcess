@@ -11,8 +11,10 @@ public class EditCSPanel extends javax.swing.JPanel {
         UIManager.put("TextField.background", Color.white);
         initComponents();
 
-        jLabel4.setText("");
-//        crsID.putClientProperty("JTextField.placeholderText", "Course ID");        
+        csID.setText("");
+        clssTyp.putClientProperty("JTextField.placeholderText", "Class Type");
+        track.putClientProperty("JTextField.placeholderText", "Track(For courses with Track only)");
+        crsID.putClientProperty("JTextField.placeholderText", "Course ID");
 
         pdt.setFont(RegisterFont.getFont("nstr", 14));
         clr.setFont(RegisterFont.getFont("nstr", 14));
@@ -38,9 +40,10 @@ public class EditCSPanel extends javax.swing.JPanel {
         day = new javax.swing.JComboBox<>();
         clssTyp = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        csID = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        track = new javax.swing.JTextField();
 
         setPreferredSize(new java.awt.Dimension(240, 235));
 
@@ -81,14 +84,16 @@ public class EditCSPanel extends javax.swing.JPanel {
         jLabel3.setText("Time:");
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        jLabel4.setText("csID");
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        csID.setText("csID");
+        csID.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jLabel5.setText("Faculty:");
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jLabel6.setText("Room:");
         jLabel6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        track.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -128,7 +133,8 @@ public class EditCSPanel extends javax.swing.JPanel {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(csID, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(track))
                 .addGap(23, 23, 23))
         );
         jPanel1Layout.setVerticalGroup(
@@ -137,7 +143,7 @@ public class EditCSPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel4))
+                    .addComponent(csID))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -160,6 +166,8 @@ public class EditCSPanel extends javax.swing.JPanel {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(yr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(sctn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(3, 3, 3)
+                .addComponent(track, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(rmID, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
@@ -192,8 +200,8 @@ public class EditCSPanel extends javax.swing.JPanel {
         yr.setSelectedIndex(0);
         sctn.setSelectedIndex(0);
     }//GEN-LAST:event_clrActionPerformed
-    
-    public void buttonListener(ActionListener a){
+
+    public void buttonListener(ActionListener a) {
         pdt.addActionListener(a);
     }
 
@@ -202,11 +210,11 @@ public class EditCSPanel extends javax.swing.JPanel {
     public javax.swing.JTextField clssTyp;
     public javax.swing.JComboBox<String> cmbFclty;
     public javax.swing.JTextField crsID;
+    private javax.swing.JLabel csID;
     public javax.swing.JComboBox<String> day;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    public javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
@@ -216,6 +224,7 @@ public class EditCSPanel extends javax.swing.JPanel {
     public com.github.lgooddatepicker.components.TimePicker time1;
     public com.github.lgooddatepicker.components.TimePicker time2;
     private com.github.lgooddatepicker.components.TimePicker timePicker1;
+    public javax.swing.JTextField track;
     public javax.swing.JComboBox<String> yr;
     // End of variables declaration//GEN-END:variables
 }

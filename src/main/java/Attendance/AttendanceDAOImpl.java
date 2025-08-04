@@ -123,23 +123,42 @@ public class AttendanceDAOImpl implements AttendanceDAO {
         try {
             conn.setAutoCommit(false);
 
-            String updateSchedule = "UPDATE class_schedule SET class_type = ?, day = ?, time_start = ?, time_end = ?, subject = ?, faculty_user_id = ?, room_id = ?, year = ?, section = ? WHERE cs_id = ?";
-            PreparedStatement ps1 = conn.prepareStatement(updateSchedule);
-            ps1.setString(1, att.getClass_type());
-            ps1.setString(2, att.getDay());
-            ps1.setTime(3, Time.valueOf(att.getTime_strt()));
-            ps1.setTime(4, Time.valueOf(att.getTime_end()));
-            ps1.setString(5, att.getSubject());
-            ps1.setString(6, att.getFaculty_id());
-            ps1.setInt(7, att.getRm_id());
-            ps1.setString(8, att.getYear());
-            ps1.setString(9, att.getSection());
-            ps1.setInt(10, att.getCs_id());
-            ps1.executeUpdate();
+            if (att.getOldCS_ID().equals(att.getCs_id())) {
+                String updateSchedule = "UPDATE class_schedule SET class_type = ?, day = ?, time_start = ?, time_end = ?, subject = ?, faculty_user_id = ?, room_id = ?, year = ?, section = ? WHERE cs_id = ?";
+                PreparedStatement ps1 = conn.prepareStatement(updateSchedule);
+                ps1.setString(1, att.getClass_type());
+                ps1.setString(2, att.getDay());
+                ps1.setTime(3, Time.valueOf(att.getTime_strt()));
+                ps1.setTime(4, Time.valueOf(att.getTime_end()));
+                ps1.setString(5, att.getSubject());
+                ps1.setString(6, att.getFaculty_id());
+                ps1.setInt(7, att.getRm_id());
+                ps1.setString(8, att.getYear());
+                ps1.setString(9, att.getSection());
+                ps1.setString(10, att.getCs_id());
+                ps1.executeUpdate();
+
+            } else {
+                String updateSchedule = "UPDATE class_schedule SET class_type = ?, day = ?, time_start = ?, time_end = ?, subject = ?, faculty_user_id = ?, room_id = ?, year = ?, section = ?, cs_id =? WHERE cs_id = ?";
+                PreparedStatement ps1 = conn.prepareStatement(updateSchedule);
+                ps1.setString(1, att.getClass_type());
+                ps1.setString(2, att.getDay());
+                ps1.setTime(3, Time.valueOf(att.getTime_strt()));
+                ps1.setTime(4, Time.valueOf(att.getTime_end()));
+                ps1.setString(5, att.getSubject());
+                ps1.setString(6, att.getFaculty_id());
+                ps1.setInt(7, att.getRm_id());
+                ps1.setString(8, att.getYear());
+                ps1.setString(9, att.getSection());
+                ps1.setString(10, att.getCs_id());
+                ps1.setString(11, att.getOldCS_ID());
+                ps1.executeUpdate();
+
+            }
 
             String deleteOld = "DELETE FROM class_student WHERE class_schedule_id = ?";
             PreparedStatement ps2 = conn.prepareStatement(deleteOld);
-            ps2.setInt(1, att.getCs_id());
+            ps2.setString(1, att.getCs_id());
             ps2.executeUpdate();
 
             String selectStudents = "SELECT user_id FROM student_info WHERE year = ? AND section = ?";
@@ -152,7 +171,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             PreparedStatement ps4 = conn.prepareStatement(insertStudent);
 
             while (rs.next()) {
-                ps4.setInt(1, att.getCs_id());
+                ps4.setString(1, att.getCs_id());
                 ps4.setString(2, rs.getString("user_id"));
                 ps4.addBatch();
             }
