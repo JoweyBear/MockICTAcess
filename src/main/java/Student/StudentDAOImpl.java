@@ -247,7 +247,7 @@ public class StudentDAOImpl implements StudentDAO {
 
                 student.setFingerprintData(fingerprintBytes);
                 student.setImageData(imageBytes);
-                student.setFngrprntImageData(fngrprntImgBytes);
+                student.setFingerprintImageData(fngrprntImgBytes);
             }
         } catch (SQLException ex) {
             Logger.getLogger(StudentDAOImpl.class.getName()).log(Level.SEVERE, null, ex);

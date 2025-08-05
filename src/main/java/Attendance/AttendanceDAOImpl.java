@@ -1,6 +1,7 @@
 package Attendance;
 
 import Connection.Ticket;
+import Utilities.Encryption;
 import Utilities.GlobalVar;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,6 +10,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +25,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     Connection conn;
     ResultSet rs;
     private String college = GlobalVar.loggedInAdmin.getCollge();
+    Encryption de = new Encryption();
 
     public AttendanceDAOImpl() {
         conn = Ticket.getConn();
@@ -51,38 +55,34 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     public boolean saveClassSched(AttModel att) {
         boolean saveCS = false;
         try {
-            String insertSql = "INSERT INTO class_schedule (class_type, day, section, year,  time_start, time_end, subject, faculty_user_id, room_id, college) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement ps = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, att.getClass_type());
-            ps.setString(2, att.getDay());
-            ps.setString(3, att.getSection());
-            ps.setString(4, att.getYear());
-            ps.setTime(5, Time.valueOf(att.getTime_strt()));
-            ps.setTime(6, Time.valueOf(att.getTime_end()));
-            ps.setString(7, att.getSubject());
-            ps.setString(8, att.getFaculty_id());
-            ps.setInt(9, att.getRm_id());
-            ps.setString(10, att.getCollege());
+            String insertSql = "INSERT INTO class_schedule (cs_id, class_type, day, section, year, time_start, time_end, subject, faculty_user_id, room_id, college) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(insertSql);
+            ps.setString(1, att.getCs_id());
+            ps.setString(2, att.getClass_type());
+            ps.setString(3, att.getDay());
+            ps.setString(4, att.getSection());
+            ps.setString(5, att.getYear());
+            ps.setTime(6, Time.valueOf(att.getTime_strt()));
+            ps.setTime(7, Time.valueOf(att.getTime_end()));
+            ps.setString(8, att.getSubject());
+            ps.setString(9, att.getFaculty_id());
+            ps.setInt(10, att.getRm_id());
+            ps.setString(11, att.getCollege());
             ps.executeUpdate();
-
-            ResultSet rs = ps.getGeneratedKeys();
-            int classScheduleId = -1;
-            if (rs.next()) {
-                classScheduleId = rs.getInt(1);
-            }
 
             String studentSql = "SELECT s.user_id FROM user s "
                     + "JOIN student_info si ON s.user_id = si.user_id "
                     + "WHERE s.role = 'student' AND si.year = ? AND si.section = ?";
             PreparedStatement studentPs = conn.prepareStatement(studentSql);
             studentPs.setString(1, att.getYear());
-            studentPs.setString(2, att.getYear());
+            studentPs.setString(2, att.getSection());
+
             ResultSet studentRs = studentPs.executeQuery();
 
             String assignSql = "INSERT INTO class_student (class_schedule_id, student_user_id) VALUES (?, ?)";
             PreparedStatement assignPs = conn.prepareStatement(assignSql);
             while (studentRs.next()) {
-                assignPs.setInt(1, classScheduleId);
+                assignPs.setString(1, att.getCs_id());
                 assignPs.setString(2, studentRs.getString("user_id"));
                 assignPs.addBatch();
             }
@@ -307,8 +307,8 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     public DefaultTableModel getAll() {
         try {
             String sql = "SELECT a.attendance_id AS 'Attendance ID', a.cs_id AS 'Class Schedule ID', "
-                    + "CONCAT(u.fname, ' ', u.mname, ' ', u.lname) AS 'Student Name', a.student_user_id AS 'Student ID', "
-                    + "cs.subject AS 'Subject', CONCAT(f.fname, ' ', f.mname, ' ', f.lname) AS 'Faculty', "
+                    + "u.fname AS 'Student FName', u.mname AS 'Student MName', u.lname AS 'Student LName', a.student_user_id AS 'Student ID', "
+                    + "cs.subject AS 'Subject', f.fname AS 'Faculty FName', f.mname AS 'Faculty MName', f.lname AS 'Faculty LName', f.user_id AS 'Faculty ID', "
                     + "a.att_date_time AS 'Date', a.method AS 'Method', a.status AS 'Status' "
                     + "FROM attendance a "
                     + "JOIN class_schedule cs ON a.cs_id = cs.cs_id "
@@ -319,29 +319,54 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, college);
             ResultSet rs = ps.executeQuery();
-            ResultSetMetaData md = rs.getMetaData();
-            int columnCount = md.getColumnCount();
 
-            Vector<String> columnNames = new Vector<>();
-            for (int i = 1; i <= columnCount; i++) {
-                columnNames.add(md.getColumnLabel(i));
-            }
+            Vector<String> columnNames = new Vector<>(Arrays.asList(
+                    "Attendance ID", "Class Schedule ID", "Student ID", "Student Name",
+                    "Subject", "Faculty", "Date", "Method", "Status"
+            ));
 
             Vector<Vector<Object>> data = new Vector<>();
             while (rs.next()) {
                 Vector<Object> row = new Vector<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    row.add(rs.getObject(i));
-                }
+
+                String studentId = rs.getString("Student ID");
+                String sFName = de.decrypt(rs.getString("Student FName"));
+                String sMName = de.decrypt(rs.getString("Student MName"));
+                String sLName = de.decrypt(rs.getString("Student LName"));
+                String studentFullName = "(" + studentId + ") " + sFName + " " + sMName + " " + sLName;
+
+                String facultyId = rs.getString("Faculty ID");
+                String fFName = de.decrypt(rs.getString("Faculty FName"));
+                String fMName = de.decrypt(rs.getString("Faculty MName"));
+                String fLName = de.decrypt(rs.getString("Faculty LName"));
+                String facultyFullName = "(" + facultyId + ") " + fFName + " " + fMName + " " + fLName;
+
+                Timestamp timestamp = rs.getTimestamp("Date");
+                String formattedDate = new SimpleDateFormat("MMMM d, yyyy h:mm a").format(timestamp);
+
+                row.add(rs.getInt("Attendance ID"));
+                row.add(rs.getInt("Class Schedule ID"));
+                row.add(studentId);
+                row.add(studentFullName);
+                row.add(rs.getString("Subject"));
+                row.add(facultyFullName);
+                row.add(rs.getTimestamp(formattedDate)); 
+                row.add(rs.getString("Method"));
+                row.add(rs.getString("Status"));
+
                 data.add(row);
             }
 
             return new DefaultTableModel(data, columnNames);
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(Arrays.asList("Attendance ID", "Class Schedule ID", "Student ID", "Student Name", "Subject", "Date", "Faculty", "Method", "Status"));
+        Vector<String> columns = new Vector<>(Arrays.asList(
+                "Attendance ID", "Class Schedule ID", "Student ID", "Student Name",
+                "Subject", "Faculty", "Date", "Method", "Status"
+        ));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -426,7 +451,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     public DefaultTableModel getAllRoom() {
         try {
             String sql = "SELECT room_id AS 'Room ID', name AS 'Room Name', building AS 'Building',"
-                    + " floor_level AS 'Floor Level', type AS 'Room Type' "
+                    + " floor_level AS 'Floor Level', type AS 'Room Type', description AS 'Description' "
                     + "FROM room WHERE college = ?;";
 
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -454,7 +479,7 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             e.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(Arrays.asList("Room ID", "Room Name", "Building", "Floor Level", "Room Type"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Room ID", "Room Name", "Building", "Floor Level", "Room Type", "Description"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -462,17 +487,20 @@ public class AttendanceDAOImpl implements AttendanceDAO {
     public DefaultTableModel getAllCS() {
         try {
             String sql = "SELECT "
-                    + "cs_id AS 'Class Schedule ID',"
-                    + "class_type AS 'Class Type',"
-                    + "day AS 'Day',"
-                    + "time_start AS 'Time Start',"
-                    + "time_end AS 'Time End',"
-                    + "subject AS 'Subject', "
-                    + "section AS 'Section', "
-                    + "year AS 'Year', "
-                    + "faculty_user_id AS 'Faculty ID',"
-                    + "room_id AS 'Room ID'"
-                    + "FROM class_schedule WHERE college = ?;";
+                    + "cs.cs_id AS 'Class Schedule ID',"
+                    + "cs.class_type AS 'Class Type',"
+                    + "cs.day AS 'Day',"
+                    + "cs.time_start AS 'Time Start',"
+                    + "cs.time_end AS 'Time End',"
+                    + "cs.subject AS 'Subject', "
+                    + "cs.section AS 'Section', "
+                    + "cs.year AS 'Year', "
+                    + "cs.faculty_user_id AS 'Faculty ID',"
+                    + "u.fname AS 'FacultyFName', u.mname AS 'FacultyMName', u.lname AS 'FacultyLName', "
+                    + "CONCAT(cs.room_id, '(', r.name, ')') AS 'Room'"
+                    + "JOIN user u ON cs.faculty_user_id = u.user_id"
+                    + "JOIN room r ON cs.room_id AS r.room_id"
+                    + "FROM class_schedule cs WHERE college = ?;";
 
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, college);
@@ -489,7 +517,17 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             while (rs.next()) {
                 Vector<Object> row = new Vector<>();
                 for (int i = 1; i <= columnCount; i++) {
-                    row.add(rs.getObject(i));
+                    Object value = rs.getObject(i);
+                    String columnLabel = md.getColumnLabel(i);
+
+                    if ("Time Start".equals(columnLabel) || "Time End".equals(columnLabel)) {
+                        if (value instanceof Time) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+                            value = sdf.format(value);
+                        }
+                    }
+
+                    row.add(value);
                 }
                 data.add(row);
             }
@@ -499,7 +537,10 @@ public class AttendanceDAOImpl implements AttendanceDAO {
             e.printStackTrace();
         }
 
-        Vector<String> columns = new Vector<>(Arrays.asList("Class Schedule ID", "Class Type", "Subject", "Section", "Year", "Day", "Time Start", "Time End", "Faculty ID", "Room ID"));
+        Vector<String> columns = new Vector<>(Arrays.asList(
+                "Class Schedule ID", "Class Type", "Subject", "Section",
+                "Year", "Day", "Time Start", "Time End", "Faculty ID", "Room ID"
+        ));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 

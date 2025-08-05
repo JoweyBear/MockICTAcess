@@ -108,7 +108,7 @@ public class StudentServiceImpl implements StudentService {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             StudentModel student = new StudentModel();
-            student.setStud_id(sAdd.student_id.getText().trim());
+            student.setStud_id(sAdd.student_id.getText().trim().toUpperCase());
             student.setFname(sAdd.adfname.getText().trim());
             student.setMname(sAdd.admname.getText().trim());
             student.setLname(sAdd.adlname.getText().trim());
@@ -117,6 +117,8 @@ public class StudentServiceImpl implements StudentService {
             student.setEmail(sAdd.ml.getText().trim());
             student.setSx(sAdd.sx.getSelectedItem().toString());
             student.setBday(sAdd.bdy.getDate());
+            student.setBrgy(sAdd.brgy.getText().trim());
+            student.setMunicipal(sAdd.municipal.getText().trim());
             student.setImage(uploadedImageForAdd);
             student.setSection(sAdd.sctn.getSelectedItem().toString());
             student.setYear(sAdd.yr.getSelectedItem().toString());
@@ -171,7 +173,6 @@ public class StudentServiceImpl implements StudentService {
         sEdit.sctn.setSelectedItem(viewDialog.section.getText());
         sEdit.brgy.setText(viewDialog.brgy.getText().trim());
         sEdit.municipal.setText(viewDialog.municipal.getText());
-        sEdit.cllg.setSelectedItem(viewDialog.college.getText());
         sEdit.trck.setText(viewDialog.track.getText());
 
         try {
@@ -225,8 +226,8 @@ public class StudentServiceImpl implements StudentService {
                         viewDialog.studentID.setText(student_id);
                         viewDialog.college.setText(getCellValue(dataRow, 1));
                         viewDialog.track.setText(getCellValue(dataRow, 2));
-                        viewDialog.year.setText(getCellValue(dataRow, 3));
-                        viewDialog.section.setText(getCellValue(dataRow, 4));
+                        viewDialog.section.setText(getCellValue(dataRow, 3));
+                        viewDialog.year.setText(getCellValue(dataRow, 4));
                         viewDialog.fName.setText(getCellValue(dataRow, 5));
                         viewDialog.mName.setText(getCellValue(dataRow, 6));
                         viewDialog.lName.setText(getCellValue(dataRow, 7));
@@ -237,8 +238,8 @@ public class StudentServiceImpl implements StudentService {
                         viewDialog.brgy.setText(getCellValue(dataRow, 12));
                         viewDialog.municipal.setText(getCellValue(dataRow, 13));
 
-                        if (student.getImage() != null) {
-                            ImageIcon icon = new ImageIcon(student.getImage());
+                        if (student.getImageData()!= null) {
+                            ImageIcon icon = new ImageIcon(student.getImageData());
                             Image scaledImage = icon.getImage().getScaledInstance(
                                     viewDialog.image.getWidth(),
                                     viewDialog.image.getHeight(),
@@ -251,8 +252,8 @@ public class StudentServiceImpl implements StudentService {
                             viewDialog.image.setIcon(null);
                         }
 
-                        if (student.getFingerprintImage() != null) {
-                            ImageIcon fingerprintIcon = new ImageIcon(student.getFingerprintImage());
+                        if (student.getFingerprintImageData() != null) {
+                            ImageIcon fingerprintIcon = new ImageIcon(student.getFingerprintImageData());
                             Image scaledFingerprint = fingerprintIcon.getImage().getScaledInstance(
                                     viewDialog.fngrprnt.getWidth(),
                                     viewDialog.fngrprnt.getHeight(),
@@ -346,7 +347,7 @@ public class StudentServiceImpl implements StudentService {
         } else {
             StudentModel student = new StudentModel();
             int dataRow = sPanel.jTable1.getSelectedRow();
-            student.setStud_id((String) sPanel.jTable1.getValueAt(dataRow, 0));
+            student.setStud_id(sPanel.jTable1.getValueAt(dataRow, 0).toString().toUpperCase());
             student.setFname(sEdit.adfname.getText().trim());
             student.setMname(sEdit.admname.getText().trim());
             student.setLname(sEdit.adlname.getText().trim());
@@ -355,6 +356,8 @@ public class StudentServiceImpl implements StudentService {
             student.setEmail(sEdit.ml.getText().trim());
             student.setSx(sEdit.sx.getSelectedItem().toString());
             student.setBday(sEdit.bdy.getDate());
+            student.setBrgy(sEdit.brgy.getText().trim());
+            student.setMunicipal(sEdit.municipal.getText().trim());
             student.setImage(uploadedImageForEdit);
             student.setSection(sEdit.sctn.getSelectedItem().toString());
             student.setYear(sEdit.yr.getSelectedItem().toString());

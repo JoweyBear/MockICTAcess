@@ -50,13 +50,13 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
     public void startEnrollment() throws UareUException {
         Selection.resetReader();
         int counter = 0;
-        int maxAttempts = requiredFmdToEnroll * 3; // e.g. 3 times the required scans
+        int maxAttempts = requiredFmdToEnroll * 2; // e.g. 3 times the required scans
         int attempts = 0;
 
         PromptSwing.prompt(PromptSwing.START_CAPTURE);
 
         while (counter < requiredFmdToEnroll && runThisThread && attempts < maxAttempts) {
-            updateProgress("Capturing fingerprint " + (counter + 1) + " of " + requiredFmdToEnroll + " (4 times each scan)", counter);
+            updateProgress("Capturing fingerprint " + (counter + 1) + " of " + requiredFmdToEnroll + " (2 times each scan)", counter);
             System.out.println("User ID to Enroll: " + userIdToEnroll);
             System.out.println("Attempt " + counter);
 

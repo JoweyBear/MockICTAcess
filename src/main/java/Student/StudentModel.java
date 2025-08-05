@@ -24,7 +24,7 @@ public class StudentModel {
     private String section;
     private byte[] imageData;
     private byte[] fingerprintData;
-    private byte[] fngrprntImageData;
+    private byte[] fingerprintImageData;
 
     public byte[] getFingerprint() {
         return fingerprint;
@@ -178,20 +178,20 @@ public class StudentModel {
         this.fingerprintData = fingerprintData;
     }
 
-    public byte[] getFngrprntImageData() {
-        return fngrprntImageData;
-    }
-
-    public void setFngrprntImageData(byte[] fngrprntImageData) {
-        this.fngrprntImageData = fngrprntImageData;
-    }
-
     public String getTrack() {
         return track;
     }
 
     public void setTrack(String track) {
         this.track = track;
+    }
+
+    public byte[] getFingerprintImageData() {
+        return fingerprintImageData;
+    }
+
+    public void setFingerprintImageData(byte[] fingerprintImageData) {
+        this.fingerprintImageData = fingerprintImageData;
     }
 
 }

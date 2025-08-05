@@ -210,7 +210,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             String track = addclass.track.getText().trim();
 //            ask for tracks, further clarification
             String crsIDwithTrack = generateScheduleId(subjectCode, section, yrLvl, track);
-            String crsID = generateScheduleId(subjectCode, section, yrLvl, null);
+            String crsID = generateScheduleId(subjectCode, section, yrLvl, "");
 
             if (college.equals("CICT")) {
                 att.setCs_id(crsIDwithTrack);
@@ -261,7 +261,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             String track = editclass.track.getText().trim();
 //            ask for tracks, further clarification
             String crsIDwithTrack = generateScheduleId(subjectCode, section, yrLvl, track);
-            String crsID = generateScheduleId(subjectCode, section, yrLvl, null);
+            String crsID = generateScheduleId(subjectCode, section, yrLvl, "");
             
             if (college.equals("CICT")) {
                 att.setCs_id(crsIDwithTrack);
@@ -447,6 +447,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             editroom.bldng.setText(getCellValue(dataRow, 2));
             editroom.flrLvl.setSelectedItem(getCellValue(dataRow, 3));
             editroom.typ.setSelectedItem(getCellValue(dataRow, 4));
+            editroom.dscp.setText(getCellValue(dataRow, 5));
 
             CardLayout cl = (CardLayout) att.jPanel1.getLayout();
             att.jPanel1.add(editroom, "EditRoom");

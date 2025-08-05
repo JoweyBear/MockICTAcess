@@ -100,7 +100,7 @@ public class FacultyDAOImpl implements FacultyDAO {
             userPs.setString(3, en.encrypt(faculty.getFname()));
             userPs.setString(4, en.encrypt(faculty.getMname()));
             userPs.setString(5, en.encrypt(faculty.getLname()));
-            userPs.setString(6, faculty.getCntctNmber());
+            userPs.setString(6, en.encrypt(faculty.getCntctNmber()));
             userPs.setString(7, faculty.getEmail());
             userPs.setString(8, en.encrypt(faculty.getBrgy()));
             userPs.setString(9, en.encrypt(faculty.getMunicipal()));
