@@ -15,9 +15,9 @@ public interface AttendanceDAO {
 
     void deleteRoom(int room_id);
 
-    void deleteClassSched(int cs_id);
+    void deleteClassSched(String cs_id);
 
-    DefaultTableModel getByCSId(int csId);
+    DefaultTableModel getByCSId(String csId);
 
     DefaultTableModel getByRoomId(int roomId);
 
@@ -31,8 +31,8 @@ public interface AttendanceDAO {
 
     DefaultTableModel getByFacultyId(int facultyUserId);
 
-    boolean addStudentToClassSchedule(int csId, String studentId);
+    boolean addStudentToClassSchedule(String csId, String studentId);
 
-    void removeStudentFromClassSchedule(int csId, String studentId);
+    void removeStudentFromClassSchedule(String csId, String studentId);
 
 }

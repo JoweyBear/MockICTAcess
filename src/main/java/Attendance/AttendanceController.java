@@ -41,8 +41,8 @@ public class AttendanceController {
                 service.addClassSched();
             } else if (e.getSource() == att.ddRm) {
                 service.addRoom();
-            } else if (e.getSource() == att.fltr) {
-                service.getScheduleAttDate();
+//            } else if (e.getSource() == att.fltr) {
+//                service.getScheduleAttDate();
             } else if (e.getSource() == att.ar) {
                 service.jcomboSelection();
             } else if (e.getSource() == att.addStudentCSMI) {
@@ -58,7 +58,7 @@ public class AttendanceController {
             } else if (e.getSource() == att.removeStudentCSMI) {
                 service.removeStudentFromClassSchedule();
             } else if (e.getSource() == att.viewCSMI) {
-                service.getSchedulesByRoomId();
+                service.getStudentsByClassScheduleId();
             } else if (e.getSource() == att.viewRMMI) {
                 service.getRoomById();
             } else if (e.getSource() == addclass.dd) {

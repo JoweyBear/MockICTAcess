@@ -6,11 +6,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import javax.swing.event.PopupMenuListener;
 
-public class AttendancePanel extends javax.swing.JPanel {
+public class AttendancePanel1 extends javax.swing.JPanel {
 
     DisplayAttPanel display;
 
-    public AttendancePanel(DisplayAttPanel display) {
+    public AttendancePanel1(DisplayAttPanel display) {
         this.display = display;
         initComponents();
         CardLayout cl = (CardLayout) jPanel1.getLayout();
@@ -19,7 +19,7 @@ public class AttendancePanel extends javax.swing.JPanel {
         srchTF.putClientProperty("JTextField.placeholderText", "Search here...");
         ddClss.setFont(RegisterFont.getFont("nstr", 14));
         ddRm.setFont(RegisterFont.getFont("nstr", 14));
-//        fltr.setFont(RegisterFont.getFont("nstr", 14));
+        fltr.setFont(RegisterFont.getFont("nstr", 14));
     }
 
     @SuppressWarnings("unchecked")
@@ -44,6 +44,11 @@ public class AttendancePanel extends javax.swing.JPanel {
         ddClss = new javax.swing.JButton();
         ddRm = new javax.swing.JButton();
         ar = new javax.swing.JComboBox<>();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        fltr = new javax.swing.JButton();
         srchTF = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
@@ -98,6 +103,23 @@ public class AttendancePanel extends javax.swing.JPanel {
         ar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         ar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Category", "Class Schedule", "Room" }));
 
+        jDateChooser1.setDateFormatString("yyyy-MM-dd");
+        jDateChooser1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jDateChooser2.setDateFormatString("yyyy-MM-dd");
+        jDateChooser2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("From");
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("to");
+
+        fltr.setText("Filter");
+        fltr.setToolTipText("");
+
         srchTF.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -130,11 +152,23 @@ public class AttendancePanel extends javax.swing.JPanel {
                         .addComponent(ddRm))
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(srchTF, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addComponent(srchTF, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
                         .addGap(189, 189, 189))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(fltr)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -143,10 +177,17 @@ public class AttendancePanel extends javax.swing.JPanel {
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(srchTF)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(srchTF))
                         .addGap(570, 570, 570))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(29, 29, 29)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2)
+                            .addComponent(fltr, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -164,7 +205,7 @@ public class AttendancePanel extends javax.swing.JPanel {
     public void buttonListener(ActionListener a, PopupMenuListener b1, MouseListener c1, PopupMenuListener b2, MouseListener c2) {
         ddClss.addActionListener(a);
         ddRm.addActionListener(a);
-//        fltr.addActionListener(a);
+        fltr.addActionListener(a);
         jTable1.addMouseListener(c1);
         jTable2.addMouseListener(c2);
         jTable1CSMenuPopup.addPopupMenuListener(b1);
@@ -190,6 +231,11 @@ public class AttendancePanel extends javax.swing.JPanel {
     public javax.swing.JButton ddRm;
     public javax.swing.JMenuItem editCSMI;
     public javax.swing.JMenuItem editRmMI;
+    public javax.swing.JButton fltr;
+    public com.toedter.calendar.JDateChooser jDateChooser1;
+    public com.toedter.calendar.JDateChooser jDateChooser2;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     public javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -43,6 +44,11 @@ public class AttendanceServiceImpl implements AttendanceService {
         } else {
             addclass.track.setEditable(false);
         }
+    }
+
+    private String getCellValue(int row, int col) {
+        Object val = att.jTable1.getValueAt(row, col);
+        return val != null ? val.toString() : "";
     }
 
     @Override
@@ -160,7 +166,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void getSchedulesByRoomId() {
         int dataRow = att.jTable1.getSelectedRow();
         if (dataRow >= 0) {
-            int roomID = (int) att.jTable1.getValueAt(dataRow, 0);
+            int roomID = Integer.parseInt(att.jTable1.getValueAt(dataRow, 0).toString());
             DefaultTableModel model = dao.getByRoomId(roomID);
             att.jTable2.setModel(model);
             new SearchDefaultModel(att, att.jTable2, att.srchTF, model);
@@ -176,21 +182,21 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public void getScheduleAttDate() {
-        dateFilter.applyFilter(att.jDateChooser1, att.jDateChooser2);
+//        dateFilter.applyFilter(att.jDateChooser1, att.jDateChooser2);
     }
 
     @Override
     public void getAttendaceBYScheduleId() {
-        int dataRow = att.jTable1.getSelectedRow();
-        if (dataRow >= 0) {
-            int csID = (int) att.jTable1.getValueAt(dataRow, 0);
-            DefaultTableModel model = dao.getByCSId(csID);
-            att.jTable2.setModel(model);
-            new SearchDefaultModel(att, att.jTable2, att.srchTF, model);
-
-        } else {
-            JOptionPane.showMessageDialog(null, "Please select a class chedule to view.");
-        }
+//        int dataRow = att.jTable1.getSelectedRow();
+//        if (dataRow >= 0) {
+//            String csID = att.jTable1.getValueAt(dataRow, 0).toString();
+//            DefaultTableModel model = dao.getByCSId(csID);
+//            att.jTable2.setModel(model);
+//            new SearchDefaultModel(att, att.jTable2, att.srchTF, model);
+//
+//        } else {
+//            JOptionPane.showMessageDialog(null, "Please select a class chedule to view.");
+//        }
     }
 
     @Override
@@ -253,8 +259,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         } else {
             AttModel att = new AttModel();
 
-            
-            att.setOldCS_ID(editclass.csID.getText().trim()); 
+            att.setOldCS_ID(editclass.csID.getText().trim());
             String subjectCode = editclass.crsID.getText().toUpperCase();
             String section = editclass.sctn.getSelectedItem().toString().toUpperCase();
             String yrLvl = editclass.yr.getSelectedItem().toString().toUpperCase();
@@ -262,7 +267,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 //            ask for tracks, further clarification
             String crsIDwithTrack = generateScheduleId(subjectCode, section, yrLvl, track);
             String crsID = generateScheduleId(subjectCode, section, yrLvl, "");
-            
+
             if (college.equals("CICT")) {
                 att.setCs_id(crsIDwithTrack);
             } else {
@@ -295,7 +300,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void deleteClassSchedule() {
         int dataRow = att.jTable1.getSelectedRow();
         if (dataRow >= 0) {
-            int cs_id = (int) att.jTable1.getValueAt(dataRow, 0);
+            String cs_id = att.jTable1.getValueAt(dataRow, 0).toString();
             int dialogButton = JOptionPane.YES_NO_OPTION;
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to "
                     + "Delete ClassSchedule: " + cs_id + "?", "Warning", dialogButton);
@@ -312,7 +317,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void getStudentsByClassScheduleId() {
         int dataRow = att.jTable1.getSelectedRow();
         if (dataRow >= 0) {
-            int csID = (int) att.jTable1.getValueAt(dataRow, 0);
+            String csID = att.jTable1.getValueAt(dataRow, 0).toString();
             DefaultTableModel model = dao.getByCSId(csID);
             att.jTable2.setModel(model);
             new SearchDefaultModel(att, att.jTable2, att.srchTF, model);
@@ -329,7 +334,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         try {
             studentCombo.getEditor().getEditorComponent().addKeyListener(new StudentCBHandler(studentCombo));
             int selectedRow = att.jTable2.getSelectedRow();
-            int classScheduleId = (int) att.jTable2.getValueAt(selectedRow, 0);
+            String classScheduleId = att.jTable2.getValueAt(selectedRow, 0).toString();
             int result = JOptionPane.showConfirmDialog(
                     null,
                     studentCombo,
@@ -363,7 +368,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void removeStudentFromClassSchedule() {
         int dataRow = att.jTable2.getSelectedRow();
         if (dataRow >= 0) {
-            int cs_id = (int) att.jTable2.getValueAt(dataRow, 0);
+            String cs_id = att.jTable2.getValueAt(dataRow, 0).toString();
             String student_id = att.jTable2.getValueAt(dataRow, 1).toString();
             int dialogButton = JOptionPane.YES_NO_OPTION;
             int dialogResult = JOptionPane.showConfirmDialog(null, "Would You Like to "
@@ -431,11 +436,6 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
     }
 
-    private String getCellValue(int row, int col) {
-        Object val = att.jTable1.getValueAt(row, col);
-        return val != null ? val.toString() : "";
-    }
-
     @Override
     public void editRoom() {
         int dataRow = att.jTable1.getSelectedRow();
@@ -466,8 +466,9 @@ public class AttendanceServiceImpl implements AttendanceService {
             editclass.csID.setText(cs_id);
             editclass.clssTyp.setText(getCellValue(dataRow, 1));
             editclass.crsID.setText(getCellValue(dataRow, 5));
-            editclass.sctn.setSelectedItem(getCellValue(dataRow, 6));
-            editclass.yr.setSelectedItem(getCellValue(dataRow, 7));
+            editclass.track.setText(getCellValue(dataRow, 6));
+            editclass.sctn.setSelectedItem(getCellValue(dataRow, 7));
+            editclass.yr.setSelectedItem(getCellValue(dataRow, 8));
             editclass.day.setSelectedItem(getCellValue(dataRow, 2));
             String time1 = getCellValue(dataRow, 3);
             String time2 = getCellValue(dataRow, 4);
@@ -476,8 +477,22 @@ public class AttendanceServiceImpl implements AttendanceService {
             LocalTime timeEnd = LocalTime.parse(time2, formatter);
             editclass.time1.setTime(timeStart);
             editclass.time2.setTime(timeEnd);
-            editclass.cmbFclty.setSelectedItem(getCellValue(dataRow, 8));
-            editclass.rmID.setSelectedItem(getCellValue(dataRow, 9));
+            String faculty = getCellValue(dataRow, 9);
+            String room = getCellValue(dataRow, 10);
+//            editclass.cmbFclty.setSelectedItem(getCellValue(dataRow, 8));
+//            editclass.rmID.setSelectedItem(getCellValue(dataRow, 9));
+            
+            DefaultComboBoxModel<String> facultyModel = (DefaultComboBoxModel<String>) editclass.cmbFclty.getModel();
+            if(facultyModel.getIndexOf(faculty) == -1){
+               editclass.cmbFclty.addItem(faculty);
+            }
+            editclass.cmbFclty.setSelectedItem(faculty);
+            
+            DefaultComboBoxModel<String> roomModel = (DefaultComboBoxModel<String>) editclass.rmID.getModel();
+            if(roomModel.getIndexOf(room) == -1){
+                editclass.rmID.addItem(room);
+            }
+            editclass.rmID.setSelectedItem(room);
 
             CardLayout cl = (CardLayout) att.jPanel1.getLayout();
             att.jPanel1.add(editclass, "EditClass");

@@ -15,6 +15,7 @@ public class AttModel {
 
     private String cs_id;
     private String oldCS_ID;
+    private String track;
     private String class_type;
     private String day;
     private LocalTime time_strt;
@@ -226,6 +227,14 @@ public class AttModel {
 
     public void setOldCS_ID(String oldCS_ID) {
         this.oldCS_ID = oldCS_ID;
+    }
+
+    public String getTrack() {
+        return track;
+    }
+
+    public void setTrack(String track) {
+        this.track = track;
     }
 
 }
