@@ -17,8 +17,7 @@ public class AttendancePanel1 extends javax.swing.JPanel {
         jPanel1.add(display, "DisplayPanel");
         cl.show(jPanel1, "DisplayPanel");
         srchTF.putClientProperty("JTextField.placeholderText", "Search here...");
-        ddClss.setFont(RegisterFont.getFont("nstr", 14));
-        ddRm.setFont(RegisterFont.getFont("nstr", 14));
+
         fltr.setFont(RegisterFont.getFont("nstr", 14));
     }
 
@@ -41,9 +40,6 @@ public class AttendancePanel1 extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
-        ddClss = new javax.swing.JButton();
-        ddRm = new javax.swing.JButton();
-        ar = new javax.swing.JComboBox<>();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jDateChooser2 = new com.toedter.calendar.JDateChooser();
         jLabel1 = new javax.swing.JLabel();
@@ -95,14 +91,6 @@ public class AttendancePanel1 extends javax.swing.JPanel {
         ));
         jScrollPane2.setViewportView(jTable2);
 
-        ddClss.setText("Add Class");
-        ddClss.setToolTipText("");
-
-        ddRm.setText("Add Room");
-
-        ar.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        ar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Category", "Class Schedule", "Room" }));
-
         jDateChooser1.setDateFormatString("yyyy-MM-dd");
         jDateChooser1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
@@ -144,17 +132,9 @@ public class AttendancePanel1 extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(ar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
-                        .addComponent(ddClss)
-                        .addGap(17, 17, 17)
-                        .addComponent(ddRm))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(srchTF, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
-                        .addGap(189, 189, 189))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
+                    .addComponent(srchTF))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
@@ -192,19 +172,13 @@ public class AttendancePanel1 extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(ddClss, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(ddRm)
-                                    .addComponent(ar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(jScrollPane2))
                         .addGap(19, 19, 19))))
         );
     }// </editor-fold>//GEN-END:initComponents
     public void buttonListener(ActionListener a, PopupMenuListener b1, MouseListener c1, PopupMenuListener b2, MouseListener c2) {
-        ddClss.addActionListener(a);
-        ddRm.addActionListener(a);
+
         fltr.addActionListener(a);
         jTable1.addMouseListener(c1);
         jTable2.addMouseListener(c2);
@@ -212,7 +186,7 @@ public class AttendancePanel1 extends javax.swing.JPanel {
         jTable1RoomPopup.addPopupMenuListener(b1);
         jTable2CSPopup.addPopupMenuListener(b2);
         jTable2RmPopup.addPopupMenuListener(b2);
-        ar.addActionListener(a);
+
         addCStoRMMI.addActionListener(a);
         addStudentCSMI.addActionListener(a);
         editCSMI.addActionListener(a);
@@ -226,9 +200,6 @@ public class AttendancePanel1 extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JMenuItem addCStoRMMI;
     public javax.swing.JMenuItem addStudentCSMI;
-    public javax.swing.JComboBox<String> ar;
-    public javax.swing.JButton ddClss;
-    public javax.swing.JButton ddRm;
     public javax.swing.JMenuItem editCSMI;
     public javax.swing.JMenuItem editRmMI;
     public javax.swing.JButton fltr;
