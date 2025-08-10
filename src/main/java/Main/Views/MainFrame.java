@@ -168,8 +168,8 @@ public class MainFrame extends javax.swing.JFrame {
     public javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
+    public javax.swing.JTable jTable1;
+    public javax.swing.JTable jTable2;
     public javax.swing.JButton lgn;
     public javax.swing.JLabel time;
     // End of variables declaration//GEN-END:variables
