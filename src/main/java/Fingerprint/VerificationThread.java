@@ -76,7 +76,7 @@ public class VerificationThread extends Thread {
             return null;
         }
 
-        return engine.CreateFmd(evt.captureResult.image, Fmd.Format.ISO_19794_2_2005);
+        return engine.CreateFmd(evt.captureResult.image, Fmd.Format.ANSI_378_2004);
     }
 
     private Fmd[] getFmdsFromDatabase() throws UareUException {
@@ -87,8 +87,8 @@ public class VerificationThread extends Thread {
             if (fingerprintList.get(i).getTemplate() != null) {
                 fmds[i] = UareUGlobal.GetImporter().ImportFmd(
                         fingerprintList.get(i).getTemplate(),
-                        Fmd.Format.ISO_19794_2_2005,
-                        Fmd.Format.ISO_19794_2_2005
+                        Fmd.Format.ANSI_378_2004,
+                        Fmd.Format.ANSI_378_2004
                 );
             }
         }

@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
 
@@ -52,13 +53,14 @@ public class MainDAOImpl implements MainDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return new DefaultTableModel(); // empty if error
         }
+        Vector<String> columns = new Vector<>(Arrays.asList("Schedule ID"," Subject", "Section", "Start Time", "End Time"));
+        return new DefaultTableModel(new Vector<>(), columns);
     }
 
     @Override
     public DefaultTableModel fetchStudentsBySchedule(String scheduleId) {
-        String sql = "SELECT u.user_id AS 'ID', "
+        String sql = "SELECT u.user_id AS 'Student ID', "
                 + "u.fname AS 'First Name', "
                 + "u.lname AS 'Last Name' "
                 + "FROM user u "
@@ -90,8 +92,9 @@ public class MainDAOImpl implements MainDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return new DefaultTableModel(); // empty if error
         }
+        Vector<String> columns = new Vector<>(Arrays.asList("Student ID", "First Name", "Last Name"));
+        return new DefaultTableModel(new Vector<>(), columns);
     }
 
 }
