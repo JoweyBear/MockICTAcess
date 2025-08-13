@@ -102,12 +102,16 @@ public class MainSerImpl implements MainService {
                     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
                     LocalTime now = LocalTime.now();
                     LocalTime startTime = LocalTime.parse(scheduledStartTime, timeFormatter);
+                    String timeIn = now.format(DateTimeFormatter.ofPattern("hh:mm a"));
 
                     if ("Present".equalsIgnoreCase(currentStatus) || "Late".equalsIgnoreCase(currentStatus)) {
                         JOptionPane.showMessageDialog(null,
                                 "Student " + matchedStudent.getFname() + " has already been marked.");
                     } else {
-                        frame.jTable1.setValueAt("Present", rowIndex, 3);
+                        String status = now.isAfter(startTime.plusMinutes(15))? "Late" : "Present";
+                        
+                        frame.jTable1.setValueAt(status, rowIndex, 3);
+                        frame.jTable1.setValueAt(timeIn, rowIndex, 4);
                         JOptionPane.showMessageDialog(null,
                                 "Student " + matchedStudent.getFname() + " is in current class.\nAttendance marked.");
                         // Optionally, save to DB here
