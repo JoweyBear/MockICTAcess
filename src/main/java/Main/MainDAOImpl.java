@@ -6,6 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Vector;
 import javax.swing.table.DefaultTableModel;
@@ -35,17 +38,19 @@ public class MainDAOImpl implements MainDAO {
             ResultSetMetaData md = rs.getMetaData();
             int columnCount = md.getColumnCount();
 
-            Vector<String> columnNames = new Vector<>();
-            for (int i = 1; i <= columnCount; i++) {
-                columnNames.add(md.getColumnLabel(i));
-            }
+            Vector<String> columnNames = new Vector<>(Arrays.asList("Schedule ID", "Subject", "Section", "Start Time", "End Time"));
 
             Vector<Vector<Object>> data = new Vector<>();
             while (rs.next()) {
                 Vector<Object> row = new Vector<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    row.add(rs.getObject(i));
-                }
+                row.add(rs.getString("Schedule ID"));
+                row.add(rs.getString("Subject"));
+                row.add(rs.getString("Section"));
+
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+                row.add(sdf.format(rs.getTime("Time Start")));
+                row.add(sdf.format(rs.getString("End Time")));
+
                 data.add(row);
             }
 
@@ -54,7 +59,7 @@ public class MainDAOImpl implements MainDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Vector<String> columns = new Vector<>(Arrays.asList("Schedule ID"," Subject", "Section", "Start Time", "End Time"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Schedule ID", " Subject", "Section", "Start Time", "End Time"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -74,10 +79,7 @@ public class MainDAOImpl implements MainDAO {
                 ResultSetMetaData md = rs.getMetaData();
                 int columnCount = md.getColumnCount();
 
-                Vector<String> columnNames = new Vector<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    columnNames.add(md.getColumnLabel(i));
-                }
+                Vector<String> columnNames = new Vector<>(Arrays.asList("Student ID", "Firt Name", "Last Name"));
 
                 Vector<Vector<Object>> data = new Vector<>();
                 while (rs.next()) {

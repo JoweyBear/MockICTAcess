@@ -37,7 +37,8 @@ public class MainSerImpl implements MainService {
     @Override
     public void checkAndLoadStudents(JTable tableA, JTable tableB, int startCol, int endCol, int scheduleIdCol) {
         LocalTime now = LocalTime.now();
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+//        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
 
         for (int row = 0; row < tableA.getRowCount(); row++) {
             try {
@@ -86,14 +87,14 @@ public class MainSerImpl implements MainService {
             if (matchedStudent != null) {
                 String studentId = matchedStudent.getUser_id();
 
-                if (ServiceLayer.isStudentInCurrentClass(studentId)) {
-                    JOptionPane.showMessageDialog(null,
-                            "Student " + matchedStudent.getFname() + " is in current class.\nAttendance marked.");
-                    // ServiceLayer.markAttendance(studentId);
-                } else {
-                    JOptionPane.showMessageDialog(null,
-                            "Student " + matchedStudent.getFname() + " is NOT in this class schedule.");
-                }
+//                if (ServiceLayer.isStudentInCurrentClass(studentId)) {
+//                    JOptionPane.showMessageDialog(null,
+//                            "Student " + matchedStudent.getFname() + " is in current class.\nAttendance marked.");
+//                    // ServiceLayer.markAttendance(studentId);
+//                } else {
+//                    JOptionPane.showMessageDialog(null,
+//                            "Student " + matchedStudent.getFname() + " is NOT in this class schedule.");
+//                }
             } else {
                 JOptionPane.showMessageDialog(null, "No matching fingerprint found.");
             }
