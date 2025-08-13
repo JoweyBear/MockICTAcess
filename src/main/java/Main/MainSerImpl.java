@@ -21,7 +21,7 @@ public class MainSerImpl implements MainService {
     public MainSerImpl(MainFrame frame) {
         this.frame = frame;
 
-        checkAndLoadStudents(frame.jTable2, frame.jTable1, 3, 4, 0);
+        checkAndLoadStudents();
     }
 
     @Override
@@ -35,24 +35,29 @@ public class MainSerImpl implements MainService {
     }
 
     @Override
-    public void checkAndLoadStudents(JTable tableA, JTable tableB, int startCol, int endCol, int scheduleIdCol) {
+    public void checkAndLoadStudents() {
         LocalTime now = LocalTime.now();
 //        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
 
-        for (int row = 0; row < tableA.getRowCount(); row++) {
+        for (int row = 0; row < frame.jTable2.getRowCount(); row++) {
             try {
-                String startTimeStr = tableA.getValueAt(row, startCol).toString();
-                String endTimeStr = tableA.getValueAt(row, endCol).toString();
+                String scheduleID = frame.jTable2.getValueAt(row, 0).toString();
+                String startTimeStr = frame.jTable2.getValueAt(row, 3).toString();
+                String endTimeStr = frame.jTable2.getValueAt(row, 4).toString();
 
                 LocalTime startTime = LocalTime.parse(startTimeStr, timeFormatter);
                 LocalTime endTime = LocalTime.parse(endTimeStr, timeFormatter);
 
                 if (!now.isBefore(startTime) && !now.isAfter(endTime)) {
-                    String scheduleId = tableA.getValueAt(row, scheduleIdCol).toString();
+                    String scheduleId = frame.jTable2.getValueAt(row, 0).toString();
+
+                    frame.subject.setText(scheduleID);
+                    frame.startTime.setText(startTimeStr);
+                    frame.endTime.setText(endTimeStr);
 
                     DefaultTableModel studentsModel = dao.fetchStudentsBySchedule(scheduleId);
-                    tableB.setModel(studentsModel);
+                    frame.jTable1.setModel(studentsModel);
 
                     System.out.println("Loaded students for schedule: " + scheduleId);
                     break;
@@ -83,18 +88,32 @@ public class MainSerImpl implements MainService {
 
             FingerprintModel matchedStudent = idThread.getIdentifiedUser();
 
-            // If match found, check schedule
             if (matchedStudent != null) {
                 String studentId = matchedStudent.getUser_id();
 
-//                if (ServiceLayer.isStudentInCurrentClass(studentId)) {
-//                    JOptionPane.showMessageDialog(null,
-//                            "Student " + matchedStudent.getFname() + " is in current class.\nAttendance marked.");
-//                    // ServiceLayer.markAttendance(studentId);
-//                } else {
-//                    JOptionPane.showMessageDialog(null,
-//                            "Student " + matchedStudent.getFname() + " is NOT in this class schedule.");
-//                }
+                int rowIndex = getStudentRowIndex(studentId);
+
+                if (rowIndex == -1) {
+                    JOptionPane.showMessageDialog(null,
+                            "Student " + matchedStudent.getFname() + " is NOT in this class schedule.");
+                } else {
+                    String currentStatus = frame.jTable1.getValueAt(rowIndex, 3).toString();
+                    String scheduledStartTime = frame.startTime.getText();
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+                    LocalTime now = LocalTime.now();
+                    LocalTime startTime = LocalTime.parse(scheduledStartTime, timeFormatter);
+
+                    if ("Present".equalsIgnoreCase(currentStatus) || "Late".equalsIgnoreCase(currentStatus)) {
+                        JOptionPane.showMessageDialog(null,
+                                "Student " + matchedStudent.getFname() + " has already been marked.");
+                    } else {
+                        frame.jTable1.setValueAt("Present", rowIndex, 3);
+                        JOptionPane.showMessageDialog(null,
+                                "Student " + matchedStudent.getFname() + " is in current class.\nAttendance marked.");
+                        // Optionally, save to DB here
+                        // ServiceLayer.markAttendance(studentId);
+                    }
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "No matching fingerprint found.");
             }
@@ -105,14 +124,14 @@ public class MainSerImpl implements MainService {
         }
     }
 
-    public boolean isStudentInCurrentSchedule(String studentId) {
+    private int getStudentRowIndex(String studentId) {
         for (int row = 0; row < frame.jTable1.getRowCount(); row++) {
             String idInTable = frame.jTable1.getValueAt(row, 0).toString();
             if (idInTable.equals(studentId)) {
-                return true;
+                return row;
             }
         }
-        return false;
+        return -1;
     }
 
 }

@@ -1,6 +1,7 @@
 package Main;
 
 import Connection.Ticket;
+import Utilities.Encryption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +18,7 @@ public class MainDAOImpl implements MainDAO {
 
     Connection conn;
     ResultSet rs;
+    Encryption de = new Encryption();
 
     public MainDAOImpl() {
         conn = Ticket.getConn();
@@ -79,14 +81,20 @@ public class MainDAOImpl implements MainDAO {
                 ResultSetMetaData md = rs.getMetaData();
                 int columnCount = md.getColumnCount();
 
-                Vector<String> columnNames = new Vector<>(Arrays.asList("Student ID", "Firt Name", "Last Name"));
+                Vector<String> columnNames = new Vector<>(Arrays.asList("Student ID", "Firt Name", "Last Name", "Status", "Time"));
 
                 Vector<Vector<Object>> data = new Vector<>();
                 while (rs.next()) {
                     Vector<Object> row = new Vector<>();
-                    for (int i = 1; i <= columnCount; i++) {
-                        row.add(rs.getObject(i));
-                    }
+
+                    String firstName = de.decrypt(rs.getString("Student ID"));
+                    String lastName = de.decrypt(rs.getString("Last Name"));
+                    
+                    row.add(rs.getString("Student ID"));
+                    row.add(firstName);
+                    row.add(lastName);
+                    row.add("Pending");
+                    row.add("Pending");
                     data.add(row);
                 }
 
@@ -95,7 +103,7 @@ public class MainDAOImpl implements MainDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Vector<String> columns = new Vector<>(Arrays.asList("Student ID", "First Name", "Last Name"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Student ID", "First Name", "Last Name", "Status", "Time"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 

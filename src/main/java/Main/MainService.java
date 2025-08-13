@@ -6,7 +6,7 @@ public interface MainService {
 
     void loginButton();
 
-    void checkAndLoadStudents(JTable tableA, JTable tableB, int startCol, int endCol, int scheduleIdCol);
+    void checkAndLoadStudents();
     
     void checkAndVerifyStudents();
 }
