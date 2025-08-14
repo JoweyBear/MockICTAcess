@@ -89,7 +89,7 @@ public class MainDAOImpl implements MainDAO {
 
                     String firstName = de.decrypt(rs.getString("Student ID"));
                     String lastName = de.decrypt(rs.getString("Last Name"));
-                    
+
                     row.add(rs.getString("Student ID"));
                     row.add(firstName);
                     row.add(lastName);
@@ -105,6 +105,49 @@ public class MainDAOImpl implements MainDAO {
         }
         Vector<String> columns = new Vector<>(Arrays.asList("Student ID", "First Name", "Last Name", "Status", "Time"));
         return new DefaultTableModel(new Vector<>(), columns);
+    }
+
+    @Override
+    public void markAbsent(String scheduleId) {
+        String sql = "SELECT student_user_id FROM class_student WHERE class_schedule_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, scheduleId);
+            try (ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+                    String studentId = rs.getString("student_user_id");
+
+                    String checkSql = "SELECT COUNT(*) FROM attendance WHERE student_user_id = ? AND class_schedule_id = ? AND date = CURDATE()";
+                    try (PreparedStatement psCheck = conn.prepareStatement(checkSql)) {
+                        psCheck.setString(1, studentId);
+                        psCheck.setString(2, scheduleId);
+                        try (ResultSet rsCheck = psCheck.executeQuery()) {
+                            if (rsCheck.next() && rsCheck.getInt(1) == 0) {
+                                String insertSql = "INSERT INTO attendance (student_user_id, class_schedule_id, date, status) VALUES (?, ?, CURDATE(), 'Absent')";
+                                try (PreparedStatement psInsert = conn.prepareStatement(insertSql)) {
+                                    psInsert.setString(1, studentId);
+                                    psInsert.setString(2, scheduleId);
+                                    psInsert.executeUpdate();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void saveAttendance(String studentId, String scheduleId) {
+        String sql = "INSERT INTO attendance (student_user_id, class_schedule_id, att_date_time, status)\n"
+                + "SELECT ?, ?, NOW(), ? "
+                + "FROM DUAL "
+                + "WHERE NOT EXISTS (SELECT 1 FROM attendance "
+                + "WHERE student_user_id = ? AND class_schedule_id = ?"
+                + " AND DATE(att_date_time) = CURDATE());";
+        
     }
 
 }

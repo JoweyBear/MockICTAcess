@@ -22,6 +22,7 @@ public class MainSerImpl implements MainService {
         this.frame = frame;
 
         checkAndLoadStudents();
+        startScheduleChecker();
     }
 
     @Override
@@ -108,8 +109,8 @@ public class MainSerImpl implements MainService {
                         JOptionPane.showMessageDialog(null,
                                 "Student " + matchedStudent.getFname() + " has already been marked.");
                     } else {
-                        String status = now.isAfter(startTime.plusMinutes(15))? "Late" : "Present";
-                        
+                        String status = now.isAfter(startTime.plusMinutes(15)) ? "Late" : "Present";
+
                         frame.jTable1.setValueAt(status, rowIndex, 3);
                         frame.jTable1.setValueAt(timeIn, rowIndex, 4);
                         JOptionPane.showMessageDialog(null,
@@ -136,6 +137,37 @@ public class MainSerImpl implements MainService {
             }
         }
         return -1;
+    }
+
+    private void startScheduleChecker() {
+        java.util.Timer timer = new java.util.Timer(true);
+        timer.scheduleAtFixedRate(new java.util.TimerTask() {
+            @Override
+            public void run() {
+                LocalTime now = LocalTime.now();
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
+
+                for (int row = 0; row < frame.jTable2.getRowCount(); row++) {
+                    String startTimeStr = frame.jTable2.getValueAt(row, 3).toString();
+                    String endTimeStr = frame.jTable2.getValueAt(row, 4).toString();
+                    String scheduleId = frame.jTable2.getValueAt(row, 0).toString();
+
+                    try {
+                        LocalTime startTime = LocalTime.parse(startTimeStr, timeFormatter);
+                        LocalTime endTime = LocalTime.parse(endTimeStr, timeFormatter);
+
+                        if (!now.isBefore(startTime) && !now.isAfter(endTime)) {
+                            checkAndLoadStudents();
+                        }
+                        if (now.isAfter(endTime)) {
+                            dao.markAbsent(scheduleId);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, 0, 60 * 1000); // every 1 min
     }
 
 }
