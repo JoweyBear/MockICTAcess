@@ -50,7 +50,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
     public void startEnrollment() throws UareUException {
         Selection.resetReader();
         int counter = 0;
-        int maxAttempts = requiredFmdToEnroll * 2; // e.g. 3 times the required scans
+        int maxAttempts = requiredFmdToEnroll * 2;
         int attempts = 0;
 
         PromptSwing.prompt(PromptSwing.START_CAPTURE);
@@ -92,6 +92,14 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
             return;
         }
 
+        Fmd finalFmd = fmdList.isEmpty() ? null : fmdList.get(0);
+        if (finalFmd != null && identificationThread.fmdIsAlreadyEnrolled(finalFmd, null)) {
+            PromptSwing.prompt(PromptSwing.ALREADY_ENROLLED);
+            updateProgress("Fingerprint already exists in database. Enrollment cancelled.", -1);
+            stopEnrollmentThread();
+            return;
+        }
+        
         // FMD List Compatibility Check before model creation
         for (Fmd fmd : fmdList) {
             if (fmd == null || fmd.getData() == null || fmd.getData().length < 100) {
@@ -161,16 +169,21 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
                     System.out.println("fmdToEnroll: " + fmdToEnroll);
                     System.out.println("fmdToEnroll data length: " + fmdToEnroll.getData().length);
 
-                    System.out.println("About to check if FMD is already enrolled...");
-                    if (!identificationThread.fmdIsAlreadyEnrolled(fmdToEnroll, fmdList)) {
-                        prefmd = new Engine.PreEnrollmentFmd();
-                        prefmd.fmd = fmdToEnroll;
-                        prefmd.view_index = 0;
-                        System.out.println("FMD Extracted");
-                    } else {
-                        PromptSwing.prompt(PromptSwing.ALREADY_ENROLLED);
-                        updateProgress("Fingerprint already exists. Please scan a different one.", -1);
-                    }
+                    prefmd = new Engine.PreEnrollmentFmd();
+                    prefmd.fmd = fmdToEnroll;
+                    prefmd.view_index = 0;
+                    System.out.println("FMD Extracted");
+
+//                    System.out.println("About to check if FMD is already enrolled...");
+//                    if (!identificationThread.fmdIsAlreadyEnrolled(fmdToEnroll, fmdList)) {
+//                        prefmd = new Engine.PreEnrollmentFmd();
+//                        prefmd.fmd = fmdToEnroll;
+//                        prefmd.view_index = 0;
+//                        System.out.println("FMD Extracted");
+//                    } else {
+//                        PromptSwing.prompt(PromptSwing.ALREADY_ENROLLED);
+//                        updateProgress("Fingerprint already exists. Please scan a different one.", -1);
+//                    }
                 } catch (UareUException e) {
                     updateProgress("Feature extraction failed.", -1);
                     System.out.println("Feature extraction failed");
@@ -209,7 +222,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
         if (captureThread != null) {
             captureThread.stopThread();
             try {
-                captureThread.join();  
+                captureThread.join();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }

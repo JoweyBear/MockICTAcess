@@ -12,6 +12,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 public class MainDAOImpl implements MainDAO {
@@ -20,22 +22,36 @@ public class MainDAOImpl implements MainDAO {
     ResultSet rs;
     Encryption de = new Encryption();
 
+    String testDay = "Monday";
+
     public MainDAOImpl() {
         conn = Ticket.getConn();
     }
 
     @Override
     public DefaultTableModel fetchSchedulesForToday() {
+//        String sql = "SELECT cs_id AS 'Schedule ID', "
+//                + "subject AS 'Subject', "
+//                + "section AS 'Section', "
+//                + "time_start AS 'Start Time', "
+//                + "time_end AS 'End Time' "
+//                + "FROM class_schedule "
+//                + "WHERE day = DAYNAME(CURDATE()) "
+//                + "ORDER BY time_start ASC";
+
         String sql = "SELECT cs_id AS 'Schedule ID', "
                 + "subject AS 'Subject', "
                 + "section AS 'Section', "
-                + "start_time AS 'Start Time', "
-                + "end_time AS 'End Time' "
+                + "time_start AS 'Start Time', "
+                + "time_end AS 'End Time' "
                 + "FROM class_schedule "
-                + "WHERE day_of_week = DAYNAME(CURDATE()) "
-                + "ORDER BY start_time ASC";
+                + "WHERE day = ? "
+                + "ORDER BY time_start ASC";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, testDay);
+            rs = ps.executeQuery();
 
             ResultSetMetaData md = rs.getMetaData();
             int columnCount = md.getColumnCount();
@@ -50,8 +66,8 @@ public class MainDAOImpl implements MainDAO {
                 row.add(rs.getString("Section"));
 
                 SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
-                row.add(sdf.format(rs.getTime("Time Start")));
-                row.add(sdf.format(rs.getString("End Time")));
+                row.add(sdf.format(rs.getTime("Start Time")));
+                row.add(sdf.format(rs.getTime("End Time")));
 
                 data.add(row);
             }
@@ -70,9 +86,9 @@ public class MainDAOImpl implements MainDAO {
         String sql = "SELECT u.user_id AS 'Student ID', "
                 + "u.fname AS 'First Name', "
                 + "u.lname AS 'Last Name' "
-                + "FROM user u "
-                + "JOIN student_schedule ss ON u.user_id = ss.user_id "
-                + "WHERE ss.cs_id = ?";
+                + "FROM class_student ss "
+                + "JOIN user u ON ss.student_user_id = u.user_id "
+                + "WHERE ss.class_schedule_id = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, scheduleId);
@@ -81,13 +97,13 @@ public class MainDAOImpl implements MainDAO {
                 ResultSetMetaData md = rs.getMetaData();
                 int columnCount = md.getColumnCount();
 
-                Vector<String> columnNames = new Vector<>(Arrays.asList("Student ID", "Firt Name", "Last Name", "Status", "Time"));
+                Vector<String> columnNames = new Vector<>(Arrays.asList("Student ID", "First Name", "Last Name", "Status", "Time"));
 
                 Vector<Vector<Object>> data = new Vector<>();
                 while (rs.next()) {
                     Vector<Object> row = new Vector<>();
 
-                    String firstName = de.decrypt(rs.getString("Student ID"));
+                    String firstName = de.decrypt(rs.getString("First Name"));
                     String lastName = de.decrypt(rs.getString("Last Name"));
 
                     row.add(rs.getString("Student ID"));
@@ -141,13 +157,22 @@ public class MainDAOImpl implements MainDAO {
 
     @Override
     public void saveAttendance(String studentId, String scheduleId) {
-        String sql = "INSERT INTO attendance (student_user_id, class_schedule_id, att_date_time, status)\n"
+        String sql = "INSERT INTO attendance (student_user_id, class_schedule_id, att_date_time, status) "
                 + "SELECT ?, ?, NOW(), ? "
                 + "FROM DUAL "
                 + "WHERE NOT EXISTS (SELECT 1 FROM attendance "
                 + "WHERE student_user_id = ? AND class_schedule_id = ?"
-                + " AND DATE(att_date_time) = CURDATE());";
-        
+                + " AND DATE(att_date_time) = CURDATE())";
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, studentId);
+            ps.setString(2, scheduleId);
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
 }

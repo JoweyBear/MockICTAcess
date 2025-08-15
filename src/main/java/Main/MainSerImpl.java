@@ -17,12 +17,16 @@ public class MainSerImpl implements MainService {
 
     MainFrame frame;
     MainDAO dao = new MainDAOImpl();
+    private String scheduleID;
+
+    private String testTime = "13:00:00";
 
     public MainSerImpl(MainFrame frame) {
         this.frame = frame;
 
-        checkAndLoadStudents();
-        startScheduleChecker();
+        loadSchedulesForToday();
+
+//        startScheduleChecker();
     }
 
     @Override
@@ -37,13 +41,16 @@ public class MainSerImpl implements MainService {
 
     @Override
     public void checkAndLoadStudents() {
-        LocalTime now = LocalTime.now();
+//        LocalTime now = LocalTime.now();
+        LocalTime now = LocalTime.parse(testTime);
+        System.out.println("Time: " + now);
 //        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
 
         for (int row = 0; row < frame.jTable2.getRowCount(); row++) {
             try {
-                String scheduleID = frame.jTable2.getValueAt(row, 0).toString();
+                String scheduleId = frame.jTable2.getValueAt(row, 0).toString();
+                String subject = frame.jTable2.getValueAt(row, 1).toString();
                 String startTimeStr = frame.jTable2.getValueAt(row, 3).toString();
                 String endTimeStr = frame.jTable2.getValueAt(row, 4).toString();
 
@@ -51,14 +58,17 @@ public class MainSerImpl implements MainService {
                 LocalTime endTime = LocalTime.parse(endTimeStr, timeFormatter);
 
                 if (!now.isBefore(startTime) && !now.isAfter(endTime)) {
-                    String scheduleId = frame.jTable2.getValueAt(row, 0).toString();
 
-                    frame.subject.setText(scheduleID);
+                    scheduleID = scheduleId;
+                    frame.subject.setText(subject);
                     frame.startTime.setText(startTimeStr);
                     frame.endTime.setText(endTimeStr);
 
                     DefaultTableModel studentsModel = dao.fetchStudentsBySchedule(scheduleId);
                     frame.jTable1.setModel(studentsModel);
+                    
+                    
+                    new Thread(() -> checkAndVerifyStudents()).start();
 
                     System.out.println("Loaded students for schedule: " + scheduleId);
                     break;
@@ -100,7 +110,7 @@ public class MainSerImpl implements MainService {
                 } else {
                     String currentStatus = frame.jTable1.getValueAt(rowIndex, 3).toString();
                     String scheduledStartTime = frame.startTime.getText();
-                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
                     LocalTime now = LocalTime.now();
                     LocalTime startTime = LocalTime.parse(scheduledStartTime, timeFormatter);
                     String timeIn = now.format(DateTimeFormatter.ofPattern("hh:mm a"));
@@ -115,6 +125,11 @@ public class MainSerImpl implements MainService {
                         frame.jTable1.setValueAt(timeIn, rowIndex, 4);
                         JOptionPane.showMessageDialog(null,
                                 "Student " + matchedStudent.getFname() + " is in current class.\nAttendance marked.");
+
+                        System.out.println("Class ID: " + scheduleID);
+
+                        dao.saveAttendance(studentId, scheduleID);
+
                         // Optionally, save to DB here
                         // ServiceLayer.markAttendance(studentId);
                     }
@@ -144,7 +159,8 @@ public class MainSerImpl implements MainService {
         timer.scheduleAtFixedRate(new java.util.TimerTask() {
             @Override
             public void run() {
-                LocalTime now = LocalTime.now();
+//                LocalTime now = LocalTime.now();
+                LocalTime now = LocalTime.parse(testTime);
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
 
                 for (int row = 0; row < frame.jTable2.getRowCount(); row++) {
@@ -168,6 +184,13 @@ public class MainSerImpl implements MainService {
                 }
             }
         }, 0, 60 * 1000); // every 1 min
+    }
+
+    @Override
+    public void loadSchedulesForToday() {
+        DefaultTableModel model = dao.fetchSchedulesForToday();
+        frame.jTable2.setModel(model);
+        checkAndLoadStudents();
     }
 
 }
