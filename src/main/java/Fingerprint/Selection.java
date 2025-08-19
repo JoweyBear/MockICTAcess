@@ -23,6 +23,34 @@ public class Selection extends Thread {
         return readerCollection;
     }
 
+    public static boolean isAnotherThreadCapturing() {
+        return ThreadFlags.captureInProgress;
+    }
+
+    public static void setCaptureInProgress(boolean inProgress) {
+        ThreadFlags.captureInProgress = inProgress;
+    }
+
+    public static void requestCurrentCaptureCancel() {
+        // Send cancel signal to the active capture owner
+        if (Selection.reader != null) {
+            try {
+                Selection.reader.CancelCapture();
+            } catch (Exception e) {
+                System.err.println("Cancel failed: " + e.getMessage());
+            }
+        }
+    }
+
+    public static void waitForCaptureToFinish() {
+        while (ThreadFlags.captureInProgress) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ignored) {
+            }
+        }
+    }
+
     public static boolean readerIsConnected() {
         try {
             ReaderCollection readerCollection = getReaderCollection();
@@ -93,12 +121,12 @@ public class Selection extends Thread {
             if (readers != null && !readers.isEmpty()) {
                 if (reader != null) {
                     try {
-                        reader.Close(); 
+                        reader.Close();
                     } catch (UareUException e) {
                         System.out.println("resetReader: Failed to close old reader.");
                     }
                 }
-                reader = readers.get(0); 
+                reader = readers.get(0);
                 reader.Open(Reader.Priority.COOPERATIVE);
                 System.out.println("resetReader: Reader has been reset and reopened.");
             } else {

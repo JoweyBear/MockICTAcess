@@ -69,7 +69,7 @@ public class VerificationThread extends Thread {
         captureThread.start();
         captureThread.join();
 
-        isCaptureCanceled = captureThread.isCaptureCanceled;
+//        isCaptureCanceled = captureThread.isCaptureCanceled;
         CaptureThread.CaptureEvent evt = captureThread.getLastCapture();
 
         if (evt == null || evt.captureResult.image == null) {

@@ -19,13 +19,14 @@ public class LoginController {
             service.login();
             System.out.println("enter clicked");
         });
-        this.frameFP.forPass.addActionListener((ActionEvent e) ->{
+        this.frameFP.forPass.addActionListener((ActionEvent e) -> {
             frameFP.setVisible(false);
             frame.setVisible(true);
         });
-        this.frameFP.lgn.addActionListener((ActionEvent e) ->{
+        this.frameFP.lgn.addActionListener((ActionEvent e) -> {
 //            service.authentication();
             service.identifyAdmin();
+//            service.checkThreadsActivity();
         });
         this.frame.psswrd.addKeyListener(new KeyListener() {
             public void actionPerformed(KeyEvent evt) {
@@ -39,7 +40,7 @@ public class LoginController {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     service.login();
                     System.out.println("enter clicked");
                 }

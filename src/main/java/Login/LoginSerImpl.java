@@ -252,4 +252,23 @@ public class LoginSerImpl implements LoginService {
 
     }
 
-}
+    @Override
+    public void checkThreadsActivity() {
+        if (Selection.reader != null && Selection.readerIsConnected()) {
+            System.out.println("Reader is already open and connected");
+
+            if (Selection.isAnotherThreadCapturing()) {
+                identifyAdmin();
+            } else {
+                System.out.println("Another capture uis in progress -- cancelling..");
+                Selection.requestCurrentCaptureCancel();
+                Selection.waitForCaptureToFinish();
+               identifyAdmin();
+            }
+        } else {
+            System.out.println("Reader is not open..Opeining..");
+            Selection.resetReader();
+            identifyAdmin();
+        }
+    }
+    }

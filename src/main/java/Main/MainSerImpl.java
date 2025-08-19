@@ -17,23 +17,23 @@ import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
 public class MainSerImpl implements MainService {
-
+    
     MainFrame frame;
     MainDAO dao = new MainDAOImpl();
     private String scheduleID;
     private final ExecutorService scanExecutor = Executors.newSingleThreadExecutor();
     private volatile boolean scanningActive = false;
-
+    
     private String testTime = "13:00:00";
-
+    
     public MainSerImpl(MainFrame frame) {
         this.frame = frame;
-
+        
         loadSchedulesForToday();
 
 //        startScheduleChecker();
     }
-
+    
     @Override
     public void loginButton() {
         LoginFrame lgnfrm = new LoginFrame();
@@ -43,7 +43,7 @@ public class MainSerImpl implements MainService {
         lgnfrmFP.setVisible(true);
         frame.setVisible(false);
     }
-
+    
     @Override
     public void checkAndLoadStudents() {
 //        LocalTime now = LocalTime.now();
@@ -51,39 +51,40 @@ public class MainSerImpl implements MainService {
         System.out.println("Time: " + now);
 //        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
-
+        
         for (int row = 0; row < frame.jTable2.getRowCount(); row++) {
             try {
                 String scheduleId = frame.jTable2.getValueAt(row, 0).toString();
                 String subject = frame.jTable2.getValueAt(row, 1).toString();
                 String startTimeStr = frame.jTable2.getValueAt(row, 3).toString();
                 String endTimeStr = frame.jTable2.getValueAt(row, 4).toString();
-
+                
                 LocalTime startTime = LocalTime.parse(startTimeStr, timeFormatter);
                 LocalTime endTime = LocalTime.parse(endTimeStr, timeFormatter);
-
+                
                 if (!now.isBefore(startTime) && !now.isAfter(endTime)) {
-
+                    
                     scheduleID = scheduleId;
                     frame.subject.setText(subject);
                     frame.startTime.setText(startTimeStr);
                     frame.endTime.setText(endTimeStr);
-
+                    
                     DefaultTableModel studentsModel = dao.fetchStudentsBySchedule(scheduleId);
                     frame.jTable1.setModel(studentsModel);
-
-                    startScanLoop();
-
+                    
+//                    startScanLoop();
+                    
                     System.out.println("Loaded students for schedule: " + scheduleId);
                     break;
                 }
-
+                
             } catch (Exception e) {
                 System.err.println("Error parsing time for row " + row + ": " + e.getMessage());
             }
         }
-    }
 
+    }
+    
     @Override
 //    public void checkAndVerifyStudents() {
 //        try {
@@ -151,10 +152,10 @@ public class MainSerImpl implements MainService {
         // Run heavy fingerprint + DB logic off the EDT
         new Thread(() -> {
             try {
-                Selection.resetReader();
+//                Selection.resetReader();
                 ReaderCollection readers = UareUGlobal.GetReaderCollection();
                 readers.GetReaders();
-
+                
                 if (readers.size() == 0 || readers.get(0) == null) {
                     SwingUtilities.invokeLater(()
                             -> JOptionPane.showMessageDialog(null, "No fingerprint reader found.")
@@ -162,13 +163,17 @@ public class MainSerImpl implements MainService {
                     return;
                 }
                 Selection.reader = readers.get(0);
-
-                IdentificationThread idThread = new IdentificationThread(null, null);
+                
+                IdentificationThread idThread = new IdentificationThread();
                 idThread.start();
-                idThread.join();
-
+                try {
+                    idThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                
                 FingerprintModel matchedStudent = idThread.getIdentifiedUser();
-
+                
                 if (matchedStudent != null) {
                     handleMatchedStudent(matchedStudent);
                 } else {
@@ -176,7 +181,7 @@ public class MainSerImpl implements MainService {
                             -> JOptionPane.showMessageDialog(null, "No matching fingerprint found.")
                     );
                 }
-
+                
             } catch (Exception e) {
                 e.printStackTrace();
                 SwingUtilities.invokeLater(()
@@ -185,7 +190,27 @@ public class MainSerImpl implements MainService {
             }
         }).start();
     }
-
+    
+    private void checkThreadsActivity() {
+        if (Selection.reader != null && Selection.readerIsConnected()) {
+            System.out.println("Reader is already open and connected");
+            
+            if (Selection.isAnotherThreadCapturing()) {
+                checkAndVerifyStudents();
+            } else {
+                System.out.println("Another capture uis in progress -- cancelling..");
+                Selection.requestCurrentCaptureCancel();
+                Selection.waitForCaptureToFinish();
+                checkAndVerifyStudents();
+            }
+        } else {
+            System.out.println("Reader is not open..Opeining..");
+            Selection.resetReader();
+            checkAndVerifyStudents();
+        }
+        
+    }
+    
     private int getStudentRowIndex(String studentId) {
         for (int row = 0; row < frame.jTable1.getRowCount(); row++) {
             String idInTable = frame.jTable1.getValueAt(row, 0).toString();
@@ -195,7 +220,7 @@ public class MainSerImpl implements MainService {
         }
         return -1;
     }
-
+    
     private void startScheduleChecker() {
         java.util.Timer timer = new java.util.Timer(true);
         timer.scheduleAtFixedRate(new java.util.TimerTask() {
@@ -204,16 +229,16 @@ public class MainSerImpl implements MainService {
 //                LocalTime now = LocalTime.now();
                 LocalTime now = LocalTime.parse(testTime);
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
-
+                
                 for (int row = 0; row < frame.jTable2.getRowCount(); row++) {
                     String startTimeStr = frame.jTable2.getValueAt(row, 3).toString();
                     String endTimeStr = frame.jTable2.getValueAt(row, 4).toString();
                     String scheduleId = frame.jTable2.getValueAt(row, 0).toString();
-
+                    
                     try {
                         LocalTime startTime = LocalTime.parse(startTimeStr, timeFormatter);
                         LocalTime endTime = LocalTime.parse(endTimeStr, timeFormatter);
-
+                        
                         if (!now.isBefore(startTime) && !now.isAfter(endTime)) {
                             checkAndLoadStudents();
                         }
@@ -228,14 +253,14 @@ public class MainSerImpl implements MainService {
             }
         }, 0, 60 * 1000); // every 1 min
     }
-
+    
     @Override
     public void loadSchedulesForToday() {
         DefaultTableModel model = dao.fetchSchedulesForToday();
         frame.jTable2.setModel(model);
         checkAndLoadStudents();
     }
-
+    
     private void startScanLoop() {
 //        if (scanTimer != null && scanTimer.isRunning()) {
 //            scanTimer.stop(); // avoid duplicate timers
@@ -250,12 +275,13 @@ public class MainSerImpl implements MainService {
             System.out.println("Scan loop already running.");
             return;
         }
-
+        
         scanningActive = true;
         scanExecutor.submit(() -> {
             System.out.println("Started fingerprint scan loop.");
             while (scanningActive) {
-                checkAndVerifyStudents(); // runs async, already non-blocking
+                checkThreadsActivity();
+//                checkAndVerifyStudents(); // runs async, already non-blocking
                 try {
                     Thread.sleep(5000); // 5-second interval, adjust as needed
                 } catch (InterruptedException e) {
@@ -265,9 +291,9 @@ public class MainSerImpl implements MainService {
             }
             System.out.println("Scan loop ended.");
         });
-
+        
     }
-
+    
     private void stopScanLoop() {
 //        if (scanTimer != null && scanTimer.isRunning()) {
 //            scanTimer.stop();
@@ -277,27 +303,27 @@ public class MainSerImpl implements MainService {
             return;
         }
         scanningActive = false;
-
+        
     }
-
+    
     private void handleMatchedStudent(FingerprintModel matchedStudent) {
         SwingUtilities.invokeLater(() -> {
             String studentId = matchedStudent.getUser_id();
             int rowIndex = getStudentRowIndex(studentId);
-
+            
             if (rowIndex == -1) {
                 JOptionPane.showMessageDialog(null,
                         "Student " + matchedStudent.getFname() + " is NOT in this class schedule.");
                 return;
             }
-
+            
             String currentStatus = frame.jTable1.getValueAt(rowIndex, 3).toString();
             String scheduledStartTime = frame.startTime.getText();
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
             LocalTime now = LocalTime.now();
             LocalTime startTime = LocalTime.parse(scheduledStartTime, timeFormatter);
             String timeIn = now.format(DateTimeFormatter.ofPattern("hh:mm a"));
-
+            
             if ("Present".equalsIgnoreCase(currentStatus) || "Late".equalsIgnoreCase(currentStatus)) {
                 JOptionPane.showMessageDialog(null,
                         "Student " + matchedStudent.getFname() + " has already been marked.");
@@ -305,13 +331,13 @@ public class MainSerImpl implements MainService {
                 String status = now.isAfter(startTime.plusMinutes(15)) ? "Late" : "Present";
                 frame.jTable1.setValueAt(status, rowIndex, 3);
                 frame.jTable1.setValueAt(timeIn, rowIndex, 4);
-
+                
                 JOptionPane.showMessageDialog(null,
                         "Student " + matchedStudent.getFname() + " is in current class.\nAttendance marked.");
-
+                
                 dao.saveAttendance(studentId, scheduleID);
             }
         });
     }
-
+    
 }

@@ -46,7 +46,7 @@ public class IdentificationThread extends Thread {
     }
 
     public void startIdentification() throws InterruptedException, UareUException {
-        Selection.resetReader();
+//        Selection.resetReader();
         System.out.println("Identification Thread Started");
 
         while (runThisThread) {
@@ -329,7 +329,9 @@ public class IdentificationThread extends Thread {
 
     @Override
     public void run() {
+
         try {
+            Selection.setCaptureInProgress(true);
             startIdentification();
         } catch (InterruptedException | UareUException ex) {
             Logger.getLogger(IdentificationThread.class.getName()).log(Level.SEVERE, null, ex);

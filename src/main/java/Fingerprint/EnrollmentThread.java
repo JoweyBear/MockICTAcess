@@ -99,7 +99,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
             stopEnrollmentThread();
             return;
         }
-        
+
         // FMD List Compatibility Check before model creation
         for (Fmd fmd : fmdList) {
             if (fmd == null || fmd.getData() == null || fmd.getData().length < 100) {
@@ -197,7 +197,9 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
     }
 
     private CaptureResult getCaptureResultFromCaptureThread(JLabel label) {
-        captureThread = new CaptureThread(label);
+
+        captureThread = new CaptureThread("Enrollment", 3000, label);
+
         captureThread.start();
         try {
             captureThread.join();
@@ -233,6 +235,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
     @Override
     public void run() {
         try {
+            Selection.setCaptureInProgress(true);
             System.out.println("Checking if reader is connected (no logging)...");
             if (Selection.readerIsConnected_noLogging()) {
                 startEnrollment();
@@ -240,6 +243,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
                 PromptSwing.prompt(PromptSwing.READER_DISCONNECTED);
                 updateProgress("Reader disconnected. Enrollment cancelled.", -1);
                 stopEnrollmentThread();
+                Selection.setCaptureInProgress(false);
             }
         } catch (UareUException ex) {
             Logger.getLogger(EnrollmentThread.class.getName()).log(Level.SEVERE, null, ex);
