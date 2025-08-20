@@ -19,7 +19,6 @@ public class MainController {
         service = new MainSerImpl(frame);
         
         //        JComponent root = frame.getRootPane();
-//JComponent root = mainPanel; // e.g., the panel with your scanner UI
 //root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
 //    .put(KeyStroke.getKeyStroke(KeyEvent.VK_O, 0), "verifyStudent");
 //root.getActionMap().put("verifyStudent", verifyStudentAction);
