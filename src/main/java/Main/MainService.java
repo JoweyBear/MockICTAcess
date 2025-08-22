@@ -1,5 +1,7 @@
 package Main;
 
+import Student.StudentModel;
+import java.util.Map;
 import javax.swing.JTable;
 
 public interface MainService {
@@ -9,6 +11,8 @@ public interface MainService {
     void loginButton();
 
     void checkAndLoadStudents();
+
+    Map<String, StudentModel> preloadClassStudents(String scheduleCode);
 
     void checkAndVerifyStudents();
 }

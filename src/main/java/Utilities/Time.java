@@ -14,7 +14,7 @@ import java.util.Locale;
 public class Time {
 
     MainFrame frame;
-    DateFormat df = new SimpleDateFormat("MMM. dd, yyyy", Locale.ENGLISH);
+    DateFormat df = new SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH);
     DateFormat tf = new SimpleDateFormat("hh:mm:ss a", Locale.ENGLISH);
 
     public Time(MainFrame frame) {

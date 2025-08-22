@@ -37,7 +37,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
-import utilities.FingerprintCapture;
+
 
 public class FacultyServiceImpl implements FacultyService {
 
@@ -53,7 +53,6 @@ public class FacultyServiceImpl implements FacultyService {
     private byte[] fingerprintImageAdd;
     private byte[] fingerprintTemplateEdit;
     private byte[] fingerprintImageEdit;
-    FingerprintCapture scanner;
 
     public FacultyServiceImpl(AddFaPanel fAdd, EditFaPanel fEdit, FacultyPanel faPanel, ViewFacultyDialog viewDialog) {
         this.fAdd = fAdd;

@@ -44,7 +44,7 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
-import utilities.FingerprintCapture;
+
 
 public class AdminSerImpl implements AdminService {
 
@@ -60,7 +60,6 @@ public class AdminSerImpl implements AdminService {
     private byte[] fingerprintImageAdd;
     private byte[] fingerprintTemplateEdit;
     private byte[] fingerprintImageEdit;
-    FingerprintCapture scanner = new FingerprintCapture();
 
     public AdminSerImpl(AdminPanel adminPanel, AddAdPanel addPanel, EditAdPanel editPanel, ViewAdminDialog viewDialog) {
         this.adminPanel = adminPanel;

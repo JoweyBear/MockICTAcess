@@ -18,10 +18,6 @@ public class MainController {
         this.frame.buttonListener(new ButtonEvent());
         service = new MainSerImpl(frame);
         
-        //        JComponent root = frame.getRootPane();
-//root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-//    .put(KeyStroke.getKeyStroke(KeyEvent.VK_O, 0), "verifyStudent");
-//root.getActionMap().put("verifyStudent", verifyStudentAction);
 
         this.frame.addKeyListener(new KeyListener() {
             public void actionPerformed(KeyEvent evt) {

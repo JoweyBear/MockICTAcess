@@ -35,7 +35,7 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import utilities.FingerprintCapture;
+
 
 public class StudentServiceImpl implements StudentService {
 
@@ -51,7 +51,6 @@ public class StudentServiceImpl implements StudentService {
     private byte[] fingerprintImageAdd;
     private byte[] fingerprintTemplateEdit;
     private byte[] fingerprintImageEdit;
-    FingerprintCapture scanner;
     String collegeOfLoggedInAdmin = GlobalVar.loggedInAdmin.getCollge();
 
     public StudentServiceImpl(AddStudPanel sAdd, EditStudPanel sEdit, StudentPanel sPanel, ViewStudentDialog viewDialog) {

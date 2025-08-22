@@ -55,21 +55,8 @@ public class AttendanceThread {
 
     public void onFingerprintCaptured() {
 
-        while (Selection.readerIsConnected_noLogging()) {
+//        while (Selection.readerIsConnected_noLogging()) {
             try {
-                if (reader == null) {
-                    System.out.println("startCapture: Selection.reader is null!");
-                    break;
-                }
-                if (reader.GetCapabilities() == null) {
-                    System.out.println("startCapture: Selection.reader.GetCapabilities() is null!");
-                    break;
-                }
-                if (reader.GetCapabilities().resolutions == null
-                        || reader.GetCapabilities().resolutions.length == 0) {
-                    System.out.println("startCapture: No resolutions available in reader capabilities!");
-                    break;
-                }
                 while (retryCount < maxRetries) {
                     if (Thread.currentThread().isInterrupted()) {
                         System.out.println("Capture thread interrupted");
@@ -123,7 +110,6 @@ public class AttendanceThread {
             } catch (UareUException | InterruptedException ex) {
                 Logger.getLogger(AttendanceThread.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
     }
 
     public void startAttendance() throws InterruptedException, UareUException {

@@ -2,21 +2,22 @@ package Main;
 
 import Fingerprint.AttendanceThread;
 import Fingerprint.FingerprintModel;
-import Fingerprint.IdentificationThread;
 import Fingerprint.Selection;
 import Main.Views.MainFrame;
 import Login.*;
-import com.digitalpersona.uareu.ReaderCollection;
+import Student.StudentModel;
 import com.digitalpersona.uareu.UareUException;
-import com.digitalpersona.uareu.UareUGlobal;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
 public class MainSerImpl implements MainService {
@@ -26,6 +27,7 @@ public class MainSerImpl implements MainService {
     private String scheduleID;
     private final ExecutorService scanExecutor = Executors.newSingleThreadExecutor();
     private volatile boolean scanningActive = false;
+    private Map<String, StudentModel> studentMap;
 
     private String testTime = "13:00:00";
 
@@ -55,12 +57,12 @@ public class MainSerImpl implements MainService {
 //        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
 
-        for (int row = 0; row < frame.jTable2.getRowCount(); row++) {
+        for (int row = 0; row < frame.jTable1.getRowCount(); row++) {
             try {
-                String scheduleId = frame.jTable2.getValueAt(row, 0).toString();
-                String subject = frame.jTable2.getValueAt(row, 1).toString();
-                String startTimeStr = frame.jTable2.getValueAt(row, 3).toString();
-                String endTimeStr = frame.jTable2.getValueAt(row, 4).toString();
+                String scheduleId = frame.jTable1.getValueAt(row, 0).toString();
+                String subject = frame.jTable1.getValueAt(row, 1).toString();
+                String startTimeStr = frame.jTable1.getValueAt(row, 3).toString();
+                String endTimeStr = frame.jTable1.getValueAt(row, 4).toString();
 
                 LocalTime startTime = LocalTime.parse(startTimeStr, timeFormatter);
                 LocalTime endTime = LocalTime.parse(endTimeStr, timeFormatter);
@@ -72,8 +74,9 @@ public class MainSerImpl implements MainService {
                     frame.startTime.setText(startTimeStr);
                     frame.endTime.setText(endTimeStr);
 
-                    DefaultTableModel studentsModel = dao.fetchStudentsBySchedule(scheduleId);
-                    frame.jTable1.setModel(studentsModel);
+                    studentMap = preloadClassStudents(scheduleId);
+//                    DefaultTableModel studentsModel = dao.fetchStudentsBySchedule(scheduleId);
+//                    frame.jTable1.setModel(studentsModel);
 
                     startScanLoop();
                     System.out.println("Loaded students for schedule: " + scheduleId);
@@ -88,68 +91,6 @@ public class MainSerImpl implements MainService {
     }
 
     @Override
-//    public void checkAndVerifyStudents() {
-//        try {
-//            Selection.resetReader();
-//            ReaderCollection readers = UareUGlobal.GetReaderCollection();
-//            readers.GetReaders();
-//
-//            if (readers.size() == 0 || readers.get(0) == null) {
-//                JOptionPane.showMessageDialog(null, "No fingerprint reader found.");
-//                return;
-//            }
-//            Selection.reader = readers.get(0);
-//
-//            IdentificationThread idThread = new IdentificationThread(null, null);
-//            idThread.start();
-//            idThread.join();
-//
-//            FingerprintModel matchedStudent = idThread.getIdentifiedUser();
-//
-//            if (matchedStudent != null) {
-//                String studentId = matchedStudent.getUser_id();
-//
-//                int rowIndex = getStudentRowIndex(studentId);
-//
-//                if (rowIndex == -1) {
-//                    JOptionPane.showMessageDialog(null,
-//                            "Student " + matchedStudent.getFname() + " is NOT in this class schedule.");
-//                } else {
-//                    String currentStatus = frame.jTable1.getValueAt(rowIndex, 3).toString();
-//                    String scheduledStartTime = frame.startTime.getText();
-//                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
-//                    LocalTime now = LocalTime.now();
-//                    LocalTime startTime = LocalTime.parse(scheduledStartTime, timeFormatter);
-//                    String timeIn = now.format(DateTimeFormatter.ofPattern("hh:mm a"));
-//
-//                    if ("Present".equalsIgnoreCase(currentStatus) || "Late".equalsIgnoreCase(currentStatus)) {
-//                        JOptionPane.showMessageDialog(null,
-//                                "Student " + matchedStudent.getFname() + " has already been marked.");
-//                    } else {
-//                        String status = now.isAfter(startTime.plusMinutes(15)) ? "Late" : "Present";
-//
-//                        frame.jTable1.setValueAt(status, rowIndex, 3);
-//                        frame.jTable1.setValueAt(timeIn, rowIndex, 4);
-//                        JOptionPane.showMessageDialog(null,
-//                                "Student " + matchedStudent.getFname() + " is in current class.\nAttendance marked.");
-//
-//                        System.out.println("Class ID: " + scheduleID);
-//
-//                        dao.saveAttendance(studentId, scheduleID);
-//
-//                        // Optionally, save to DB here
-//                        // ServiceLayer.markAttendance(studentId);
-//                    }
-//                }
-//            } else {
-//                JOptionPane.showMessageDialog(null, "No matching fingerprint found.");
-//            }
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
-//        }
-//    }
     public void checkAndVerifyStudents() {
         JProgressBar progressBar = new JProgressBar();
         progressBar.setMinimum(0);
@@ -172,7 +113,8 @@ public class MainSerImpl implements MainService {
 
         FingerprintModel user = attendanceThread.getIdentifiedUser();
         if (user != null) {
-            handleMatchedStudent(user);
+            String userId = user.getUser_id();
+            handleMatchedStudent(userId);
         } else {
             System.out.println("No user identified.");
         }
@@ -201,8 +143,8 @@ public class MainSerImpl implements MainService {
     }
 
     private int getStudentRowIndex(String studentId) {
-        for (int row = 0; row < frame.jTable1.getRowCount(); row++) {
-            String idInTable = frame.jTable1.getValueAt(row, 0).toString();
+        for (int row = 0; row < frame.jTable2.getRowCount(); row++) {
+            String idInTable = frame.jTable2.getValueAt(row, 0).toString();
             if (idInTable.equals(studentId)) {
                 return row;
             }
@@ -219,22 +161,28 @@ public class MainSerImpl implements MainService {
                 LocalTime now = LocalTime.parse(testTime);
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:mm a");
 
-                for (int row = 0; row < frame.jTable2.getRowCount(); row++) {
-                    String startTimeStr = frame.jTable2.getValueAt(row, 3).toString();
-                    String endTimeStr = frame.jTable2.getValueAt(row, 4).toString();
-                    String scheduleId = frame.jTable2.getValueAt(row, 0).toString();
+                for (int row = 0; row < frame.jTable1.getRowCount(); row++) {
+                    String startTimeStr = frame.jTable1.getValueAt(row, 3).toString();
+                    String endTimeStr = frame.jTable1.getValueAt(row, 4).toString();
+                    String scheduleId = frame.jTable1.getValueAt(row, 0).toString();
 
                     try {
                         LocalTime startTime = LocalTime.parse(startTimeStr, timeFormatter);
                         LocalTime endTime = LocalTime.parse(endTimeStr, timeFormatter);
+                        LocalTime graceEndTime = endTime.plusMinutes(15);
 
                         if (!now.isBefore(startTime) && !now.isAfter(endTime)) {
                             checkAndLoadStudents();
                         }
-                        if (now.isAfter(endTime)) {
+                        if (now.isAfter(graceEndTime)) {
                             dao.markAbsent(scheduleId);
-                            stopScanLoop();
+                            System.out.println("Grace period ended. Marking absentees.");
+                            // stopScanLoop(); 
+                        } else {
+                            System.out.println("Class ended, but still within grace period for time-out.");
+                            // continue waiting for time-out scans
                         }
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -295,38 +243,111 @@ public class MainSerImpl implements MainService {
 
     }
 
-    private void handleMatchedStudent(FingerprintModel matchedStudent) {
+    private void handleMatchedStudent(String userId) {
         SwingUtilities.invokeLater(() -> {
-            String studentId = matchedStudent.getUser_id();
-            int rowIndex = getStudentRowIndex(studentId);
+            StudentModel matchedStudent = studentMap.get(userId);
 
-            if (rowIndex == -1) {
+            String studentId = matchedStudent.getStud_id();
+
+            if (matchedStudent == null || matchedStudent.getStud_id() == null) {
                 JOptionPane.showMessageDialog(null,
-                        "Student " + matchedStudent.getFname() + " is NOT in this class schedule.");
+                        "Student with ID " + userId + " is NOT in this class schedule.");
                 return;
             }
 
-            String currentStatus = frame.jTable1.getValueAt(rowIndex, 3).toString();
+            int rowIndex = getStudentRowIndex(studentId);
+            if (rowIndex == -1) {
+                JOptionPane.showMessageDialog(null,
+                        "Student " + matchedStudent.getFname() + " is enrolled but not found in the table.\n"
+                        + "Please refresh the class roster or check for mismatches.");
+                return;
+            }
+
+            String timeInRow = frame.jTable2.getValueAt(rowIndex, 3).toString();
+            String timeOutRow = frame.jTable2.getValueAt(rowIndex, 4).toString();
             String scheduledStartTime = frame.startTime.getText();
+            String scheduledEndTime = frame.endTime.getText();
             DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
             LocalTime now = LocalTime.now();
             LocalTime startTime = LocalTime.parse(scheduledStartTime, timeFormatter);
-            String timeIn = now.format(DateTimeFormatter.ofPattern("hh:mm a"));
+            LocalTime endTime = LocalTime.parse(scheduledEndTime, timeFormatter);
 
-            if ("Present".equalsIgnoreCase(currentStatus) || "Late".equalsIgnoreCase(currentStatus)) {
+            long classDuration = Duration.between(startTime, endTime).toMinutes();
+            long currentDuration = Duration.between(startTime, now).toMinutes();
+
+            if (!timeInRow.isEmpty() && currentDuration < classDuration) {
                 JOptionPane.showMessageDialog(null,
-                        "Student " + matchedStudent.getFname() + " has already been marked.");
+                        "Student " + matchedStudent.getFname() + " has already timed in and class is still ongoing.");
             } else {
-                String status = now.isAfter(startTime.plusMinutes(15)) ? "Late" : "Present";
-                frame.jTable1.setValueAt(status, rowIndex, 3);
-                frame.jTable1.setValueAt(timeIn, rowIndex, 4);
-
+                String timeIn = now.format(DateTimeFormatter.ofPattern("hh:mm a"));
+                frame.jTable2.setValueAt(timeIn, rowIndex, 3);
                 JOptionPane.showMessageDialog(null,
                         "Student " + matchedStudent.getFname() + " is in current class.\nAttendance marked.");
-
-                dao.saveAttendance(studentId, scheduleID);
+//                String status = now.isAfter(startTime.plusMinutes(15)) ? "Late" : "Present";
+//                dao.saveAttendance(studentId, scheduleID);
+            }
+            if (!timeOutRow.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Student already timed out.");
+                return;
+            }
+            if (!timeInRow.isEmpty() && now.isAfter(endTime)) {
+                String timeOut = now.format(DateTimeFormatter.ofPattern("hh: mm a"));
+                frame.jTable2.setValueAt(timeOut, rowIndex, 4);
             }
         });
     }
 
+    @Override
+    public Map<String, StudentModel> preloadClassStudents(String scheduleCode) {
+        List<StudentModel> students = dao.fetchStudentsBySchedule(scheduleID);
+        Map<String, StudentModel> studentMap = new HashMap<>();
+
+        for (StudentModel student : students) {
+            if (student != null && student.getStud_id() != null) {
+                studentMap.put(student.getStud_id(), student);
+            }
+        }
+
+        return studentMap;
+    }
+
+    private void saveAttendance() {
+        for (int row = 0; row < frame.jTable2.getRowCount(); row++) {
+            String scheduleId = scheduleID;
+            String studentId = frame.jTable2.getValueAt(row, 0).toString();
+            String timeInStr = frame.jTable2.getValueAt(row, 3).toString();
+            String timeOutStr = frame.jTable2.getValueAt(row, 4).toString();
+            String startTimeStr = frame.startTime.getText().trim();
+            String endTimeStr = frame.endTime.getText().trim();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a");
+
+            try {
+                LocalTime startTime = LocalTime.parse(startTimeStr, formatter);
+                LocalTime endTime = LocalTime.parse(endTimeStr, formatter);
+                LocalTime graceEndTime = endTime.plusMinutes(15);
+                LocalTime late = startTime.plusMinutes(15);
+
+                LocalTime timeIn = timeInStr.isEmpty() ? null : LocalTime.parse(timeInStr, formatter);
+                LocalTime timeOut = timeOutStr.isEmpty() ? null : LocalTime.parse(timeOutStr, formatter);
+
+                String status;
+
+                if (timeOut == null) {
+                    status = "INCOMPLETE";
+                } else if (!timeIn.isBefore(startTime) && !timeOut.isAfter(endTime)) {
+                    status = "COMPLETE";
+                } else if (!timeIn.isAfter(graceEndTime) && !timeIn.isAfter(late)) {
+                    status = "LATE";
+                } else {
+                    status = "INCOMPLETE";
+                }
+
+//                dao.saveAttendance(scheduleId, studentId, status);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
 }
