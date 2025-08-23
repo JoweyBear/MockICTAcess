@@ -275,9 +275,9 @@ public class MainSerImpl implements MainService {
             long classDuration = Duration.between(startTime, endTime).toMinutes();
             long currentDuration = Duration.between(startTime, now).toMinutes();
 
-            if (!timeInRow.isEmpty() && currentDuration < classDuration) {
+            if (!timeInRow.isEmpty()) {
                 JOptionPane.showMessageDialog(null,
-                        "Student " + matchedStudent.getFname() + " has already timed in and class is still ongoing.");
+                        "Student " + matchedStudent.getFname() + " has already timed in.");
             } else {
                 String timeIn = now.format(DateTimeFormatter.ofPattern("hh:mm a"));
                 frame.jTable2.setValueAt(timeIn, rowIndex, 3);
@@ -290,9 +290,12 @@ public class MainSerImpl implements MainService {
                 JOptionPane.showMessageDialog(null, "Student already timed out.");
                 return;
             }
-            if (!timeInRow.isEmpty() && now.isAfter(endTime)) {
+            if (!timeInRow.isEmpty()) {
                 String timeOut = now.format(DateTimeFormatter.ofPattern("hh: mm a"));
                 frame.jTable2.setValueAt(timeOut, rowIndex, 4);
+//            } else if (currentDuration < classDuration) {
+//                String timeOut = now.format(DateTimeFormatter.ofPattern("hh: mm a"));
+//                frame.jTable2.setValueAt(timeOut, rowIndex, 4);
             }
         });
     }

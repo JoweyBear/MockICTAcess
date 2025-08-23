@@ -29,14 +29,14 @@ public class AttModel {
     private String section;
 
     private int att_id;
+    private LocalTime timeIn;
+    private LocalTime timeOut;
     private String status;
     private LocalDateTime attDateTime;
     private String att_method;
     private String user_id;
     private LocalDateTime created_at;
-    
-    
-    
+
     public int getRm_id() {
         return rm_id;
     }
@@ -235,6 +235,22 @@ public class AttModel {
 
     public void setTrack(String track) {
         this.track = track;
+    }
+
+    public LocalTime getTimeIn() {
+        return timeIn;
+    }
+
+    public void setTimeIn(LocalTime timeIn) {
+        this.timeIn = timeIn;
+    }
+
+    public LocalTime getTimeOut() {
+        return timeOut;
+    }
+
+    public void setTimeOut(LocalTime timeOut) {
+        this.timeOut = timeOut;
     }
 
 }
