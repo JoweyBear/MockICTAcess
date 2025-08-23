@@ -1,5 +1,6 @@
 package Main;
 
+import Attendance.AttModel;
 import Fingerprint.AttendanceThread;
 import Fingerprint.FingerprintModel;
 import Fingerprint.Selection;
@@ -293,6 +294,7 @@ public class MainSerImpl implements MainService {
             if (!timeInRow.isEmpty()) {
                 String timeOut = now.format(DateTimeFormatter.ofPattern("hh: mm a"));
                 frame.jTable2.setValueAt(timeOut, rowIndex, 4);
+                saveAttendance();
 //            } else if (currentDuration < classDuration) {
 //                String timeOut = now.format(DateTimeFormatter.ofPattern("hh: mm a"));
 //                frame.jTable2.setValueAt(timeOut, rowIndex, 4);
@@ -338,15 +340,24 @@ public class MainSerImpl implements MainService {
 
                 if (timeOut == null) {
                     status = "INCOMPLETE";
-                } else if (!timeIn.isBefore(startTime) && !timeOut.isAfter(endTime)) {
+                } else if (timeIn.isBefore(late) && !timeOut.isAfter(graceEndTime)) {
                     status = "COMPLETE";
-                } else if (!timeIn.isAfter(graceEndTime) && !timeIn.isAfter(late)) {
+                } else if (timeIn.isAfter(late)) {
                     status = "LATE";
+                } else if (timeOut.isBefore(endTime)) {
+                    status = "Early Time Out";
                 } else {
                     status = "INCOMPLETE";
                 }
 
-//                dao.saveAttendance(scheduleId, studentId, status);
+                AttModel att = new AttModel();
+                att.setCs_id(scheduleId);
+                att.setStud_id(studentId);
+                att.setStatus(status);
+                att.setTimeIn(timeIn);
+                att.setTimeOut(timeOut);
+
+                dao.saveAttendance(att);
             } catch (Exception e) {
                 e.printStackTrace();
             }

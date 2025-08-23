@@ -1,5 +1,6 @@
 package Main;
 
+import Attendance.AttModel;
 import Connection.Ticket;
 import Student.StudentModel;
 import Utilities.Encryption;
@@ -8,8 +9,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -137,17 +140,19 @@ public class MainDAOImpl implements MainDAO {
                 while (rs.next()) {
                     String studentId = rs.getString("student_user_id");
 
-                    String checkSql = "SELECT COUNT(*) FROM attendance WHERE student_user_id = ? AND class_schedule_id = ? AND date = CURDATE()";
+                    String checkSql = "SELECT COUNT(*) FROM attendance WHERE student_user_id = ? AND class_schedule_id = ? AND DATE(att_date_time) = CURDATE()";
                     try (PreparedStatement psCheck = conn.prepareStatement(checkSql)) {
                         psCheck.setString(1, studentId);
                         psCheck.setString(2, scheduleId);
                         try (ResultSet rsCheck = psCheck.executeQuery()) {
                             if (rsCheck.next() && rsCheck.getInt(1) == 0) {
-                                String insertSql = "INSERT INTO attendance (student_user_id, class_schedule_id, date, status) VALUES (?, ?, CURDATE(), 'Absent')";
+                                String insertSql = "INSERT INTO attendance (student_user_id, class_schedule_id, att_date_time, status, method) VALUES (?, ?, ?, 'Absent', 'Auto-marked by system')";
                                 try (PreparedStatement psInsert = conn.prepareStatement(insertSql)) {
                                     psInsert.setString(1, studentId);
                                     psInsert.setString(2, scheduleId);
+                                    psInsert.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
                                     psInsert.executeUpdate();
+//                                    add Auto-marked by system in the enum of method.
                                 }
                             }
                         }
@@ -159,25 +164,6 @@ public class MainDAOImpl implements MainDAO {
         }
     }
 
-    @Override
-    public void saveAttendance(String studentId, String scheduleId) {
-        String sql = "INSERT INTO attendance (student_user_id, class_schedule_id, att_date_time, status) "
-                + "SELECT ?, ?, NOW(), ? "
-                + "FROM DUAL "
-                + "WHERE NOT EXISTS (SELECT 1 FROM attendance "
-                + "WHERE student_user_id = ? AND class_schedule_id = ?"
-                + " AND DATE(att_date_time) = CURDATE())";
-
-        try {
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, studentId);
-            ps.setString(2, scheduleId);
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(MainDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
 
     @Override
     public List<StudentModel> fetchStudentsBySchedule(String scheduleId) {
@@ -205,42 +191,27 @@ public class MainDAOImpl implements MainDAO {
 
     }
 
-    public void saveAttendanceForSchedule(String scheduleId, Map<String, LocalTime> scannedStudents) {
-        String getStudentsSql = "SELECT u.user_id, u.fname, u.lname "
-                + "FROM class_student cs "
-                + "JOIN user u ON cs.student_user_id = u.user_id "
-                + "WHERE cs.class_schedule_id = ?";
+    @Override
+    public void saveAttendance(AttModel att) {
+        String sql = "INSERT INTO attendance (student_user_id, class_schedule_id, att_date_time, status, time_in, time_out) "
+                + "SELECT ?, ?, NOW(), ?, ?, ? "
+                + "FROM DUAL "
+                + "WHERE NOT EXISTS (SELECT 1 FROM attendance "
+                + "WHERE student_user_id = ? AND class_schedule_id = ?"
+                + " AND DATE(att_date_time) = CURDATE())";
 
-        String insertAttendanceSql = "INSERT INTO attendance (schedule_id, student_id, status, time_in) "
-                + "VALUES (?, ?, ?, ?)";
-
-        try (PreparedStatement psGet = conn.prepareStatement(getStudentsSql); PreparedStatement psInsert = conn.prepareStatement(insertAttendanceSql)) {
-
-            psGet.setString(1, scheduleId);
-            try (ResultSet rs = psGet.executeQuery()) {
-                while (rs.next()) {
-                    String studentId = rs.getString("user_id");
-                    LocalTime timeIn = scannedStudents.get(studentId);
-
-                    String status;
-                    if (timeIn == null) {
-                        status = "INCOMPLETE"; // student never scanned
-                    } else {
-                        // You can add more nuanced logic here if needed
-                        status = "COMPLETE"; // or "LATE" based on timeIn
-                    }
-
-                    psInsert.setString(1, scheduleId);
-                    psInsert.setString(2, studentId);
-                    psInsert.setString(3, status);
-                    psInsert.setString(4, timeIn != null ? timeIn.toString() : null);
-                    psInsert.addBatch();
-                }
-                psInsert.executeBatch();
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, att.getStud_id());
+            ps.setString(2, att.getCs_id());
+            ps.setString(3, att.getStatus());
+            ps.setTime(4, Time.valueOf(att.getTimeIn()));
+            ps.setTime(5, Time.valueOf(att.getTimeOut()));
+            ps.setString(6, att.getStud_id());
+            ps.setString(7, att.getCs_id());
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(MainDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
