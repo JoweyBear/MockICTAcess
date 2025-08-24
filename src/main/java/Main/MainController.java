@@ -1,6 +1,6 @@
 package Main;
 
-import Main.Views.MainFrame;
+import Main.Views.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,12 +11,14 @@ import javax.swing.Action;
 public class MainController {
 
     MainFrame frame;
+    MainPanel panel;
     MainService service;
 
-    public MainController(MainFrame frame) {
+    public MainController(MainFrame frame, MainPanel panel) {
         this.frame = frame;
+        this.panel = panel;
         this.frame.buttonListener(new ButtonEvent());
-        service = new MainSerImpl(frame);
+        service = new MainSerImpl(frame, panel);
         
 
         this.frame.addKeyListener(new KeyListener() {

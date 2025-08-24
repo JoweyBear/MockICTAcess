@@ -1,6 +1,6 @@
 package com.trialapp.trialams1;
 
-import Main.Views.MainFrame;
+import Main.Views.*;
 import AdminDashboard.Dashboard;
 import Main.*;
 import Utilities.Time;
@@ -17,7 +17,8 @@ public class TrialAMS1 {
         FlatLightLaf.setup();
 //        Dashboard wf = new Dashboard();
         MainFrame wf = new MainFrame();
-        new MainController(wf);
+        MainPanel mp =  new MainPanel();
+        new MainController(wf, mp);
         Time t = new Time(wf);
         t.setTime();
         wf.setVisible(true);

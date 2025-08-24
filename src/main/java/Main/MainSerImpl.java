@@ -4,10 +4,11 @@ import Attendance.AttModel;
 import Fingerprint.AttendanceThread;
 import Fingerprint.FingerprintModel;
 import Fingerprint.Selection;
-import Main.Views.MainFrame;
+import Main.Views.*;
 import Login.*;
 import Student.StudentModel;
 import com.digitalpersona.uareu.UareUException;
+import java.awt.CardLayout;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -19,11 +20,13 @@ import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
 public class MainSerImpl implements MainService {
 
     MainFrame frame;
+    MainPanel panel;
     MainDAO dao = new MainDAOImpl();
     private String scheduleID;
     private final ExecutorService scanExecutor = Executors.newSingleThreadExecutor();
@@ -32,8 +35,9 @@ public class MainSerImpl implements MainService {
 
     private String testTime = "13:00:00";
 
-    public MainSerImpl(MainFrame frame) {
+    public MainSerImpl(MainFrame frame, MainPanel panel) {
         this.frame = frame;
+        this.panel = panel;
 
         loadSchedulesForToday();
 
@@ -121,26 +125,6 @@ public class MainSerImpl implements MainService {
         }
 
         attendanceThread.shutdown();
-    }
-
-    private void checkThreadsActivity() {
-        if (Selection.reader != null && Selection.readerIsConnected()) {
-            System.out.println("Reader is already open and connected");
-
-            if (Selection.isAnotherThreadCapturing()) {
-                checkAndVerifyStudents();
-            } else {
-                System.out.println("Another capture uis in progress -- cancelling..");
-                Selection.requestCurrentCaptureCancel();
-                Selection.waitForCaptureToFinish();
-                checkAndVerifyStudents();
-            }
-        } else {
-            System.out.println("Reader is not open..Opeining..");
-            Selection.resetReader();
-            checkAndVerifyStudents();
-        }
-
     }
 
     private int getStudentRowIndex(String studentId) {
@@ -284,6 +268,7 @@ public class MainSerImpl implements MainService {
                 frame.jTable2.setValueAt(timeIn, rowIndex, 3);
                 JOptionPane.showMessageDialog(null,
                         "Student " + matchedStudent.getFname() + " is in current class.\nAttendance marked.");
+                showStudentInfo(studentId);
 //                String status = now.isAfter(startTime.plusMinutes(15)) ? "Late" : "Present";
 //                dao.saveAttendance(studentId, scheduleID);
             }
@@ -364,4 +349,16 @@ public class MainSerImpl implements MainService {
 
         }
     }
+
+    private void showStudentInfo(String studentID) {
+        CardLayout cl = (CardLayout) frame.jPanel1.getLayout();
+        frame.jPanel1.add(panel, "showInfo");
+        
+        new Timer(5000, e -> {
+            cl.show(frame.jPanel1, "showInfo");
+            ((Timer) e.getSource()).stop();
+        }).start();
+
+    }
+
 }

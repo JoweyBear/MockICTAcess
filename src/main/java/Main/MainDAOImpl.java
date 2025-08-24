@@ -215,4 +215,65 @@ public class MainDAOImpl implements MainDAO {
         }
     }
 
+
+    @Override
+    public Map<String, Integer> getStatusCounts(String studentId) {
+        Map<String, Integer> map = new HashMap<>();
+        String sql = "SELECT status, COUNT(*) FROM attendance WHERE student_user_id = ? GROUP BY status";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, studentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    map.put(rs.getString(1), rs.getInt(2));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    @Override
+    public Map<String, Integer> getSubjectAttendanceCounts(String studentId) {
+        Map<String, Integer> map = new HashMap<>();
+        String sql = "SELECT cs.subject, COUNT(*) FROM attendance a JOIN class_schedule cs ON a.class_schedule_id = cs.id WHERE a.student_user_id = ? GROUP BY cs.subject";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, studentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    map.put(rs.getString(1), rs.getInt(2));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
+    @Override
+    public List<AttModel> getAttendanceHistory(String studentId) {
+        List<AttModel> list = new ArrayList<>();
+        String sql = "SELECT cs.subject, a.att_date_time, a.status, a.time_in, a.time_out FROM attendance a JOIN class_schedule cs ON a.class_schedule_id = cs.id WHERE a.student_user_id = ? ORDER BY a.att_date_time DESC";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, studentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    AttModel record = new AttModel();
+                    record.setSubject(rs.getString("subject_name"));
+                    record.setAttDateTime(rs.getTimestamp("att_date_time").toLocalDateTime());
+                    record.setStatus(rs.getString("status"));
+                    record.setTimeIn(rs.getTime("time_in") != null ? rs.getTime("time_in").toLocalTime() : null);
+                    record.setTimeOut(rs.getTime("time_out") != null ? rs.getTime("time_out").toLocalTime() : null);
+                    list.add(record);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+
+
 }
