@@ -354,6 +354,8 @@ public class MainSerImpl implements MainService {
         CardLayout cl = (CardLayout) frame.jPanel1.getLayout();
         frame.jPanel1.add(panel, "showInfo");
         
+        
+        
         new Timer(5000, e -> {
             cl.show(frame.jPanel1, "showInfo");
             ((Timer) e.getSource()).stop();

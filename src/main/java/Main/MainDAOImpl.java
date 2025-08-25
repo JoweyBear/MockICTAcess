@@ -219,7 +219,9 @@ public class MainDAOImpl implements MainDAO {
     @Override
     public Map<String, Integer> getStatusCounts(String studentId) {
         Map<String, Integer> map = new HashMap<>();
-        String sql = "SELECT status, COUNT(*) FROM attendance WHERE student_user_id = ? GROUP BY status";
+        String sql = "SELECT status, COUNT(*) FROM attendance "
+                + "WHERE student_user_id = ? "
+                + "GROUP BY status";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, studentId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -253,11 +255,25 @@ public class MainDAOImpl implements MainDAO {
     @Override
     public List<AttModel> getAttendanceHistory(String studentId) {
         List<AttModel> list = new ArrayList<>();
-        String sql = "SELECT cs.subject, a.att_date_time, a.status, a.time_in, a.time_out FROM attendance a JOIN class_schedule cs ON a.class_schedule_id = cs.id WHERE a.student_user_id = ? ORDER BY a.att_date_time DESC";
+        String sql = "SELECT s.fname, s.lname, s.image, "
+                + "si.year, si.section, si.track, "
+                + "i.fingerprint_image, "
+                + "cs.subject, a.att_date_time, a.status, a.time_in, a.time_out "
+                + "FROM attendance a "
+                + "JOIN class_schedule cs ON a.class_schedule_id = cs.id "
+                + "JOIN user s ON a.student_user_id = s.user_id "
+                + "JOIN student_info si ON a.student_user_id = si.user_id "
+                + "JOIN identification i ON a.student_user_id = i.user_id "
+                + "WHERE a.student_user_id = ? "
+                + "ORDER BY a.att_date_time DESC";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, studentId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
+                    StudentModel student = new StudentModel();
+                    String fname = de.decrypt(rs.getString("fname"));
+                    String lname = de.decrypt(rs.getString("lname"));
+                    
                     AttModel record = new AttModel();
                     record.setSubject(rs.getString("subject_name"));
                     record.setAttDateTime(rs.getTimestamp("att_date_time").toLocalDateTime());
