@@ -1,5 +1,6 @@
 package Attendance;
 
+import Student.StudentModel;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -36,6 +37,8 @@ public class AttModel {
     private String att_method;
     private String user_id;
     private LocalDateTime created_at;
+    
+    private StudentModel student;
 
     public int getRm_id() {
         return rm_id;
@@ -251,6 +254,14 @@ public class AttModel {
 
     public void setTimeOut(LocalTime timeOut) {
         this.timeOut = timeOut;
+    }
+
+    public StudentModel getStudent() {
+        return student;
+    }
+
+    public void setStudent(StudentModel student) {
+        this.student = student;
     }
 
 }

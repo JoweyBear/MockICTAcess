@@ -164,7 +164,6 @@ public class MainDAOImpl implements MainDAO {
         }
     }
 
-
     @Override
     public List<StudentModel> fetchStudentsBySchedule(String scheduleId) {
         List<StudentModel> students = new ArrayList<>();
@@ -215,7 +214,6 @@ public class MainDAOImpl implements MainDAO {
         }
     }
 
-
     @Override
     public Map<String, Integer> getStatusCounts(String studentId) {
         Map<String, Integer> map = new HashMap<>();
@@ -255,7 +253,7 @@ public class MainDAOImpl implements MainDAO {
     @Override
     public List<AttModel> getAttendanceHistory(String studentId) {
         List<AttModel> list = new ArrayList<>();
-        String sql = "SELECT s.fname, s.lname, s.image, "
+        String sql = "SELECT s.fname, s.mname, s.lname, s.image, "
                 + "si.year, si.section, si.track, "
                 + "i.fingerprint_image, "
                 + "cs.subject, a.att_date_time, a.status, a.time_in, a.time_out "
@@ -271,16 +269,25 @@ public class MainDAOImpl implements MainDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     StudentModel student = new StudentModel();
-                    String fname = de.decrypt(rs.getString("fname"));
-                    String lname = de.decrypt(rs.getString("lname"));
-                    
+                    student.setFname(de.decrypt(rs.getString("fname")));
+                    student.setMname(de.decrypt(rs.getString("mname")));
+                    student.setLname(de.decrypt(rs.getString("lname")));
+                    student.setImage(rs.getBytes("image"));
+                    student.setFingerprintImage(rs.getBytes("fingerprint_image"));
+                    student.setYear(rs.getString("year"));
+                    student.setSection(rs.getString("section"));
+                    student.setTrack(rs.getString("track"));
+
                     AttModel record = new AttModel();
-                    record.setSubject(rs.getString("subject_name"));
+                    record.setStudent(student); 
+                    record.setSubject(rs.getString("subject"));
                     record.setAttDateTime(rs.getTimestamp("att_date_time").toLocalDateTime());
                     record.setStatus(rs.getString("status"));
                     record.setTimeIn(rs.getTime("time_in") != null ? rs.getTime("time_in").toLocalTime() : null);
                     record.setTimeOut(rs.getTime("time_out") != null ? rs.getTime("time_out").toLocalTime() : null);
+
                     list.add(record);
+
                 }
             }
         } catch (SQLException e) {
@@ -288,8 +295,5 @@ public class MainDAOImpl implements MainDAO {
         }
         return list;
     }
-
-
-
 
 }

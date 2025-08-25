@@ -9,6 +9,8 @@ import Login.*;
 import Student.StudentModel;
 import com.digitalpersona.uareu.UareUException;
 import java.awt.CardLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -17,11 +19,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 public class MainSerImpl implements MainService {
 
@@ -353,14 +361,99 @@ public class MainSerImpl implements MainService {
     private void showStudentInfo(String studentID) {
         CardLayout cl = (CardLayout) frame.jPanel1.getLayout();
         frame.jPanel1.add(panel, "showInfo");
-        
-        
-        
+
+        List<AttModel> history = dao.getAttendanceHistory(studentID);
+
+        if (history.isEmpty()) {
+            JOptionPane.showMessageDialog(frame, "No attendance history found for this student.");
+            return;
+        }
+
+        StudentModel student = history.get(0).getStudent();
+        if (student == null) {
+            JOptionPane.showMessageDialog(frame, "Student information is missing.");
+            return;
+        }
+
+        panel.fname.setText(student.getFname());
+
+        String initial = (student.getMname() != null && !student.getMname().isEmpty())
+                ? student.getMname().substring(0, 1).toUpperCase() + "."
+                : "";
+        panel.mi.setText(initial);
+
+        panel.lname.setText(student.getLname());
+        panel.college.setText(student.getCollege());
+        panel.section.setText(student.getSection());
+        panel.track.setText(student.getTrack());
+        panel.year.setText(student.getYear());
+
+        byte[] fingerprintBytes = student.getFingerprintImage();
+        if (fingerprintBytes != null && fingerprintBytes.length > 0) {
+            ImageIcon icon = new ImageIcon(fingerprintBytes);
+            Image scaled = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            panel.image.setIcon(new ImageIcon(scaled));
+        } else {
+            panel.image.setText("No image available");
+        }
+
+        DefaultTableModel model = new DefaultTableModel(new String[]{
+            "Subject", "Date", "Status", "Time In", "Time Out"
+        }, 0);
+        for (AttModel r : history) {
+            model.addRow(new Object[]{
+                r.getSubject(),
+                r.getAttDateTime(),
+                r.getStatus(),
+                r.getTimeIn(),
+                r.getTimeOut()
+            });
+        }
+        panel.jTable1.setModel(model);
+
+        panel.jPanel3.removeAll();
+        panel.jPanel4.removeAll();
+        panel.jPanel3.setLayout(new GridLayout(1, 1));
+        panel.jPanel4.setLayout(new GridLayout(1, 1));
+
+        // Pie Chart
+        Map<String, Integer> statusCounts = dao.getStatusCounts(studentID);
+        DefaultPieDataset pieDataset = new DefaultPieDataset();
+        statusCounts.forEach(pieDataset::setValue);
+        JFreeChart pieChart = ChartFactory.createPieChart("Status Breakdown", pieDataset, true, true, false);
+        ChartPanel pieChartPanel = new ChartPanel(pieChart);
+        panel.jPanel3.add(pieChartPanel);
+
+        // Bar Chart
+        Map<String, Integer> subjectCounts = dao.getSubjectAttendanceCounts(studentID);
+        DefaultCategoryDataset barDataset = new DefaultCategoryDataset();
+        subjectCounts.forEach((subject, count) -> barDataset.addValue(count, "Attendance", subject));
+        JFreeChart barChart = ChartFactory.createBarChart("Attendance per Subject", "Subject", "Count", barDataset);
+        ChartPanel barChartPanel = new ChartPanel(barChart);
+        panel.jPanel4.add(barChartPanel);
+
+        panel.jPanel4.revalidate();
+        panel.jPanel4.repaint();
+        panel.jPanel3.revalidate();
+        panel.jPanel3.repaint();
+        panel.revalidate();
+        panel.repaint();
+
+        new Timer(2500, e -> {
+            byte[] profileBytes = student.getImage();
+            if (profileBytes != null && profileBytes.length > 0) {
+                ImageIcon icon = new ImageIcon(profileBytes);
+                Image scaled = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                panel.image.setIcon(new ImageIcon(scaled));
+            } else {
+                panel.image.setText("No image available");
+            }
+        }).start();
+
         new Timer(5000, e -> {
             cl.show(frame.jPanel1, "showInfo");
             ((Timer) e.getSource()).stop();
         }).start();
-
     }
 
 }
