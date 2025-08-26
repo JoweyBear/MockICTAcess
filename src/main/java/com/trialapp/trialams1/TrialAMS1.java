@@ -16,7 +16,8 @@ public class TrialAMS1 {
         FlatLaf.registerCustomDefaultsSource("Themes");
         FlatLightLaf.setup();
 //        Dashboard wf = new Dashboard();
-        MainFrame wf = new MainFrame();
+        DisplayPanel dp = new DisplayPanel();
+        MainFrame wf = new MainFrame(dp);
         MainPanel mp =  new MainPanel();
         new MainController(wf, mp);
         Time t = new Time(wf);

@@ -2,6 +2,7 @@ package Main;
 
 import Attendance.AttModel;
 import Connection.Ticket;
+import Faculty.FacultyModel;
 import Student.StudentModel;
 import Utilities.Encryption;
 import java.sql.Connection;
@@ -47,14 +48,19 @@ public class MainDAOImpl implements MainDAO {
 //                + "WHERE day = DAYNAME(CURDATE()) "
 //                + "ORDER BY time_start ASC";
 
-        String sql = "SELECT cs_id AS 'Schedule ID', "
-                + "subject AS 'Subject', "
-                + "section AS 'Section', "
-                + "time_start AS 'Start Time', "
-                + "time_end AS 'End Time' "
-                + "FROM class_schedule "
-                + "WHERE day = ? "
-                + "ORDER BY time_start ASC";
+        String sql = "SELECT cs.cs_id AS 'Schedule ID', "
+                + "cs.subject AS 'Subject', "
+                + "cs.section AS 'Section', "
+                + "cs.time_start AS 'Start Time', "
+                + "cs.time_end AS 'End Time', "
+                + "cs.faculty_user_id AS 'Faculty ID', "
+                + "u.fname AS 'facultyFname', "
+                + "u.mname AS 'facultyMname', "
+                + "u.lname AS 'facultyLname' "
+                + "FROM class_schedule cs "
+                + "JOIN user u ON cs.faculty_user_id = u.user_id "
+                + "WHERE cs.day = ? "
+                + "ORDER BY cs.time_start ASC";
 
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
@@ -64,11 +70,18 @@ public class MainDAOImpl implements MainDAO {
             ResultSetMetaData md = rs.getMetaData();
             int columnCount = md.getColumnCount();
 
-            Vector<String> columnNames = new Vector<>(Arrays.asList("Schedule ID", "Subject", "Section", "Start Time", "End Time"));
+            Vector<String> columnNames = new Vector<>(Arrays.asList("Schedule ID", "Subject", "Section", "Start Time", "End Time", "Faculty"));
 
             Vector<Vector<Object>> data = new Vector<>();
             while (rs.next()) {
                 Vector<Object> row = new Vector<>();
+
+                String fname = de.decrypt(rs.getString("facultyFname"));
+                String mname = de.decrypt(rs.getString("facultyMname")).substring(0, 1);
+                String lname = de.decrypt(rs.getString("facultyLname"));
+
+                String faculty = fname + " " + mname + ". " + lname;
+
                 row.add(rs.getString("Schedule ID"));
                 row.add(rs.getString("Subject"));
                 row.add(rs.getString("Section"));
@@ -76,6 +89,7 @@ public class MainDAOImpl implements MainDAO {
                 SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
                 row.add(sdf.format(rs.getTime("Start Time")));
                 row.add(sdf.format(rs.getTime("End Time")));
+                row.add(faculty);
 
                 data.add(row);
             }
@@ -85,7 +99,7 @@ public class MainDAOImpl implements MainDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Vector<String> columns = new Vector<>(Arrays.asList("Schedule ID", " Subject", "Section", "Start Time", "End Time"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Schedule ID", " Subject", "Section", "Start Time", "End Time", "Faculty"));
         return new DefaultTableModel(new Vector<>(), columns);
     }
 
@@ -178,6 +192,7 @@ public class MainDAOImpl implements MainDAO {
                 while (rs.next()) {
                     StudentModel student = new StudentModel();
                     student.setStud_id(rs.getString("user_id"));
+                    System.out.println(student);
 //                    student.setFullName(de.decrypt(rs.getString("fname")) + " " + de.decrypt(rs.getString("lname")));
                     students.add(student);
                 }
@@ -191,12 +206,14 @@ public class MainDAOImpl implements MainDAO {
     }
 
     @Override
-    public void saveAttendance(AttModel att) {
-        String sql = "INSERT INTO attendance (student_user_id, class_schedule_id, att_date_time, status, time_in, time_out) "
+    public boolean saveAttendance(AttModel att) {
+        boolean saved = false;
+
+        String sql = "INSERT INTO attendance (user_id, class_schedule_id, att_date_time, status, time_in, time_out) "
                 + "SELECT ?, ?, NOW(), ?, ?, ? "
                 + "FROM DUAL "
                 + "WHERE NOT EXISTS (SELECT 1 FROM attendance "
-                + "WHERE student_user_id = ? AND class_schedule_id = ?"
+                + "WHERE user_id = ? AND class_schedule_id = ?"
                 + " AND DATE(att_date_time) = CURDATE())";
 
         try {
@@ -208,17 +225,26 @@ public class MainDAOImpl implements MainDAO {
             ps.setTime(5, Time.valueOf(att.getTimeOut()));
             ps.setString(6, att.getStud_id());
             ps.setString(7, att.getCs_id());
-            ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                saved = true;
+                System.out.println("Attendance saved.");
+            } else {
+                saved = false;
+                System.out.println("Attendance already exists. Insert skipped.");
+            }
+
         } catch (SQLException ex) {
             Logger.getLogger(MainDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return saved;
     }
 
     @Override
     public Map<String, Integer> getStatusCounts(String studentId) {
         Map<String, Integer> map = new HashMap<>();
         String sql = "SELECT status, COUNT(*) FROM attendance "
-                + "WHERE student_user_id = ? "
+                + "WHERE user_id = ? "
                 + "GROUP BY status";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, studentId);
@@ -236,7 +262,9 @@ public class MainDAOImpl implements MainDAO {
     @Override
     public Map<String, Integer> getSubjectAttendanceCounts(String studentId) {
         Map<String, Integer> map = new HashMap<>();
-        String sql = "SELECT cs.subject, COUNT(*) FROM attendance a JOIN class_schedule cs ON a.class_schedule_id = cs.id WHERE a.student_user_id = ? GROUP BY cs.subject";
+        String sql = "SELECT cs.subject, COUNT(*) FROM attendance a "
+                + "JOIN class_schedule cs ON a.class_schedule_id = cs.cs_id "
+                + "WHERE a.user_id = ? GROUP BY cs.subject";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, studentId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -253,17 +281,41 @@ public class MainDAOImpl implements MainDAO {
     @Override
     public List<AttModel> getAttendanceHistory(String studentId) {
         List<AttModel> list = new ArrayList<>();
-        String sql = "SELECT s.fname, s.mname, s.lname, s.image, "
-                + "si.year, si.section, si.track, "
-                + "i.fingerprint_image, "
-                + "cs.subject, a.att_date_time, a.status, a.time_in, a.time_out "
+        String sql = "SELECT cs.subject, a.att_date_time, a.status, a.time_in, a.time_out "
                 + "FROM attendance a "
-                + "JOIN class_schedule cs ON a.class_schedule_id = cs.id "
-                + "JOIN user s ON a.student_user_id = s.user_id "
-                + "JOIN student_info si ON a.student_user_id = si.user_id "
-                + "JOIN identification i ON a.student_user_id = i.user_id "
-                + "WHERE a.student_user_id = ? "
+                + "JOIN class_schedule cs ON a.class_schedule_id = cs.cs_id "
+                + "WHERE a.user_id = ? "
                 + "ORDER BY a.att_date_time DESC";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, studentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    AttModel record = new AttModel();
+                    record.setSubject(rs.getString("subject"));
+                    record.setAttDateTime(rs.getTimestamp("att_date_time").toLocalDateTime());
+                    record.setStatus(rs.getString("status"));
+                    record.setTimeIn(rs.getTime("time_in") != null ? rs.getTime("time_in").toLocalTime() : null);
+                    record.setTimeOut(rs.getTime("time_out") != null ? rs.getTime("time_out").toLocalTime() : null);
+
+                    list.add(record);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+
+    }
+
+    @Override
+    public StudentModel fetchStudentInfo(String studentId) {
+
+        String sql = "SELECT fname, mname, lname, image, fingerprint_image, college, year, section, track "
+                + "FROM user u JOIN student_info si ON u.user_id = si.user_id "
+                + "JOIN identification i ON u.user_id = i.user_id "
+                + "WHERE u.user_id = ?";
+
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, studentId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -274,26 +326,49 @@ public class MainDAOImpl implements MainDAO {
                     student.setLname(de.decrypt(rs.getString("lname")));
                     student.setImage(rs.getBytes("image"));
                     student.setFingerprintImage(rs.getBytes("fingerprint_image"));
+                    student.setCollege(rs.getString("college"));
                     student.setYear(rs.getString("year"));
                     student.setSection(rs.getString("section"));
                     student.setTrack(rs.getString("track"));
+                    return student;
 
-                    AttModel record = new AttModel();
-                    record.setStudent(student); 
-                    record.setSubject(rs.getString("subject"));
-                    record.setAttDateTime(rs.getTimestamp("att_date_time").toLocalDateTime());
-                    record.setStatus(rs.getString("status"));
-                    record.setTimeIn(rs.getTime("time_in") != null ? rs.getTime("time_in").toLocalTime() : null);
-                    record.setTimeOut(rs.getTime("time_out") != null ? rs.getTime("time_out").toLocalTime() : null);
+                }
 
-                    list.add(record);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(MainDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
+    @Override
+    public FacultyModel getAssignedFacultyInfo(String csId, String facultyId) {
+        String sql = "SELECT u.user_id, u.fname, u.mname, u.lname, u.email "
+                + "FROM class_schedule cs "
+                + "JOIN user u ON cs.faculty_user_id = u.user_id "
+                + "WHERE cs.cs_id = ? AND cs.faculty_user_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, csId);
+            stmt.setString(2, facultyId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    FacultyModel faculty = new FacultyModel();
+                    faculty.setFaculty_id(rs.getString("user_id"));
+                    faculty.setFname(de.decrypt(rs.getString("fname")));
+                    faculty.setMname(de.decrypt(rs.getString("mname")));
+                    faculty.setLname(de.decrypt(rs.getString("lname")));
+                    return faculty;
                 }
             }
         } catch (SQLException e) {
+            System.err.println("Error fetching assigned faculty info: " + e.getMessage());
             e.printStackTrace();
         }
-        return list;
+
+        return null; // not assigned or error occurred
     }
 
 }

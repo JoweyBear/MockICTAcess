@@ -1,6 +1,7 @@
 package Main;
 
 import Attendance.AttModel;
+import Faculty.FacultyModel;
 import Student.StudentModel;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,11 @@ public interface MainDAO {
 
     List<StudentModel> fetchStudentsBySchedule(String scheduleId);
 
-    void saveAttendance(AttModel att);
+    boolean saveAttendance(AttModel att);
+
+    StudentModel fetchStudentInfo(String studentId);
+
+    FacultyModel getAssignedFacultyInfo(String csId, String facultyId);
 
     Map<String, Integer> getStatusCounts(String studentId);
 

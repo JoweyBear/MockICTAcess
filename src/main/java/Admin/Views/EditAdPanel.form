@@ -81,11 +81,11 @@
                               <Group type="102" alignment="1" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="scn" max="32767" attributes="0"/>
-                                      <Component id="jLabelfinger" max="32767" attributes="0"/>
+                                      <Component id="jLabelfinger" min="-2" pref="134" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="jLabelimage" alignment="1" max="32767" attributes="0"/>
+                                      <Component id="jLabelimage" alignment="1" min="-2" pref="152" max="-2" attributes="0"/>
                                       <Component id="chssmg" alignment="1" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
@@ -150,9 +150,9 @@
                   <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                   <Component id="cnfrm" max="32767" attributes="0"/>
                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jLabelfinger" alignment="3" pref="127" max="32767" attributes="0"/>
-                      <Component id="jLabelimage" alignment="3" pref="127" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="jLabelfinger" pref="127" max="32767" attributes="0"/>
+                      <Component id="jLabelimage" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
@@ -235,6 +235,7 @@
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" value="jLabel3"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
@@ -290,6 +291,7 @@
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" value="jLabel3"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>

@@ -81,6 +81,7 @@ public class EditStudPanel extends javax.swing.JPanel {
         student_id.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabelimage.setText("jLabel3");
+        jLabelimage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         pdt.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
         pdt.setText("update");
@@ -99,6 +100,7 @@ public class EditStudPanel extends javax.swing.JPanel {
         nmbr.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         jLabelfinger.setText("jLabel3");
+        jLabelfinger.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
         chssmg.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
         chssmg.setText("Choose Image");
@@ -135,11 +137,11 @@ public class EditStudPanel extends javax.swing.JPanel {
                 .addGap(39, 39, 39)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(cllg, 0, 112, Short.MAX_VALUE)
+                        .addComponent(cllg, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(yr, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(sctn, 0, 88, Short.MAX_VALUE))
+                        .addComponent(sctn, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(admname)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(adfname)
@@ -151,10 +153,10 @@ public class EditStudPanel extends javax.swing.JPanel {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(scn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelfinger, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE))
+                            .addComponent(jLabelfinger, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(36, 36, 36)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelimage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
+                            .addComponent(jLabelimage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(chssmg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(ml)
                     .addComponent(brgy)

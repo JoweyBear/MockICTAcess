@@ -77,12 +77,12 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="scn" max="32767" attributes="0"/>
-                              <Component id="jLabelfinger" pref="134" max="32767" attributes="0"/>
+                              <Component id="jLabelfinger" min="-2" pref="134" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="72" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jLabelimage" alignment="1" max="32767" attributes="0"/>
-                              <Component id="chssmg" alignment="1" pref="134" max="32767" attributes="0"/>
+                              <Component id="jLabelimage" alignment="1" min="-2" pref="134" max="-2" attributes="0"/>
+                              <Component id="chssmg" alignment="1" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <Component id="ml" alignment="0" max="32767" attributes="0"/>
@@ -227,6 +227,7 @@
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" value="jLabel3"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
@@ -282,6 +283,7 @@
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" value="jLabel3"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>

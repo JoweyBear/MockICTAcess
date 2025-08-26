@@ -77,12 +77,12 @@
                       <Group type="102" alignment="0" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="scn" max="32767" attributes="0"/>
-                              <Component id="jLabelfinger" pref="134" max="32767" attributes="0"/>
+                              <Component id="jLabelfinger" min="-2" pref="134" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="72" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jLabelimage" alignment="1" max="32767" attributes="0"/>
-                              <Component id="chssmg" alignment="1" pref="134" max="32767" attributes="0"/>
+                              <Component id="jLabelimage" alignment="1" min="-2" pref="134" max="-2" attributes="0"/>
+                              <Component id="chssmg" alignment="1" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <Component id="ml" alignment="0" max="32767" attributes="0"/>
@@ -92,7 +92,7 @@
                           <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
                           <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Component id="bdy" pref="286" max="32767" attributes="0"/>
+                          <Component id="bdy" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
@@ -110,41 +110,41 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <Component id="jLabel2" max="32767" attributes="0"/>
+                  <Component id="jLabel2" pref="19" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
-                  <Component id="faculty_id" pref="26" max="32767" attributes="0"/>
+                  <Component id="faculty_id" pref="24" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="pstn" max="32767" attributes="0"/>
                       <Component id="cllg" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel1" pref="21" max="32767" attributes="0"/>
+                  <Component id="jLabel1" pref="19" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="0" max="-2" attributes="0"/>
-                  <Component id="adfname" pref="26" max="32767" attributes="0"/>
+                  <Component id="adfname" pref="24" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="admname" pref="26" max="32767" attributes="0"/>
+                  <Component id="admname" pref="24" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="adlname" pref="26" max="32767" attributes="0"/>
+                  <Component id="adlname" pref="24" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="nmbr" pref="26" max="32767" attributes="0"/>
+                  <Component id="nmbr" pref="24" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="ml" pref="26" max="32767" attributes="0"/>
+                  <Component id="ml" pref="24" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="brgy" pref="26" max="32767" attributes="0"/>
+                  <Component id="brgy" pref="24" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="municipal" max="32767" attributes="0"/>
+                  <Component id="municipal" pref="26" max="32767" attributes="0"/>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                  <Component id="sx" pref="31" max="32767" attributes="0"/>
+                  <Component id="sx" pref="29" max="32767" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="bdy" pref="28" max="32767" attributes="0"/>
+                      <Component id="bdy" pref="35" max="32767" attributes="0"/>
                       <Component id="jLabel3" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="jLabelfinger" alignment="3" max="32767" attributes="0"/>
-                      <Component id="jLabelimage" alignment="3" pref="127" max="32767" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jLabelimage" min="-2" pref="140" max="-2" attributes="0"/>
+                      <Component id="jLabelfinger" min="-2" pref="133" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
@@ -152,9 +152,9 @@
                       <Component id="chssmg" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                  <Component id="sv" max="32767" attributes="0"/>
+                  <Component id="sv" pref="24" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
-                  <Component id="clr" max="32767" attributes="0"/>
+                  <Component id="clr" pref="24" max="32767" attributes="0"/>
                   <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -226,6 +226,7 @@
         <Component class="javax.swing.JLabel" name="jLabelimage">
           <Properties>
             <Property name="text" type="java.lang.String" value="jLabel3"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
@@ -280,6 +281,7 @@
         <Component class="javax.swing.JLabel" name="jLabelfinger">
           <Properties>
             <Property name="text" type="java.lang.String" value="jLabel3"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
