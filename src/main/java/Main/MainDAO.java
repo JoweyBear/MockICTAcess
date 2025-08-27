@@ -22,6 +22,8 @@ public interface MainDAO {
     boolean hasTimeIn(String userId, String scheduleId);
     
     void saveTimeIn(String userId, String scheduleId, LocalTime now);
+    
+    void markIncompete(String userId, String scheduleId, LocalTime timeIn);
 
     StudentModel fetchStudentInfo(String studentId);
 

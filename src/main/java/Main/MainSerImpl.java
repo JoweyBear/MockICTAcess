@@ -160,22 +160,6 @@ public class MainSerImpl implements MainService {
                 handleMatchedFaculty(userId);
             }
 
-//            int rowIndex = getStudentRowIndex(userId);
-//            DefaultTableModel model = (DefaultTableModel) frame.studentTable.getModel();
-//
-//            SwingUtilities.invokeLater(() -> {
-//                if (rowIndex == -1) {
-//                    model.addRow(new Object[]{
-//                        userId,
-//                        fname,
-//                        lname,
-//                        "", // Time In
-//                        "" // Time Out
-//                    });
-//
-//                }
-//                // Don't clear the table!
-//            });
         } else {
             System.out.println("No user identified.");
         }
@@ -245,8 +229,26 @@ public class MainSerImpl implements MainService {
                             checkAndLoadStudents();
                         }
                         if (now.isAfter(graceEndTime)) {
-                            dao.markAbsent(scheduleId);
-                            System.out.println("Grace period ended. Marking absentees.");
+                            DefaultTableModel model = (DefaultTableModel) frame.studentTable.getModel();
+
+                            for (int i = 0; i < model.getRowCount(); i++) {
+                                String userId = model.getValueAt(i, 0).toString();
+                                String timeInStr = model.getValueAt(i, 3).toString();
+                                String timeOutStr = model.getValueAt(i, 4).toString();
+
+                                boolean hasTimeIn = timeInStr != null && !timeInStr.trim().isEmpty();
+                                boolean hasNoTimeOut = timeOutStr == null || timeOutStr.trim().isEmpty();
+
+                                if (hasTimeIn && hasNoTimeOut) {
+                                    LocalTime timeIn = LocalTime.parse(timeInStr, timeFormatter);
+
+                                    dao.markIncompete(userId, scheduleId, timeIn);
+                                } else if (!hasTimeIn && hasNoTimeOut) {
+                                    dao.markAbsent(scheduleId);
+                                    System.out.println("Grace period ended. Marking absentees.");
+                                }
+                            }
+
                             // stopScanLoop(); 
                         } else {
                             System.out.println("Class ended, but still within grace period for time-out.");
@@ -269,15 +271,6 @@ public class MainSerImpl implements MainService {
     }
 
     private void startScanLoop() {
-//        if (scanTimer != null && scanTimer.isRunning()) {
-//            scanTimer.stop(); // avoid duplicate timers
-//        }
-//
-//        scanTimer = new Timer(5000, e -> checkAndVerifyStudents()); // every 5 seconds
-//        scanTimer.setInitialDelay(0); // start immediately
-//        scanTimer.start();
-//
-//        System.out.println("Started fingerprint scan loop.");
         if (scanningActive) {
             System.out.println("Scan loop already running.");
             return;
@@ -347,7 +340,7 @@ public class MainSerImpl implements MainService {
             if (now.isAfter(graceTime)) {
                 JOptionPane.showMessageDialog(null,
                         "Student " + fname + " " + lname + " is beyond the allowed scan time.\nAttendance not recorded.");
-                        model.removeRow(rowIndex);
+                model.removeRow(rowIndex);
                 return;
             }
 
@@ -739,28 +732,5 @@ public class MainSerImpl implements MainService {
             ((Timer) e.getSource()).stop();
         }).start();
     }
-    
-    
-//        DefaultTableModel model = (DefaultTableModel) frame.studentTable.getModel();
-//
-//    for (int i = 0; i < model.getRowCount(); i++) {
-//        Object timeInObj = model.getValueAt(i, 3);  // Time In column
-//        Object timeOutObj = model.getValueAt(i, 4); // Time Out column
-//
-//        boolean hasTimeIn = timeInObj != null && !timeInObj.toString().trim().isEmpty();
-//        boolean hasNoTimeOut = timeOutObj == null || timeOutObj.toString().trim().isEmpty();
-//
-//        if (hasTimeIn && hasNoTimeOut) {
-//            String userId = model.getValueAt(i, 0).toString(); // Assuming column 0 is user ID
-//
-//            // ✅ Update status in DB
-//            dao.markStatus(userId, scheduleId, "Incomplete");
-//
-//            // ✅ Optional: update status in table UI
-//            model.setValueAt("Incomplete", i, 5); // Assuming column 5 is status
-//
-//            System.out.printf("Marked user %s as Incomplete (missing time-out)%n", userId);
-//        }
-//    }
 
 }

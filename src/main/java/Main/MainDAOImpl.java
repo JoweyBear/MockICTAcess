@@ -439,25 +439,23 @@ public class MainDAOImpl implements MainDAO {
             System.err.println("Error saving time-in: " + e.getMessage());
         }
     }
-    
-//    public void markStatus(String userId, String scheduleId, String status) {
-//    String sql = "INSERT INTO attendance (user_id, class_schedule_id, time_in, time_out, status, att_date_time) " +
-//                 "VALUES (?, ?, NULL, NULL, ?, CURDATE()) " +
-//                 "ON DUPLICATE KEY UPDATE status = VALUES(status)";
-//
-//    try (Connection conn = dataSource.getConnection();
-//         PreparedStatement stmt = conn.prepareStatement(sql)) {
-//
-//        stmt.setString(1, userId);
-//        stmt.setString(2, scheduleId);
-//        stmt.setString(3, status); // e.g., "Incomplete"
-//
-//        stmt.executeUpdate();
-//    } catch (SQLException e) {
-//        System.err.println("Error inserting/updating attendance status: " + e.getMessage());
-//        e.printStackTrace();
-//    }
-//}
 
+    @Override
+    public void markIncompete(String userId, String scheduleId, LocalTime timeIn) {
+        String sql = "INSERT INTO attendance (user_id, class_schedule_id, time_in, time_out, status, att_date_time, method) "
+                + "VALUES (?, ?, ?, NULL, 'Incomplete', CURDATE(), 'Auto-marked by system') ";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, userId);
+            stmt.setString(2, scheduleId);
+            stmt.setTime(3, Time.valueOf(timeIn));
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error inserting/updating attendance status: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 }
