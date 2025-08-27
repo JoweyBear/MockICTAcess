@@ -14,6 +14,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -235,19 +236,19 @@ public class MainDAOImpl implements MainDAO {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(MainDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         return saved;
     }
 
     @Override
-    public Map<String, Integer> getStatusCounts(String studentId) {
+    public Map<String, Integer> getStatusCounts(String userId) {
         Map<String, Integer> map = new HashMap<>();
         String sql = "SELECT status, COUNT(*) FROM attendance "
                 + "WHERE user_id = ? "
                 + "GROUP BY status";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, studentId);
+            ps.setString(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     map.put(rs.getString(1), rs.getInt(2));
@@ -279,7 +280,7 @@ public class MainDAOImpl implements MainDAO {
     }
 
     @Override
-    public List<AttModel> getAttendanceHistory(String studentId) {
+    public List<AttModel> getAttendanceHistory(String userId) {
         List<AttModel> list = new ArrayList<>();
         String sql = "SELECT cs.subject, a.att_date_time, a.status, a.time_in, a.time_out "
                 + "FROM attendance a "
@@ -288,7 +289,7 @@ public class MainDAOImpl implements MainDAO {
                 + "ORDER BY a.att_date_time DESC";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, studentId);
+            ps.setString(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     AttModel record = new AttModel();
@@ -336,7 +337,7 @@ public class MainDAOImpl implements MainDAO {
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(MainDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
         return null;
     }
@@ -370,5 +371,93 @@ public class MainDAOImpl implements MainDAO {
 
         return null; // not assigned or error occurred
     }
+
+    @Override
+    public Map<String, Map<String, Integer>> getSectionAttendanceCounts(String facultyId) {
+        Map<String, Map<String, Integer>> attendanceMap = new HashMap<>();
+
+        String sql = "SELECT cs.subject AS subject, cs.section AS section, COUNT(*) AS count "
+                + "FROM attendance a "
+                + "JOIN class_schedule cs ON a.class_schedule_id = cs.cs_id "
+                + "WHERE cs.faculty_user_id = ? "
+                + "GROUP BY cs.subject, cs.section "
+                + "ORDER BY cs.subject, cs.section";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, facultyId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    String subject = rs.getString("subject");
+                    String section = rs.getString("section");
+                    int count = rs.getInt("count");
+
+                    attendanceMap
+                            .computeIfAbsent(subject, k -> new HashMap<>())
+                            .put(section, count);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching attendance data: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return attendanceMap;
+    }
+
+    @Override
+    public boolean hasTimeIn(String userId, String scheduleId) {
+        String sql = "SELECT time_in FROM attendance "
+                + "WHERE user_id = ? AND class_schedule_id = ? AND DATE(att_date_time) = CURDATE()";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, userId);
+            stmt.setString(2, scheduleId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() && rs.getTimestamp("time_in") != null;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error checking time-in: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public void saveTimeIn(String userId, String scheduleId, LocalTime now) {
+        String sql = "INSERT INTO attendance (user_id, class_schedule_id, time_in, att_date_time) "
+                + "VALUES (?, ?, ?, CURDATE()) "
+                + "ON DUPLICATE KEY UPDATE time_in = VALUES(time_in)";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, userId);
+            stmt.setString(2, scheduleId);
+            stmt.setTime(3, Time.valueOf(now));
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error saving time-in: " + e.getMessage());
+        }
+    }
+    
+//    public void markStatus(String userId, String scheduleId, String status) {
+//    String sql = "INSERT INTO attendance (user_id, class_schedule_id, time_in, time_out, status, att_date_time) " +
+//                 "VALUES (?, ?, NULL, NULL, ?, CURDATE()) " +
+//                 "ON DUPLICATE KEY UPDATE status = VALUES(status)";
+//
+//    try (Connection conn = dataSource.getConnection();
+//         PreparedStatement stmt = conn.prepareStatement(sql)) {
+//
+//        stmt.setString(1, userId);
+//        stmt.setString(2, scheduleId);
+//        stmt.setString(3, status); // e.g., "Incomplete"
+//
+//        stmt.executeUpdate();
+//    } catch (SQLException e) {
+//        System.err.println("Error inserting/updating attendance status: " + e.getMessage());
+//        e.printStackTrace();
+//    }
+//}
+
 
 }
