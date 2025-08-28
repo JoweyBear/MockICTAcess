@@ -161,7 +161,7 @@ public class MainDAOImpl implements MainDAO {
                         psCheck.setString(2, scheduleId);
                         try (ResultSet rsCheck = psCheck.executeQuery()) {
                             if (rsCheck.next() && rsCheck.getInt(1) == 0) {
-                                String insertSql = "INSERT INTO attendance (student_user_id, class_schedule_id, att_date_time, status, method) VALUES (?, ?, ?, 'Absent', 'Auto-marked by system')";
+                                String insertSql = "INSERT INTO attendance (student_user_id, class_schedule_id, att_date_time, time_in, time_out, status, method) VALUES (?, ?, ?, NULL, NULL, 'Absent', 'Auto-marked by system')";
                                 try (PreparedStatement psInsert = conn.prepareStatement(insertSql)) {
                                     psInsert.setString(1, studentId);
                                     psInsert.setString(2, scheduleId);

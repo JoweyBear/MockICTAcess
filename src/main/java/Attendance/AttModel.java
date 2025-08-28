@@ -38,6 +38,13 @@ public class AttModel {
     private String user_id;
     private LocalDateTime created_at;
     
+
+    private int absentCount;
+    private int lateCount;
+    private int incompleteCount;
+    private int timeInCount;
+    private int timeOutCount;
+    
     private StudentModel student;
 
     public int getRm_id() {
@@ -262,6 +269,47 @@ public class AttModel {
 
     public void setStudent(StudentModel student) {
         this.student = student;
+    }
+
+
+    public int getAbsentCount() {
+        return absentCount;
+    }
+
+    public void setAbsentCount(int absentCount) {
+        this.absentCount = absentCount;
+    }
+
+    public int getLateCount() {
+        return lateCount;
+    }
+
+    public void setLateCount(int lateCount) {
+        this.lateCount = lateCount;
+    }
+
+    public int getIncompleteCount() {
+        return incompleteCount;
+    }
+
+    public void setIncompleteCount(int incompleteCount) {
+        this.incompleteCount = incompleteCount;
+    }
+
+    public int getTimeInCount() {
+        return timeInCount;
+    }
+
+    public void setTimeInCount(int timeInCount) {
+        this.timeInCount = timeInCount;
+    }
+
+    public int getTimeOutCount() {
+        return timeOutCount;
+    }
+
+    public void setTimeOutCount(int timeOutCount) {
+        this.timeOutCount = timeOutCount;
     }
 
 }

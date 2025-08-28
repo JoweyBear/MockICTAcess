@@ -1,7 +1,7 @@
 package Login;
 
 import Admin.AdminModel;
-import AdminDashboard.Dashboard;
+import AdminDashboard.Views.*;
 import Fingerprint.FingerprintModel;
 import Fingerprint.IdentificationThread;
 import Fingerprint.PromptSwing;
@@ -45,7 +45,8 @@ public class LoginSerImpl implements LoginService {
         GlobalVar.loggedInAdmin = admin;
         if (admin != null) {
             System.out.println("Log in successful");
-            Dashboard dashboard = new Dashboard();
+            DashboardPanel panel = new DashboardPanel();
+            Dashboard dashboard = new Dashboard(panel);
             dashboard.setVisible(true);
             frame.setVisible(false);
         }
@@ -127,7 +128,8 @@ public class LoginSerImpl implements LoginService {
 
                             String name = matchedAdmin.getFname() + " " + matchedAdmin.getLname();
                             JOptionPane.showMessageDialog(null, "Welcome " + name + "!", "Authenticated", JOptionPane.INFORMATION_MESSAGE);
-                            new Dashboard().setVisible(true);
+                            DashboardPanel panel = new DashboardPanel();
+                            new Dashboard(panel).setVisible(true);
                             frameFP.setVisible(false);
                         }
                     } else {

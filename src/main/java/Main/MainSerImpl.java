@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -507,7 +508,7 @@ public class MainSerImpl implements MainService {
         Map<String, Integer> statusCounts = dao.getStatusCounts(studentID);
         DefaultPieDataset pieDataset = new DefaultPieDataset();
         statusCounts.forEach(pieDataset::setValue);
-        JFreeChart pieChart = ChartFactory.createPieChart("Status Breakdown", pieDataset, true, true, false);
+        JFreeChart pieChart = ChartFactory.createPieChart("Status Breakdown", pieDataset, true, true, Locale.getDefault());
         ChartPanel pieChartPanel = new ChartPanel(pieChart);
         panel.jPanel3.add(pieChartPanel);
 
@@ -516,6 +517,7 @@ public class MainSerImpl implements MainService {
         DefaultCategoryDataset barDataset = new DefaultCategoryDataset();
         subjectCounts.forEach((subject, count) -> barDataset.addValue(count, "Attendance", subject));
         JFreeChart barChart = ChartFactory.createBarChart("Attendance per Subject", "Subject", "Count", barDataset);
+        barChart.getCategoryPlot().getRenderer().setSeriesPaint(0, Color.BLUE);
         ChartPanel barChartPanel = new ChartPanel(barChart);
         panel.jPanel4.add(barChartPanel);
 
@@ -589,7 +591,7 @@ public class MainSerImpl implements MainService {
                 String timeIn = now.format(DateTimeFormatter.ofPattern("hh:mm a"));
                 frame.studentTable.setValueAt(timeIn, rowIndex, 3);
                 JOptionPane.showMessageDialog(null,
-                        "Student " + fname + " " + lname + " is in current class.\nAttendance marked.");
+                        "Faculty " + fname + " " + lname + " is in current class.\nAttendance marked.");
                 showFacultyInfo(userId);
 
             }
@@ -669,7 +671,7 @@ public class MainSerImpl implements MainService {
         Map<String, Integer> statusCounts = dao.getStatusCounts(facultyID);
         DefaultPieDataset pieDataset = new DefaultPieDataset();
         statusCounts.forEach(pieDataset::setValue);
-        JFreeChart pieChart = ChartFactory.createPieChart("Status Breakdown", pieDataset, true, true, false);
+        JFreeChart pieChart = ChartFactory.createPieChart("Status Breakdown", pieDataset, true, true, Locale.getDefault());
         ChartPanel pieChartPanel = new ChartPanel(pieChart);
         panel.jPanel3.add(pieChartPanel);
 
@@ -700,6 +702,7 @@ public class MainSerImpl implements MainService {
 //        CategoryPlot plot = barChart.getCategoryPlot();
 //        BarRenderer renderer = (BarRenderer) plot.getRenderer();
 //        renderer.setSeriesPaint(0, Color.BLUE);
+        barChart.getCategoryPlot().getRenderer().setSeriesPaint(0, Color.BLUE);
         ChartPanel barChartPanel = new ChartPanel(barChart);
         panel.jPanel4.add(barChartPanel);
 

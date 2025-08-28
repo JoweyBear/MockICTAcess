@@ -1,9 +1,10 @@
-package AdminDashboard;
+package AdminDashboard.Views;
 
 import Utilities.Drawerbuilder;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.util.FontUtils;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Font;
 import static java.awt.Font.PLAIN;
@@ -13,8 +14,9 @@ import raven.drawer.Drawer;
 import raven.popup.GlassPanePopup;
 
 public class Dashboard extends javax.swing.JFrame {
-
-    public Dashboard() {
+        DashboardPanel panel;
+    public Dashboard(DashboardPanel panel) {
+        this.panel = panel;
         //        Font font = UIManager.getFont("defaultFont");
         Font newFont = FontUtils.getCompositeFont("Jost", PLAIN, 15);
         UIManager.put("defaultFont", newFont);
@@ -26,6 +28,10 @@ public class Dashboard extends javax.swing.JFrame {
         GlassPanePopup.install(this);
         Drawerbuilder myDrawerBuilder = new Drawerbuilder(this);
         Drawer.getInstance().setDrawerBuilder(myDrawerBuilder);
+        
+        CardLayout cl = (CardLayout) jPanel2.getLayout();
+        jPanel2.add(panel, "Panel");
+        cl.show(jPanel2, "Panel");
         
 
         

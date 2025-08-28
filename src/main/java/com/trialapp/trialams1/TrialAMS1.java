@@ -1,7 +1,7 @@
 package com.trialapp.trialams1;
 
 import Main.Views.*;
-import AdminDashboard.Dashboard;
+import AdminDashboard.Views.Dashboard;
 import Main.*;
 import Utilities.Time;
 import com.formdev.flatlaf.FlatLaf;

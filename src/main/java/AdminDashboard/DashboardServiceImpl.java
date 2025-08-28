@@ -1,0 +1,80 @@
+package AdminDashboard;
+
+import AdminDashboard.Views.*;
+import Attendance.AttModel;
+import java.awt.GridLayout;
+import java.util.Locale;
+import java.util.Map;
+import javax.swing.table.DefaultTableModel;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+
+public class DashboardServiceImpl implements DashboardService {
+
+    Dashboard db;
+    DashboardPanel dp;
+    DashboardDAO dao = new DashboardDAOImpl();
+
+    public DashboardServiceImpl(Dashboard db, DashboardPanel dp) {
+        this.db = db;
+        this.dp = dp;
+        
+        setDashboardData();
+
+    }
+
+    private void setDashboardData() {
+        DefaultTableModel model = dao.getAllAttendanceRecords();
+        dp.jTable1.setModel(model);
+        
+        AttModel att = dao.getAttendanceStatus();
+        
+        dp.absent.setText(String.valueOf(att.getAbsentCount()));
+        dp.timeIn.setText(String.valueOf(att.getTimeInCount()));
+        dp.timeOut.setText(String.valueOf(att.getTimeOutCount()));
+        dp.incomplete.setText(String.valueOf(att.getIncompleteCount()));
+        dp.late.setText(String.valueOf(att.getLateCount()));
+        
+        dp.jPanel6.removeAll();
+        dp.jPanel7.removeAll();
+        dp.jPanel6.setLayout(new GridLayout(1, 1));
+        dp.jPanel7.setLayout(new GridLayout(1, 1));
+
+//        piechart
+        Map<String, Integer> counts = dao.getAttendanceStatusCounts();
+        DefaultPieDataset pieDataset = new DefaultPieDataset();
+        counts.forEach(pieDataset::setValue);
+        JFreeChart pieChart = ChartFactory.createPieChart("Attendance Breakdown", pieDataset, true, true, Locale.getDefault());
+        ChartPanel pieChartPanel = new ChartPanel(pieChart);
+        dp.jPanel6.add(pieChartPanel);
+
+//        barchart
+        Map<String, Map<String, Integer>> genderMap = dao.getAttendanceStatusByGender();
+        DefaultCategoryDataset barDataset = new DefaultCategoryDataset();
+        for (String gender : genderMap.keySet()) {
+            Map<String, Integer> statusMap = genderMap.get(gender);
+            for (Map.Entry<String, Integer> entry : statusMap.entrySet()) {
+                barDataset.addValue(entry.getValue(), gender, entry.getKey());
+            }
+        }
+        JFreeChart barChart = ChartFactory.createBarChart("Gender Metrics", 
+                "Status", 
+                "Attendance Count", 
+                barDataset, 
+                PlotOrientation.VERTICAL, true, true, true);
+        ChartPanel barChartPanel = new ChartPanel(barChart);
+        dp.jPanel7.add(barChartPanel);
+        
+        dp.jPanel6.revalidate();
+        dp.jPanel7.revalidate();
+        dp.jPanel6.repaint();
+        dp.jPanel7.repaint();
+        dp.repaint();
+        dp.revalidate();
+
+    }
+}

@@ -2,7 +2,7 @@ package Utilities;
 
 import Admin.AdminController;
 import Admin.Views.*;
-import AdminDashboard.Dashboard;
+import AdminDashboard.Views.Dashboard;
 import Attendance.AttendanceController;
 import Attendance.Views.*;
 import Faculty.FacultyController;
@@ -41,8 +41,8 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
     public SimpleMenuOption getSimpleMenuOption() {
         String menus[][] = {
             {"Dashboard"},
-            {"Manage", "Admin", "Student", "Faculty", "Attendance"},
-            {"Reports", "Analytics"},
+            {"Manage", "Admin", "Student", "Faculty", "Class Schedules and Rooms"},
+            {"Reports", "Analytics", "Attendance"},
             {"Logout"}
         };
 
