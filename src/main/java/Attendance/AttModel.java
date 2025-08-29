@@ -44,6 +44,7 @@ public class AttModel {
     private int incompleteCount;
     private int timeInCount;
     private int timeOutCount;
+    private int leftEarly;
     
     private StudentModel student;
 
@@ -310,6 +311,14 @@ public class AttModel {
 
     public void setTimeOutCount(int timeOutCount) {
         this.timeOutCount = timeOutCount;
+    }
+
+    public int getLeftEarly() {
+        return leftEarly;
+    }
+
+    public void setLeftEarly(int leftEarly) {
+        this.leftEarly = leftEarly;
     }
 
 }

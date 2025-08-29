@@ -2,7 +2,8 @@ package Utilities;
 
 import Admin.AdminController;
 import Admin.Views.*;
-import AdminDashboard.Views.Dashboard;
+import AdminDashboard.DashboardController;
+import AdminDashboard.Views.*;
 import Attendance.AttendanceController;
 import Attendance.Views.*;
 import Faculty.FacultyController;
@@ -55,7 +56,13 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
                     @Override
                     public void selected(MenuAction action, int index, int subIndex) {
                         if (index == 0) {
-//                            Dashboard dashboard = new Dashboard();
+                            DashboardPanel panel = new DashboardPanel();
+//                            Dashboard dashboard = new Dashboard(panel);
+                            new DashboardController(dashboard, panel);
+                            CardLayout cl = (CardLayout) dashboard.jPanel2.getLayout();
+                            dashboard.jPanel2.add(panel, "dashboardPanel");
+                            cl.show(dashboard.jPanel2, "dashboardPanel");
+                            System.out.println("DashboardPanel shown");
 //                            dashboard.setVisible(true);
                         } else if (index == 1) {
                             if (subIndex == 1) {

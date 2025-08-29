@@ -77,4 +77,49 @@ public class DashboardServiceImpl implements DashboardService {
         dp.revalidate();
 
     }
+
+    @Override
+    public void displayIrregularAttendance() {
+        DefaultTableModel model = dao.getAllIrregularAttendance();
+        dp.jTable1.setModel(model);
+        
+        dp.jPanel6.removeAll();
+        dp.jPanel7.removeAll();
+        dp.jPanel6.setLayout(new GridLayout(1, 1));
+        dp.jPanel7.setLayout(new GridLayout(1, 1));
+        
+//        barchart1
+        Map<String, Map<String, Integer>> irregAttCounts = dao.getAllIrregularAttendanceByGender();
+        DefaultCategoryDataset genderBarDataset = new DefaultCategoryDataset();
+        for(String gender : irregAttCounts.keySet()){
+            Map<String, Integer> irregGenderCounts = irregAttCounts.get(gender);
+            for(Map.Entry<String, Integer> entry : irregGenderCounts.entrySet()){
+                genderBarDataset.addValue(entry.getValue(), gender, entry.getKey());
+            }
+        }
+        JFreeChart genderBarChart = ChartFactory.createBarChart("Gender Metrics", "Status", "Attendance Count", genderBarDataset, PlotOrientation.VERTICAL, true, true, true);
+        ChartPanel genderBarChartPanel = new ChartPanel(genderBarChart);
+        dp.jPanel6.add(genderBarChartPanel);
+        
+//        barchart2
+        Map<String, Map<String, Integer>> irregCounts = dao.getAllIrregularAttendancePerSubject();
+        DefaultCategoryDataset subjectBarDataset = new DefaultCategoryDataset();
+        for(String subject : irregCounts.keySet()){
+            Map<String, Integer> irregSubjectCounts = irregCounts.get(subject);
+            for(Map.Entry<String, Integer> entry : irregSubjectCounts.entrySet()){
+                subjectBarDataset.addValue(entry.getValue(), subject, entry.getKey());
+            }
+        }
+        JFreeChart subjectBarChart = ChartFactory.createBarChart("Subject Metrics", "Status", "Attendance Count", genderBarDataset, PlotOrientation.VERTICAL, true, true, true);
+        ChartPanel subjectBarChartPanel = new ChartPanel(subjectBarChart);
+        dp.jPanel7.add(subjectBarChartPanel);
+         
+        dp.jPanel6.revalidate();
+        dp.jPanel7.revalidate();
+        dp.jPanel6.repaint();
+        dp.jPanel7.repaint();
+        dp.revalidate();
+        dp.repaint();
+        
+    }
 }

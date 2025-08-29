@@ -13,5 +13,12 @@ public interface DashboardDAO {
     Map<String, Map<String, Integer>> getAttendanceStatusByGender();
     AttModel getAttendanceStatus();
     
+    DefaultTableModel getAllIrregularAttendance();
+    Map<String, Map<String, Integer>> getAllIrregularAttendanceByGender();
+    Map<String, Map<String, Integer>> getAllIrregularAttendancePerSubject();
+    
+    DefaultTableModel getAllAttendaceRecordsBetween(String date1, String date2);
+    Map<String, Integer> getAttendanceCountsBetween(String date1, String date2);
+    
 
 }
