@@ -19,6 +19,9 @@ public interface DashboardDAO {
     
     DefaultTableModel getAllAttendaceRecordsBetween(String date1, String date2);
     Map<String, Integer> getAttendanceCountsBetween(String date1, String date2);
+    Map<String, Map<String, Integer>> getAttendanceByGenderBetween(String date1, String date2);
+    AttModel getAttendanceStatusBetween(String date1, String date2);
+    
     
 
 }

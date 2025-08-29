@@ -139,7 +139,7 @@ public class DashboardDAOImpl implements DashboardDAO {
                 + "WHERE u.college = ? "
                 + "GROUP BY a.status";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql);) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, college);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -464,7 +464,92 @@ public class DashboardDAOImpl implements DashboardDAO {
 
     @Override
     public Map<String, Integer> getAttendanceCountsBetween(String date1, String date2) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Map<String, Integer> statusCount = new HashMap<>();
+
+        String sql = "SELECT a.status, COUNT(*) AS count "
+                + "FROM attendance a "
+                + "JOIN user u ON u.user_id = a.user_id "
+                + "WHERE u.college = ? "
+                + "AND DATE(a.att_date_time) BETWEEN ? AND ? "
+                + "GROUP BY a.status";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, college);
+            ps.setString(2, date1);
+            ps.setString(3, date2);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                statusCount.put(rs.getString("status"), rs.getInt("count"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DashboardDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return statusCount;
+    }
+
+    @Override
+    public Map<String, Map<String, Integer>> getAttendanceByGenderBetween(String date1, String date2) {
+        Map<String, Map<String, Integer>> result = new HashMap<>();
+        String sql = "SELECT u.sex, a.status, COUNT(*) AS count "
+                + "FROM attendance a"
+                + "JOIN user u ON u.user_id = a.user_id "
+                + "WHERE u.college = ? "
+                + "AND DATE(a.att_date_time) BETWEEN ? AND ? "
+                + "GROUP BY u.gender, a.status";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, college);
+            ps.setString(2, date1);
+            ps.setString(3, date2);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                String gender = rs.getString("gender");
+                String status = rs.getString("status");
+                int count = rs.getInt("count");
+
+                result.computeIfAbsent(gender, k -> new HashMap<>()).merge(status, count, Integer::sum);
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    public AttModel getAttendanceStatusBetween(String date1, String date2) {
+        AttModel summary = new AttModel();
+        String sql = "SELECT "
+                + "COUNT(CASE WHEN a.time_in IS NOT NULL THEN 1 END) AS time_in_count, "
+                + "COUNT(CASE WHEN a.time_out IS NOT NULL THEN 1 END) AS time_out_count, "
+                + "COUNT(CASE WHEN a.status = 'Absent' THEN 1 END) AS absent_count, "
+                + "COUNT(CASE WHEN a.status = 'Late' THEN 1 END) AS late_count, "
+                + "COUNT(CASE WHEN a.status = 'Incomplete' THEN 1 END) AS incomplete_count "
+                + "COUNT (CASE WHEN a.status = 'Early Time Out' THEN 1 END AS left_early) "
+                + "FROM attendance a "
+                + "JOIN user u ON u.user_id = a.user_id "
+                + "WHERE u.college = ? "
+                + "AND DATE(att_date_time) BETWEEN ? AND ?";
+        try(PreparedStatement ps = conn.prepareStatement(sql)){
+            ps.setString(1, college);
+            ps.setString(2, date1);
+            ps.setString(3, date2);
+            rs = ps.executeQuery();
+            
+            while(rs.next()){
+                summary.setTimeInCount(rs.getInt("time_in_count"));
+                summary.setTimeOutCount(rs.getInt("time_out_count"));
+                summary.setLateCount(rs.getInt("late_count"));
+                summary.setAbsentCount(rs.getInt("absent_count"));
+                summary.setIncompleteCount(rs.getInt("incomplete_count"));
+                summary.setLeftEarly(rs.getInt("left_early"));
+                
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DashboardDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return summary;
     }
 
 }
