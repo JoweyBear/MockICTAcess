@@ -5,4 +5,7 @@ public interface DashboardService {
     void displayAttendanceBetween();
     void displayAttendanceCS();
     void displayAttendanceBetweenAndCS();
+    void dsiplayAttendanceByFaculty();
+    void saveAttendance();
+    
 }

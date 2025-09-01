@@ -5,13 +5,23 @@ import Attendance.AttModel;
 import Utilities.AttendanceFilterType;
 import Utilities.GlobalVar;
 import Utilities.SearchDefaultModel;
+import com.mysql.cj.xdevapi.Row;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import org.apache.poi.sl.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -198,9 +208,12 @@ public class DashboardServiceImpl implements DashboardService {
     public void displayAttendanceBetweenAndCS() {
         String csid = dp.cs_id.getSelectedItem().toString();
         String cs_id = csid.split(" - ")[0].replace("Class Sched. ID: ", "").trim();
-//        att.setRm_id(Integer.parseInt(cs_id));
+        if (cs_id == null) {
+            JOptionPane.showMessageDialog(null, "Attendance", "No Class Schedule Selected.", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         System.out.println(cs_id);
-        
+
         Date utilDate1 = dp.jDateChooser1.getDate();
         Date utilDate2 = dp.jDateChooser2.getDate();
 
@@ -235,5 +248,116 @@ public class DashboardServiceImpl implements DashboardService {
         dp.jPanel7.add(buildBarChartPanel("Gender Metrics", genderMap));
 
         repaintAndRevalidate();
+    }
+
+    @Override
+    public void dsiplayAttendanceByFaculty() {
+        String facultyId = dp.cs_id.getSelectedItem().toString();
+        String faculty_id = facultyId.split(" - ")[0].replace("Class Sched. ID: ", "").trim();
+        if (faculty_id == null) {
+            JOptionPane.showMessageDialog(null, "Attendance", "No Faculty is Selected.", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        System.out.println(faculty_id);
+        DefaultTableModel model = dao.getAttendanceRecords(AttendanceFilterType.BY_FACULTY, college, faculty_id);
+        dp.jTable1.setModel(model);
+        new SearchDefaultModel(dp, dp.jTable1, dp.search, model);
+
+        dp.jPanel6.removeAll();
+        dp.jPanel7.removeAll();
+        dp.jPanel6.setLayout(new GridLayout(1, 1));
+        dp.jPanel7.setLayout(new GridLayout(1, 1));
+
+//        piechart
+        Map<String, Integer> statusCounts = dao.getAttedanceCounts(AttendanceFilterType.BY_FACULTY, college, faculty_id);
+        dp.jPanel6.add(buildPieChartPanel("Attendance Breakdown", statusCounts));
+
+//        barchart2
+        Map<String, Map<String, Integer>> irregCounts = dao.getAllIrregularAttendancePerSubject();
+        dp.jPanel7.add(buildBarChartPanel("Subject Metrics", irregCounts));
+
+        repaintAndRevalidate();
+    }
+
+    @Override
+    public void saveAttendance() {
+        String csid = dp.cs_id.getSelectedItem().toString();
+        String cs_id = csid.split(" - ")[0].replace("Class Sched. ID: ", "").trim();
+        if (cs_id == null) {
+            JOptionPane.showMessageDialog(null, "Attendance", "No Class Schedule Selected.", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Date date = dp.jDateChooser3.getDate();
+
+        if (date == null) {
+            JOptionPane.showMessageDialog(null, "Attendance", "No date is selected.", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        DefaultTableModel model = dao.saveAttendance(college, cs_id, date);
+        if (model == null || model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(null, "No attendance records to export.");
+            return;
+        }
+
+        // Format date for filename
+        String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        String defaultFileName = "Attendance_" + cs_id + "_" + formattedDate + ".csv";
+
+        // Confirm before saving
+        String message = "Are you sure you want to save this attendance?\n\n"
+                + "Date: " + formattedDate + "\n"
+                + "Class Schedule ID: " + cs_id;
+        int confirm = JOptionPane.showConfirmDialog(null, message, "Confirm Export", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            System.out.println("Export cancelled.");
+            return;
+        }
+
+        // File chooser
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Attendance CSV");
+        fileChooser.setSelectedFile(new File(defaultFileName));
+
+        int userSelection = fileChooser.showSaveDialog(null);
+        if (userSelection != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File fileToSave = fileChooser.getSelectedFile();
+        if (!fileToSave.getName().toLowerCase().endsWith(".csv")) {
+            fileToSave = new File(fileToSave.getAbsolutePath() + ".csv");
+        }
+
+        // Write CSV
+        try (PrintWriter pw = new PrintWriter(fileToSave)) {
+            // Header
+            for (int col = 0; col < model.getColumnCount(); col++) {
+                pw.print(model.getColumnName(col));
+                if (col < model.getColumnCount() - 1) {
+                    pw.print(",");
+                }
+            }
+            pw.println();
+
+            // Rows
+            for (int row = 0; row < model.getRowCount(); row++) {
+                for (int col = 0; col < model.getColumnCount(); col++) {
+                    Object value = model.getValueAt(row, col);
+                    pw.print(value != null ? value.toString().replace(",", " ") : "");
+                    if (col < model.getColumnCount() - 1) {
+                        pw.print(",");
+                    }
+                }
+                pw.println();
+            }
+
+            JOptionPane.showMessageDialog(null, " Exported successfully to:\n" + fileToSave.getAbsolutePath());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, " Export failed:\n" + e.getMessage());
+            e.printStackTrace();
+        }
+
     }
 }
