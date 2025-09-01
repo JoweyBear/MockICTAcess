@@ -50,7 +50,7 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
     public void startEnrollment() throws UareUException {
         Selection.resetReader();
         int counter = 0;
-        int maxAttempts = requiredFmdToEnroll * 2;
+        int maxAttempts = requiredFmdToEnroll * 1;
         int attempts = 0;
 
         PromptSwing.prompt(PromptSwing.START_CAPTURE);

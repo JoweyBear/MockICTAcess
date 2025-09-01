@@ -250,9 +250,6 @@ public class IdentificationThread extends Thread {
                         SwingUtilities.invokeLater(() -> progressBar.setString("Fingerprint matched!"));
                         Thread.sleep(1000);
 
-                        SwingUtilities.invokeLater(() -> progressBar.setString("Success"));
-                        Thread.sleep(1000);
-
                         SwingUtilities.invokeLater(() -> progressBar.setString("Access granted. Preparing dashboard..."));
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
