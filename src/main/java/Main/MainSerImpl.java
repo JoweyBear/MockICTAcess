@@ -7,6 +7,7 @@ import Fingerprint.FingerprintModel;
 import Main.Views.*;
 import Login.*;
 import Student.StudentModel;
+import Utilities.ChartDrawingSupplier;
 import com.digitalpersona.uareu.UareUException;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -31,6 +32,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -509,6 +511,8 @@ public class MainSerImpl implements MainService {
         DefaultPieDataset pieDataset = new DefaultPieDataset();
         statusCounts.forEach(pieDataset::setValue);
         JFreeChart pieChart = ChartFactory.createPieChart("Status Breakdown", pieDataset, true, true, Locale.getDefault());
+        Plot piePlot = pieChart.getPlot();
+        piePlot.setDrawingSupplier(new ChartDrawingSupplier());
         ChartPanel pieChartPanel = new ChartPanel(pieChart);
         panel.jPanel3.add(pieChartPanel);
 
@@ -517,7 +521,13 @@ public class MainSerImpl implements MainService {
         DefaultCategoryDataset barDataset = new DefaultCategoryDataset();
         subjectCounts.forEach((subject, count) -> barDataset.addValue(count, "Attendance", subject));
         JFreeChart barChart = ChartFactory.createBarChart("Attendance per Subject", "Subject", "Count", barDataset);
-        barChart.getCategoryPlot().getRenderer().setSeriesPaint(0, Color.BLUE);
+        CategoryPlot barPlot = barChart.getCategoryPlot();
+        BarRenderer render = (BarRenderer) barPlot.getRenderer();
+        render.setSeriesPaint(0, new Color(225, 219, 203));
+        render.setSeriesPaint(1, new Color(95, 114, 148));
+        render.setSeriesPaint(2, new Color(71, 77, 93));
+        render.setSeriesPaint(3, new Color(146, 186, 230));
+        render.setSeriesPaint(4, new Color(0, 51, 102));
         ChartPanel barChartPanel = new ChartPanel(barChart);
         panel.jPanel4.add(barChartPanel);
 
@@ -672,6 +682,8 @@ public class MainSerImpl implements MainService {
         DefaultPieDataset pieDataset = new DefaultPieDataset();
         statusCounts.forEach(pieDataset::setValue);
         JFreeChart pieChart = ChartFactory.createPieChart("Status Breakdown", pieDataset, true, true, Locale.getDefault());
+        Plot piePlot = pieChart.getPlot();
+        piePlot.setDrawingSupplier(new ChartDrawingSupplier());
         ChartPanel pieChartPanel = new ChartPanel(pieChart);
         panel.jPanel3.add(pieChartPanel);
 
@@ -702,7 +714,13 @@ public class MainSerImpl implements MainService {
 //        CategoryPlot plot = barChart.getCategoryPlot();
 //        BarRenderer renderer = (BarRenderer) plot.getRenderer();
 //        renderer.setSeriesPaint(0, Color.BLUE);
-        barChart.getCategoryPlot().getRenderer().setSeriesPaint(0, Color.BLUE);
+        CategoryPlot barPlot = barChart.getCategoryPlot();
+        BarRenderer render = (BarRenderer) barPlot.getRenderer();
+        render.setSeriesPaint(0, new Color(225, 219, 203));
+        render.setSeriesPaint(1, new Color(95, 114, 148));
+        render.setSeriesPaint(2, new Color(71, 77, 93));
+        render.setSeriesPaint(3, new Color(146, 186, 230));
+        render.setSeriesPaint(4, new Color(0, 51, 102));
         ChartPanel barChartPanel = new ChartPanel(barChart);
         panel.jPanel4.add(barChartPanel);
 

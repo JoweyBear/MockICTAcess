@@ -61,17 +61,17 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
                 cnclActionPerformed(evt);
             }
         });
-        jPanel1.add(cncl, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 360, 130, 30));
+        jPanel1.add(cncl, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 60, 80, -1));
 
         lgn.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
         lgn.setText("Initiate Scan");
         lgn.setFocusPainted(false);
         lgn.setRequestFocusEnabled(false);
         lgn.setVerifyInputWhenFocusTarget(false);
-        jPanel1.add(lgn, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 270, 130, 30));
+        jPanel1.add(lgn, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 290, 210, 30));
 
         forPass.setText("Use Password Instead");
-        jPanel1.add(forPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 320, 210, -1));
+        jPanel1.add(forPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 350, 210, -1));
 
         jLabel2.setFont(new java.awt.Font("Vogue", 1, 50)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));

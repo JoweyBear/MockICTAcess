@@ -41,12 +41,12 @@ public class DashboardDAOImpl implements DashboardDAO {
                 + "si.section AS 'Section', si.year AS 'Year', si.track AS 'Track' "
                 + "FROM attendance a "
                 + "JOIN user s ON a.user_id = s.user_id "
-                + "JOIN student_info si ON a.user_id = a.user_id "
+                + "JOIN student_info si ON a.user_id = si.user_id "
                 + "WHERE s.college = ? ";
 
         String sqlStatusCounts = "SELECT a.user_id, a.status, COUNT(*) AS count FROM attendance a "
-                + "WHERE s.college = ? "
                 + "JOIN user s ON s.user_id = a.user_id "
+                + "WHERE s.college = ? "
                 + "GROUP BY a.user_id, a.status";
 
         Map<String, Map<String, Integer>> statusMap = new HashMap<>();
@@ -161,10 +161,10 @@ public class DashboardDAOImpl implements DashboardDAO {
     public Map<String, Map<String, Integer>> getAttendanceStatusByGender() {
         Map<String, Map<String, Integer>> result = new HashMap<>();
         String sql = "SELECT u.sex, a.status, COUNT(*) AS count "
-                + "FROM attendance a"
+                + "FROM attendance a "
                 + "JOIN user u ON u.user_id = a.user_id "
                 + "WHERE u.college = ? "
-                + "GROUP BY u.gender, a.status";
+                + "GROUP BY u.sex, a.status";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -193,8 +193,8 @@ public class DashboardDAOImpl implements DashboardDAO {
                 + "COUNT(CASE WHEN a.time_out IS NOT NULL THEN 1 END) AS time_out_count, "
                 + "COUNT(CASE WHEN a.status = 'Absent' THEN 1 END) AS absent_count, "
                 + "COUNT(CASE WHEN a.status = 'Late' THEN 1 END) AS late_count, "
-                + "COUNT(CASE WHEN a.status = 'Incomplete' THEN 1 END) AS incomplete_count "
-                + "COUNT (CASE WHEN a.status = 'Early Time Out' THEN 1 END AS left_early) "
+                + "COUNT(CASE WHEN a.status = 'Incomplete' THEN 1 END) AS incomplete_count, "
+                + "COUNT(CASE WHEN a.status = 'Early Time Out' THEN 1 END) AS left_early "
                 + "FROM attendance a "
                 + "JOIN user u ON u.user_id = a.user_id "
                 + "WHERE u.college = ?";
@@ -227,24 +227,24 @@ public class DashboardDAOImpl implements DashboardDAO {
                 + "OR (status = 'Early Time Out') "
                 + "OR (status = 'Absent' AND time_in IS NULL AND time_out IS NULL)), "
                 + "summary_counts AS "
-                + "(SELECT student_id, "
+                + "(SELECT user_id, "
                 + "COUNT(time_in) AS time_in_count, "
                 + "COUNT(time_out) AS time_out_count, "
                 + "SUM(CASE WHEN status = 'Late' THEN 1 ELSE 0 END) AS late_count, "
                 + "SUM(CASE WHEN status = 'Early Time Out' THEN 1 ELSE 0 END) AS left_early_count, "
                 + "SUM(CASE WHEN status = 'Absent' AND time_in IS NULL AND time_out IS NULL THEN 1 ELSE 0 END) AS absent_count "
-                + "FROM attendance GROUP BY student_id)"
-                + "SELECT f.student_id AS 'Student ID', u.fname AS 'firstName', u.mname AS 'middleName', u.lname AS 'lastName', "
-//                + "DATE(f.att_date_time) AS 'Date', f.status AS 'Status', f.time_in AS 'Time In', f.time_out AS 'Time Out', "
+                + "FROM attendance GROUP BY user_id)"
+                + "SELECT f.user_id AS 'Student ID', u.fname AS 'firstName', u.mname AS 'middleName', u.lname AS 'lastName', "
+                //                + "DATE(f.att_date_time) AS 'Date', f.status AS 'Status', f.time_in AS 'Time In', f.time_out AS 'Time Out', "
                 + "s.time_in_count AS 'timeInCount', s.time_out_count AS 'timeOutCount', "
                 + "s.late_count AS 'lateCount', "
                 + "s.left_early_count AS 'leftEarlyCount', "
                 + "s.absent_count As 'absentCount'"
                 + "FROM filtered_attendance f "
-                + "JOIN summary_counts s ON f.student_id = s.student_id "
-                + "JOIN user u ON u.user_id = s.student_id "
+                + "JOIN summary_counts s ON f.user_id = s.user_id "
+                + "JOIN user u ON u.user_id = s.user_id "
                 + "WHERE u.college = ? "
-                + "ORDER BY f.student_id, DATE(f.att_date_time)";
+                + "ORDER BY f.user_id, DATE(f.att_date_time)";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, college);
             rs = ps.executeQuery();
@@ -402,8 +402,17 @@ public class DashboardDAOImpl implements DashboardDAO {
                         + "si.section AS 'Section', si.year AS 'Year', si.track AS 'Track' "
                         + "FROM attendance a "
                         + "JOIN user s ON a.user_id = s.user_id "
+                        + "JOIN student_info si ON a.user_id = si.user_id "
                         + "JOIN class_schedule cs ON a.class_schedule_id = cs.cs_id "
                         + "WHERE s.college = ? AND cs.faculty_user_id = ?";
+
+                sqlStatusCounts = "SELECT a.user_id, a.status, COUNT(*) AS count "
+                        + "FROM attendance a "
+                        + "JOIN user s ON a.user_id = s.user_id "
+                        + "JOIN class_schedule cs ON a.class_schedule_id = cs.cs_id "
+                        + "WHERE s.college = ? AND cs.faculty_user_id = ? "
+                        + "GROUP BY a.user_id, a.status";
+
                 break;
 
         }
@@ -412,6 +421,10 @@ public class DashboardDAOImpl implements DashboardDAO {
 
         try {
             ps = conn.prepareStatement(sqlStatusCounts);
+            System.out.println("Params: ");
+            for (Object param : params) {
+                System.out.println(param);
+            }
             for (int i = 0; i < params.length; i++) {
                 ps.setObject(i + 1, params[i]);
             }
@@ -545,13 +558,18 @@ public class DashboardDAOImpl implements DashboardDAO {
 
         try {
             ps = conn.prepareStatement(sql);
+            System.out.println("Params: ");
+            for (Object param : params) {
+                System.out.println(param);
+            }
             for (int i = 0; i < params.length; i++) {
-                ps.setObject(i + 1, params[1]);
+                ps.setObject(i + 1, params[i]);
             }
 
             rs = ps.executeQuery();
             while (rs.next()) {
                 statusCounts.put(rs.getString("status"), rs.getInt("count"));
+                System.out.println(statusCounts);
             }
 
         } catch (SQLException ex) {
@@ -572,24 +590,24 @@ public class DashboardDAOImpl implements DashboardDAO {
                         + "JOIN user u ON u.user_id = a.user_id "
                         + "WHERE u.college = ? "
                         + "AND DATE(a.att_date_time) BETWEEN ? AND ? "
-                        + "GROUP BY u.gender, a.status";
+                        + "GROUP BY u.sex, a.status";
                 break;
 
             case BY_CLASS_SCHEDULE:
                 sql = "SELECT u.sex, a.status, COUNT(*) AS count "
-                        + "FROM attendance a"
+                        + "FROM attendance a "
                         + "JOIN user u ON u.user_id = a.user_id "
                         + "WHERE u.college = ? AND a.class_schedule_id = ? "
-                        + "GROUP BY u.gender, a.status";
+                        + "GROUP BY u.sex, a.status";
                 break;
 
             case BY_DATE_RANGE_CS:
                 sql = "SELECT u.sex, a.status, COUNT(*) AS count "
-                        + "FROM attendance a"
+                        + "FROM attendance a "
                         + "JOIN user u ON u.user_id = a.user_id "
                         + "WHERE u.college = ? AND a.class_schedule_id = ? "
                         + "AND DATE(a.att_date_time) BETWEEN ? AND ? "
-                        + "GROUP BY u.gender, a.status";
+                        + "GROUP BY u.sex, a.status";
                 break;
         }
 
@@ -627,7 +645,7 @@ public class DashboardDAOImpl implements DashboardDAO {
                         + "COUNT(CASE WHEN a.status = 'Absent' THEN 1 END) AS absent_count, "
                         + "COUNT(CASE WHEN a.status = 'Late' THEN 1 END) AS late_count, "
                         + "COUNT(CASE WHEN a.status = 'Incomplete' THEN 1 END) AS incomplete_count "
-                        + "COUNT (CASE WHEN a.status = 'Early Time Out' THEN 1 END AS left_early) "
+                        + "COUNT(CASE WHEN a.status = 'Early Time Out' THEN 1 END) AS left_early  "
                         + "FROM attendance a "
                         + "JOIN user u ON u.user_id = a.user_id "
                         + "WHERE u.college = ? "
@@ -642,7 +660,7 @@ public class DashboardDAOImpl implements DashboardDAO {
                         + "COUNT(CASE WHEN a.status = 'Absent' THEN 1 END) AS absent_count, "
                         + "COUNT(CASE WHEN a.status = 'Late' THEN 1 END) AS late_count, "
                         + "COUNT(CASE WHEN a.status = 'Incomplete' THEN 1 END) AS incomplete_count "
-                        + "COUNT (CASE WHEN a.status = 'Early Time Out' THEN 1 END AS left_early) "
+                        + "COUNT(CASE WHEN a.status = 'Early Time Out' THEN 1 END) AS left_early "
                         + "FROM attendance a "
                         + "JOIN user u ON u.user_id = a.user_id "
                         + "JOIN student_info si ON si.user_id = a.user_id "
@@ -656,7 +674,7 @@ public class DashboardDAOImpl implements DashboardDAO {
                         + "COUNT(CASE WHEN a.status = 'Absent' THEN 1 END) AS absent_count, "
                         + "COUNT(CASE WHEN a.status = 'Late' THEN 1 END) AS late_count, "
                         + "COUNT(CASE WHEN a.status = 'Incomplete' THEN 1 END) AS incomplete_count "
-                        + "COUNT (CASE WHEN a.status = 'Early Time Out' THEN 1 END AS left_early) "
+                        + "COUNT(CASE WHEN a.status = 'Early Time Out' THEN 1 END) AS left_early "
                         + "FROM attendance a "
                         + "JOIN user u ON u.user_id = a.user_id "
                         + "JOIN student_info si ON si.user_id = a.user_id "
@@ -671,7 +689,7 @@ public class DashboardDAOImpl implements DashboardDAO {
                         + "COUNT(CASE WHEN a.status = 'Absent' THEN 1 END) AS absent_count, "
                         + "COUNT(CASE WHEN a.status = 'Late' THEN 1 END) AS late_count, "
                         + "COUNT(CASE WHEN a.status = 'Incomplete' THEN 1 END) AS incomplete_count "
-                        + "COUNT (CASE WHEN a.status = 'Early Time Out' THEN 1 END AS left_early) "
+                        + "COUNT (CASE WHEN a.status = 'Early Time Out' THEN 1 END) AS left_early "
                         + "FROM attendance a "
                         + "JOIN user u ON u.user_id = a.user_id "
                         + "JOIN class_schedule cs ON cs.cs_id = a.class_schedule_id "
@@ -745,7 +763,7 @@ public class DashboardDAOImpl implements DashboardDAO {
             ps.setDate(3, sqlDate);
 
             rs = ps.executeQuery();
-            Vector<String> columnNames = new Vector<>(Arrays.asList("Student ID", "First Name", "Middle Name", "Last Name", 
+            Vector<String> columnNames = new Vector<>(Arrays.asList("Student ID", "First Name", "Middle Name", "Last Name",
                     "Year", "Section", "Track", "Time In", "Time Out", "Status"));
 
             Vector<Vector<Object>> data = new Vector<>();
@@ -767,15 +785,15 @@ public class DashboardDAOImpl implements DashboardDAO {
                 row.add(rs.getString("Time In"));
                 row.add(rs.getString("Time Out"));
                 row.add(rs.getString("Status"));
-                
+
                 data.add(row);
             }
             return new DefaultTableModel(data, columnNames);
         } catch (SQLException ex) {
             Logger.getLogger(DashboardDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Vector<String> columns = new Vector<>(Arrays.asList("Student ID", "First Name", "Middle Name", "Last Name", 
-                    "Year", "Section", "Track", "Time In", "Time Out", "Status"));
+        Vector<String> columns = new Vector<>(Arrays.asList("Student ID", "First Name", "Middle Name", "Last Name",
+                "Year", "Section", "Track", "Time In", "Time Out", "Status"));
         return new DefaultTableModel(new Vector<>(), columns);
 
     }

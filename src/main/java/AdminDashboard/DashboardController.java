@@ -1,6 +1,7 @@
 package AdminDashboard;
 
 import AdminDashboard.Views.*;
+import Utilities.FacultyCBHandler;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -30,6 +31,7 @@ public class DashboardController {
             if(e.getSource() == panel.disInAb){
                 service.displayIrregularAttendance();
             }else if(e.getSource() == panel.srchCs){
+                System.out.println("searchCsclicked");
                 service.displayAttendanceCS();
             }else if(e.getSource() == panel.saveAtt){
                 service.saveAttendance();

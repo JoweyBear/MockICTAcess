@@ -245,17 +245,18 @@ public class IdentificationThread extends Thread {
             fingerprintLabel.setIcon(null);
             System.out.println("Identification Success: " + (user != null ? user.getFname() : "Unknown User"));
             if (progressBar != null) {
-                new Thread(() -> {
-                    try {
-                        SwingUtilities.invokeLater(() -> progressBar.setString("Fingerprint matched!"));
-                        Thread.sleep(1000);
+                if (user.getRole().equalsIgnoreCase("admin")) {
+                    new Thread(() -> {
+                        try {
+                            SwingUtilities.invokeLater(() -> progressBar.setString("Fingerprint matched!"));
+                            Thread.sleep(1000);
 
-                        SwingUtilities.invokeLater(() -> progressBar.setString("Access granted. Preparing dashboard..."));
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                }).start();
-
+                            SwingUtilities.invokeLater(() -> progressBar.setString("Access granted. Preparing dashboard..."));
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    }).start();
+                }
             }
         });
 

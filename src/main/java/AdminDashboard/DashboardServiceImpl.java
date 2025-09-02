@@ -3,9 +3,11 @@ package AdminDashboard;
 import AdminDashboard.Views.*;
 import Attendance.AttModel;
 import Utilities.AttendanceFilterType;
+import Utilities.ChartDrawingSupplier;
 import Utilities.GlobalVar;
 import Utilities.SearchDefaultModel;
 import com.mysql.cj.xdevapi.Row;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.io.File;
@@ -25,7 +27,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
@@ -50,7 +55,9 @@ public class DashboardServiceImpl implements DashboardService {
     private ChartPanel buildPieChartPanel(String title, Map<String, Integer> data) {
         DefaultPieDataset dataset = new DefaultPieDataset();
         data.forEach(dataset::setValue);
-        JFreeChart chart = ChartFactory.createPieChart(title, dataset, true, true, Locale.getDefault());
+        JFreeChart chart = ChartFactory.createPieChart3D(title, dataset, true, true, Locale.getDefault());
+        Plot plot = chart.getPlot();
+        plot.setDrawingSupplier(new ChartDrawingSupplier());
         return new ChartPanel(chart);
     }
 
@@ -66,7 +73,27 @@ public class DashboardServiceImpl implements DashboardService {
                 "Attendance Count",
                 dataset,
                 PlotOrientation.VERTICAL, true, true, true);
+        CategoryPlot plot = chart.getCategoryPlot();
+        BarRenderer render = (BarRenderer) plot.getRenderer();
+        render.setSeriesPaint(0, new Color(225, 219, 203));
+        render.setSeriesPaint(1, new Color(95, 114, 148));
+        render.setSeriesPaint(2, new Color(71, 77, 93));
+        render.setSeriesPaint(3, new Color(146, 186, 230));
+        render.setSeriesPaint(4, new Color(0, 51, 102));
         return new ChartPanel(chart);
+    }
+    
+//    add attendance in the morning and afternoon all attendance Records just like the irregCounts
+    
+    
+    void clearComponents(){
+        dp.jDateChooser1.setDate(null);
+        dp.jDateChooser2.setDate(null);
+        dp.jDateChooser3.setDate(null);
+        dp.cmbFaculty.setSelectedIndex(-1);
+        dp.cs_id.setSelectedIndex(-1);
+        dp.cs_id1.setSelectedIndex(-1);
+        
     }
 
     private void repaintAndRevalidate() {
@@ -90,6 +117,7 @@ public class DashboardServiceImpl implements DashboardService {
         dp.timeOut.setText(String.valueOf(att.getTimeOutCount()));
         dp.incomplete.setText(String.valueOf(att.getIncompleteCount()));
         dp.late.setText(String.valueOf(att.getLateCount()));
+        dp.leftEarly.setText(String.valueOf(att.getLeftEarly()));
 
         dp.jPanel6.removeAll();
         dp.jPanel7.removeAll();
@@ -103,6 +131,7 @@ public class DashboardServiceImpl implements DashboardService {
         dp.jPanel7.add(buildBarChartPanel("Gender Metrics", genderMap));
 
         repaintAndRevalidate();
+        System.out.println("SetDashboardData");
     }
 
     @Override
@@ -125,7 +154,6 @@ public class DashboardServiceImpl implements DashboardService {
         dp.jPanel7.add(buildBarChartPanel("Subject Metrics", irregCounts));
 
         repaintAndRevalidate();
-
     }
 
     @Override
@@ -168,7 +196,7 @@ public class DashboardServiceImpl implements DashboardService {
         dp.jPanel7.add(buildBarChartPanel("Gender Metrics", genderMap));
 
         repaintAndRevalidate();
-
+        clearComponents();
     }
 
     @Override
@@ -194,14 +222,14 @@ public class DashboardServiceImpl implements DashboardService {
         dp.jPanel7.removeAll();
 
 //        piechart
-        Map<String, Integer> counts = dao.getAttedanceCounts(AttendanceFilterType.BY_CLASS_SCHEDULE, cs_id);
+        Map<String, Integer> counts = dao.getAttedanceCounts(AttendanceFilterType.BY_CLASS_SCHEDULE, college, cs_id);
         dp.jPanel6.add(buildPieChartPanel("Attendance Breakdown", counts));
 //        barchart
         Map<String, Map<String, Integer>> genderMap = dao.getAttendanceByGender(AttendanceFilterType.BY_CLASS_SCHEDULE, college, cs_id);
         dp.jPanel7.add(buildBarChartPanel("Gender Metrics", genderMap));
 
         repaintAndRevalidate();
-
+        clearComponents();
     }
 
     @Override
@@ -248,12 +276,13 @@ public class DashboardServiceImpl implements DashboardService {
         dp.jPanel7.add(buildBarChartPanel("Gender Metrics", genderMap));
 
         repaintAndRevalidate();
+        clearComponents();
     }
 
     @Override
     public void dsiplayAttendanceByFaculty() {
-        String facultyId = dp.cs_id.getSelectedItem().toString();
-        String faculty_id = facultyId.split(" - ")[0].replace("Class Sched. ID: ", "").trim();
+        String facultyId = dp.cmbFaculty.getSelectedItem().toString();
+        String faculty_id = facultyId.split(" - ")[0].replace("Faculty ID: ", "").trim();
         if (faculty_id == null) {
             JOptionPane.showMessageDialog(null, "Attendance", "No Faculty is Selected.", JOptionPane.WARNING_MESSAGE);
             return;
@@ -265,25 +294,25 @@ public class DashboardServiceImpl implements DashboardService {
 
         dp.jPanel6.removeAll();
         dp.jPanel7.removeAll();
-        dp.jPanel6.setLayout(new GridLayout(1, 1));
-        dp.jPanel7.setLayout(new GridLayout(1, 1));
 
 //        piechart
         Map<String, Integer> statusCounts = dao.getAttedanceCounts(AttendanceFilterType.BY_FACULTY, college, faculty_id);
         dp.jPanel6.add(buildPieChartPanel("Attendance Breakdown", statusCounts));
 
 //        barchart2
-        Map<String, Map<String, Integer>> irregCounts = dao.getAllIrregularAttendancePerSubject();
+        Map<String, Map<String, Integer>> irregCounts = dao.getAllAttendancePerSubjectByFaculty(college, faculty_id);
         dp.jPanel7.add(buildBarChartPanel("Subject Metrics", irregCounts));
 
         repaintAndRevalidate();
+        clearComponents();
     }
 
     @Override
     public void saveAttendance() {
-        String csid = dp.cs_id.getSelectedItem().toString();
+        String csid = dp.cs_id1.getSelectedItem().toString();
         String cs_id = csid.split(" - ")[0].replace("Class Sched. ID: ", "").trim();
         if (cs_id == null) {
+            
             JOptionPane.showMessageDialog(null, "Attendance", "No Class Schedule Selected.", JOptionPane.WARNING_MESSAGE);
             return;
         }

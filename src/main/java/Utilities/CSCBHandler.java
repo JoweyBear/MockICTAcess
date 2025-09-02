@@ -27,9 +27,9 @@ public class CSCBHandler extends KeyAdapter {
         this.comboBox = combo;
         try (Connection conn = Ticket.getConn(); 
                 Statement stmt = conn.createStatement(); 
-                ResultSet rs = stmt.executeQuery("SELECT cs_id, subject FROM clas_schedule")) {
+                ResultSet rs = stmt.executeQuery("SELECT cs_id, subject FROM class_schedule")) {
             while (rs.next()) {
-                String item = String.format("Class Sched. ID: %d - %s", rs.getInt("cs_id"), rs.getString("subject"));
+                String item = String.format("Class Sched. ID: %s - %s", rs.getString("cs_id"), rs.getString("subject"));
                 list.add(item);
             }
         } catch (SQLException ex) {
