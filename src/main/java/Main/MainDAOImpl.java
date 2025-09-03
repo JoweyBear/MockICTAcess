@@ -3,6 +3,7 @@ package Main;
 import Attendance.AttModel;
 import Connection.Ticket;
 import Faculty.FacultyModel;
+import Fingerprint.FingerprintModel;
 import Student.StudentModel;
 import Utilities.Encryption;
 import java.sql.Connection;
@@ -456,6 +457,32 @@ public class MainDAOImpl implements MainDAO {
             System.err.println("Error inserting/updating attendance status: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public FingerprintModel userIdMatched(String user_id) {
+        FingerprintModel matched = new FingerprintModel();
+
+        String sql = "SELECT fname, lname, role "
+                + "FROM user "
+                + "WHERE user_id = ?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, user_id);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                matched.setFname(rs.getString("fname"));
+                matched.setLname(rs.getString("lname"));
+                matched.setRole(rs.getString("role"));
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(MainDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return matched;
+
     }
 
 }

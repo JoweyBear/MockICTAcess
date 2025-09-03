@@ -33,8 +33,8 @@ public class MainController {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_O) {
-                    service.checkAndVerifyStudents();
+                if (e.getKeyCode() == KeyEvent.VK_I) {
+                    service.typeIDToTimeIn();
                     System.out.println("O clicked");
                 }
             }

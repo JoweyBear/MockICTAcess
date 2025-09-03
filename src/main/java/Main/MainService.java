@@ -15,4 +15,6 @@ public interface MainService {
     Map<String, StudentModel> preloadClassStudents(String scheduleCode);
 
     void checkAndVerifyStudents();
+    
+    void typeIDToTimeIn();
 }

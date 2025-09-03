@@ -2,6 +2,7 @@ package Main;
 
 import Attendance.AttModel;
 import Faculty.FacultyModel;
+import Fingerprint.FingerprintModel;
 import Student.StudentModel;
 import java.time.LocalTime;
 import java.util.List;
@@ -37,4 +38,5 @@ public interface MainDAO {
 
     Map<String, Map<String, Integer>> getSectionAttendanceCounts(String facultyId);
 
+    FingerprintModel userIdMatched(String user_id);
 }

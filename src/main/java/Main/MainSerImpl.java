@@ -13,6 +13,7 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Window;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -24,10 +25,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -752,6 +758,84 @@ public class MainSerImpl implements MainService {
 // new panel here the display panel
             ((Timer) e.getSource()).stop();
         }).start();
+    }
+
+    @Override
+    public void typeIDToTimeIn() {
+        JTextField userTextField = new JTextField(15);
+
+        userTextField.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
+                if (str != null) {
+                    super.insertString(offset, str.toUpperCase(), attr);
+                }
+            }
+        });
+
+        JPanel inputPanel = new JPanel();
+        inputPanel.add(userTextField);
+
+        userTextField.addActionListener(e -> {
+            Window window = SwingUtilities.getWindowAncestor(userTextField);
+            if (window != null) {
+                window.dispose();
+            }
+        });
+
+        int result = JOptionPane.showConfirmDialog(
+                null,
+                inputPanel,
+                "Type your ID",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            String user_id = userTextField.getText().trim();
+
+            if (user_id.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid ID.");
+                return;
+            }
+
+            FingerprintModel user = dao.userIdMatched(user_id);
+            if (user != null) {
+                String role = user.getRole();
+                String userId = user.getUser_id();
+                String fname = user.getFname();
+                String lname = user.getLname();
+
+                System.out.println("role: " + role);
+
+                if ("student".equalsIgnoreCase(role)) {
+                    StudentModel matchedStudent = studentMap.get(userId);
+                    if (matchedStudent == null || matchedStudent.getStud_id() == null) {
+                        JOptionPane.showMessageDialog(null,
+                                "Student with ID " + userId + " is NOT in this class schedule.");
+                        return;
+                    }
+                    System.out.println("student here");
+                    addInTable(userId, fname, lname);
+                    handleMatchedStudent(userId);
+
+                } else if ("faculty".equalsIgnoreCase(role)) {
+                    FacultyModel faculty = dao.getAssignedFacultyInfo(scheduleID, userId);
+                    if (faculty == null) {
+                        JOptionPane.showMessageDialog(null,
+                                "Instructor mismatch: not assigned to this class.",
+                                "Attendance", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    System.out.println("faculty here");
+                    addInTable(userId, fname, lname);
+                    handleMatchedFaculty(userId);
+                }
+
+            } else {
+                JOptionPane.showMessageDialog(null, "No user identified.");
+            }
+        }
     }
 
 }
