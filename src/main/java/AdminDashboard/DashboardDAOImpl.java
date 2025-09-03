@@ -798,4 +798,106 @@ public class DashboardDAOImpl implements DashboardDAO {
 
     }
 
+    @Override
+    public DefaultTableModel getAttendanceByPeriod(AttendanceFilterType filterType, Object... params) {
+        String sql = "";
+        switch (filterType) {
+            case BY_MORNING:
+                sql = "SELECT a.user AS 'Student ID', a.status AS 'Status', a.time_in AS 'Time In', a.time_out AS 'Time Out', "
+                        + "u.fname AS 'First Name', u.mname AS 'Middle Name', u.lname AS 'Last Name', "
+                        + "si.section AS 'Section', si.year AS 'Year', si.track AS 'Track', "
+                        + "cs.subject AS 'Subject' "
+                        + "FROM attendance a "
+                        + "JOIN user u ON u.user_id = a.user_id "
+                        + "JOIN student_info si ON u.user_id = a.user_id "
+                        + "JOIN class_schedule cs ON cs.cs_id = a.class_schedule_id "
+                        + "WHERE u.college = ? AND DATE(a.att_date_time) = CURDATE() "
+                        + "AND TIME(a.att_date_time) BETWEEN '06:00:00' AND '12:00:00'";
+                break;
+            case BY_AFTERNOON:
+                sql = "SELECT a.user AS 'Student ID', a.status AS 'Status', a.time_in AS 'Time In', a.time_out AS 'Time Out', "
+                        + "u.fname AS 'First Name', u.mname AS 'Middle Name', u.lname AS 'Last Name', "
+                        + "si.section AS 'Section', si.year AS 'Year', si.track AS 'Track', "
+                        + "cs.subject AS 'Subject' "
+                        + "FROM attendance a "
+                        + "JOIN user u ON u.user_id = a.user_id "
+                        + "JOIN student_info si ON u.user_id = a.user_id "
+                        + "JOIN class_schedule cs ON cs.cs_id = a.class_schedule_id "
+                        + "WHERE s.college = ? AND DATE(a.att_date_time) = CURDATE() "
+                        + "AND TIME(a.att_date_time) BETWEEN '13:00:00' AND '18:00:00'";
+                break;
+
+        }
+
+        try {
+            ps = conn.prepareStatement(sql);
+            for (int i = 0; i < params.length; i++) {
+                ps.setObject(i + 1, params[i]);
+            }
+
+            rs = ps.executeQuery();
+            Vector<String> columnNames = new Vector<>(Arrays.asList("Student ID", "First Name", "Middle Name", "Last Name",
+                    "Year", "Section", "Track", "Subject", "Time In", "Time Out", "Status"));
+
+            Vector<Vector<Object>> data = new Vector<>();
+            while (rs.next()) {
+                Vector<Object> row = new Vector<>();
+
+                String studentId = rs.getString("Student ID");
+                String fname = de.decrypt(rs.getString("FirstName"));
+                String mname = de.decrypt(rs.getString("MiddleName"));
+                String lname = de.decrypt(rs.getString("LastName"));
+
+                row.add(studentId);
+                row.add(fname);
+                row.add(mname);
+                row.add(lname);
+                row.add(rs.getString("Section"));
+                row.add(rs.getString("Year"));
+                row.add(rs.getString("Track"));
+                row.add(rs.getString("Subject"));
+                row.add(rs.getString("Time In"));
+                row.add(rs.getString("Time Out"));
+                row.add(rs.getString("Status"));
+
+                data.add(row);
+            }
+            return new DefaultTableModel(data, columnNames);
+        } catch (SQLException ex) {
+            Logger.getLogger(DashboardDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Vector<String> columns = new Vector<>(Arrays.asList("Student ID", "First Name", "Middle Name", "Last Name",
+                "Year", "Section", "Track", "Subject", "Time In", "Time Out", "Status"));
+        return new DefaultTableModel(new Vector<>(), columns);
+    }
+
+    @Override
+    public AttModel getAttendanceCountsByPeriod() {
+        AttModel summary = new AttModel();
+        String sql = "SELECT "
+                + "(SELECT COUNT(*) FROM attendance a "
+                + "JOIN user u ON u.user_id = a.user_id "
+                + "WHERE DATE(a.att_date_time) = CURDATE() "
+                + "AND TIME(a.att_date_time) BETWEEN '06:00:00' AND '12:00:00' "
+                + "AND u.college = ?) AS morningCounts, "
+                + "(SELECT COUNT(*) FROM attendance a "
+                + "JOIN user u ON u.user_id = a.user_id "
+                + "WHERE DATE(a.att_date_time) = CURDATE() "
+                + "AND TIME(a.att_date_time) BETWEEN '13:00:00' AND '18:00:00' "
+                + "AND u.college = ?) AS afternoonCounts";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, college);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                summary.setMorningCounts(rs.getInt("morningCounts"));
+                summary.setAfternoonCounts(rs.getInt("afternoonCounts"));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DashboardDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return summary;
+    }
+
 }

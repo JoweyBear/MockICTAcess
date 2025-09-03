@@ -82,18 +82,16 @@ public class DashboardServiceImpl implements DashboardService {
         render.setSeriesPaint(4, new Color(0, 51, 102));
         return new ChartPanel(chart);
     }
-    
+
 //    add attendance in the morning and afternoon all attendance Records just like the irregCounts
-    
-    
-    void clearComponents(){
+    void clearComponents() {
         dp.jDateChooser1.setDate(null);
         dp.jDateChooser2.setDate(null);
         dp.jDateChooser3.setDate(null);
         dp.cmbFaculty.setSelectedIndex(-1);
         dp.cs_id.setSelectedIndex(-1);
         dp.cs_id1.setSelectedIndex(-1);
-        
+
     }
 
     private void repaintAndRevalidate() {
@@ -118,6 +116,10 @@ public class DashboardServiceImpl implements DashboardService {
         dp.incomplete.setText(String.valueOf(att.getIncompleteCount()));
         dp.late.setText(String.valueOf(att.getLateCount()));
         dp.leftEarly.setText(String.valueOf(att.getLeftEarly()));
+
+        AttModel period = dao.getAttendanceCountsByPeriod();
+        dp.morning.setText(String.valueOf(period.getMorningCounts()));
+        dp.afternoon.setText(String.valueOf(period.getAfternoonCounts()));
 
         dp.jPanel6.removeAll();
         dp.jPanel7.removeAll();
@@ -312,7 +314,7 @@ public class DashboardServiceImpl implements DashboardService {
         String csid = dp.cs_id1.getSelectedItem().toString();
         String cs_id = csid.split(" - ")[0].replace("Class Sched. ID: ", "").trim();
         if (cs_id == null) {
-            
+
             JOptionPane.showMessageDialog(null, "Attendance", "No Class Schedule Selected.", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -332,7 +334,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         // Format date for filename
         String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
-        String defaultFileName = "Attendance_" + cs_id + "_" + formattedDate + ".csv";
+        String fileName = "Attendance_" + cs_id + "_" + formattedDate + ".csv";
 
         // Confirm before saving
         String message = "Are you sure you want to save this attendance?\n\n"
@@ -344,10 +346,65 @@ public class DashboardServiceImpl implements DashboardService {
             return;
         }
 
+        saveCSV(fileName, model);
+
+    }
+
+    @Override
+    public void saveAttendanceMorning() {
+        Date date = new Date();
+
+        DefaultTableModel model = dao.getAttendanceByPeriod(AttendanceFilterType.BY_MORNING, college);
+        if (model == null || model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(null, "No attendance records to export.");
+            return;
+        }
+
+        // Format date for filename
+        String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        String fileName = "Attendance_MORNING_" + formattedDate + ".csv";
+
+        // Confirm before saving
+        String message = "Are you sure you want to save this morning's attendance?\n\n"
+                + "Date: " + formattedDate;
+        int confirm = JOptionPane.showConfirmDialog(null, message, "Confirm Export", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            System.out.println("Export cancelled.");
+            return;
+        }
+        saveCSV(fileName, model);
+    }
+
+    @Override
+    public void saveAttendancAfternoon() {
+        Date date = new Date();
+
+        DefaultTableModel model = dao.getAttendanceByPeriod(AttendanceFilterType.BY_AFTERNOON, college);
+        if (model == null || model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(null, "No attendance records to export.");
+            return;
+        }
+
+        // Format date for filename
+        String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(date);
+        String fileName = "Attendance_AFTERNOON_" + formattedDate + ".csv";
+
+        // Confirm before saving
+        String message = "Are you sure you want to save this afternoon's attendance?\n\n"
+                + "Date: " + formattedDate;
+        int confirm = JOptionPane.showConfirmDialog(null, message, "Confirm Export", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            System.out.println("Export cancelled.");
+            return;
+        }
+        saveCSV(fileName, model);
+    }
+
+    private void saveCSV(String fileName, DefaultTableModel model) {
         // File chooser
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Save Attendance CSV");
-        fileChooser.setSelectedFile(new File(defaultFileName));
+        fileChooser.setSelectedFile(new File(fileName));
 
         int userSelection = fileChooser.showSaveDialog(null);
         if (userSelection != JFileChooser.APPROVE_OPTION) {
@@ -387,6 +444,5 @@ public class DashboardServiceImpl implements DashboardService {
             JOptionPane.showMessageDialog(null, " Export failed:\n" + e.getMessage());
             e.printStackTrace();
         }
-
     }
 }

@@ -46,6 +46,9 @@ public class AttModel {
     private int timeOutCount;
     private int leftEarly;
     
+    private int morningCounts;
+    private int afternoonCounts;
+    
     private StudentModel student;
 
     public int getRm_id() {
@@ -319,6 +322,22 @@ public class AttModel {
 
     public void setLeftEarly(int leftEarly) {
         this.leftEarly = leftEarly;
+    }
+
+    public int getMorningCounts() {
+        return morningCounts;
+    }
+
+    public void setMorningCounts(int morningCounts) {
+        this.morningCounts = morningCounts;
+    }
+
+    public int getAfternoonCounts() {
+        return afternoonCounts;
+    }
+
+    public void setAfternoonCounts(int afternoonCounts) {
+        this.afternoonCounts = afternoonCounts;
     }
 
 }

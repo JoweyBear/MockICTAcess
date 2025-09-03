@@ -42,5 +42,9 @@ public interface DashboardDAO {
 
     Map<String, Map<String, Integer>> getAllAttendancePerSubjectByFaculty(String college, String faculty_id);
     DefaultTableModel saveAttendance(String college, String cs_id, Date date);
+    
+    AttModel getAttendanceCountsByPeriod();
+    DefaultTableModel getAttendanceByPeriod(AttendanceFilterType filterType, Object... params);
+    
 
 }

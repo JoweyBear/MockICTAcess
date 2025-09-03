@@ -647,7 +647,7 @@ public class MainSerImpl implements MainService {
         panel.track.setVisible(false);
         panel.year.setVisible(false);
 
-        System.out.println("student name: " + faculty.getFname() + " " + faculty.getLname());
+        System.out.println("faculty name: " + faculty.getFname() + " " + faculty.getLname());
 
         byte[] fingerprintBytes = faculty.getFingerprintImage();
         if (fingerprintBytes != null && fingerprintBytes.length > 0) {

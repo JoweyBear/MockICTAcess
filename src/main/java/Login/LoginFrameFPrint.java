@@ -61,7 +61,7 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
                 cnclActionPerformed(evt);
             }
         });
-        jPanel1.add(cncl, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 60, 80, -1));
+        jPanel1.add(cncl, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 60, 90, -1));
 
         lgn.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
         lgn.setText("Initiate Scan");

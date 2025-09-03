@@ -7,5 +7,7 @@ public interface DashboardService {
     void displayAttendanceBetweenAndCS();
     void dsiplayAttendanceByFaculty();
     void saveAttendance();
+    void saveAttendanceMorning();
+    void saveAttendancAfternoon();
     
 }
