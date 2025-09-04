@@ -8,12 +8,14 @@ import Main.Views.*;
 import Login.*;
 import Student.StudentModel;
 import Utilities.ChartDrawingSupplier;
+import Utilities.StudentCBHandler;
 import com.digitalpersona.uareu.UareUException;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Window;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -23,7 +25,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -762,80 +767,88 @@ public class MainSerImpl implements MainService {
 
     @Override
     public void typeIDToTimeIn() {
-        JTextField userTextField = new JTextField(15);
-
-        userTextField.setDocument(new PlainDocument() {
-            @Override
-            public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
-                if (str != null) {
-                    super.insertString(offset, str.toUpperCase(), attr);
+        JComboBox<String> comboBox = new JComboBox();
+        comboBox.setEditable(true);
+        try {
+            JTextField userTextField = (JTextField) comboBox.getEditor().getEditorComponent();
+            userTextField.addKeyListener(new StudentCBHandler(comboBox));
+            userTextField.setDocument(new PlainDocument() {
+                @Override
+                public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
+                    if (str != null) {
+                        super.insertString(offset, str.toUpperCase(), attr);
+                    }
                 }
-            }
-        });
+            });
 
-        JPanel inputPanel = new JPanel();
-        inputPanel.add(userTextField);
+            JPanel inputPanel = new JPanel();
+            inputPanel.add(comboBox);
 
-        userTextField.addActionListener(e -> {
-            Window window = SwingUtilities.getWindowAncestor(userTextField);
-            if (window != null) {
-                window.dispose();
-            }
-        });
+            userTextField.addActionListener(e -> {
+                Window window = SwingUtilities.getWindowAncestor(userTextField);
+                if (window != null) {
+                    window.dispose();
+                }
+            });
 
-        int result = JOptionPane.showConfirmDialog(
-                null,
-                inputPanel,
-                "Type your ID",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-        );
+            int result = JOptionPane.showConfirmDialog(
+                    null,
+                    inputPanel,
+                    "Type your ID",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
+            );
 
-        if (result == JOptionPane.OK_OPTION) {
-            String user_id = userTextField.getText().trim();
+            if (result == JOptionPane.OK_OPTION) {
+                String user = userTextField.getText().trim();
+                int idStart = user.indexOf("ID:") + 3;
+                int idEnd = user.indexOf(" -");
+                String user_id = user.substring(idStart, idEnd).trim();
 
-            if (user_id.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Please enter a valid ID.");
-                return;
-            }
-
-            FingerprintModel user = dao.userIdMatched(user_id);
-            if (user != null) {
-                String role = user.getRole();
-                String userId = user.getUser_id();
-                String fname = user.getFname();
-                String lname = user.getLname();
-
-                System.out.println("role: " + role);
-
-                if ("student".equalsIgnoreCase(role)) {
-                    StudentModel matchedStudent = studentMap.get(userId);
-                    if (matchedStudent == null || matchedStudent.getStud_id() == null) {
-                        JOptionPane.showMessageDialog(null,
-                                "Student with ID " + userId + " is NOT in this class schedule.");
-                        return;
-                    }
-                    System.out.println("student here");
-                    addInTable(userId, fname, lname);
-                    handleMatchedStudent(userId);
-
-                } else if ("faculty".equalsIgnoreCase(role)) {
-                    FacultyModel faculty = dao.getAssignedFacultyInfo(scheduleID, userId);
-                    if (faculty == null) {
-                        JOptionPane.showMessageDialog(null,
-                                "Instructor mismatch: not assigned to this class.",
-                                "Attendance", JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-                    System.out.println("faculty here");
-                    addInTable(userId, fname, lname);
-                    handleMatchedFaculty(userId);
+                if (user_id.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Please enter a valid ID.");
+                    return;
                 }
 
-            } else {
-                JOptionPane.showMessageDialog(null, "No user identified.");
+                FingerprintModel matched = dao.userIdMatched(user_id);
+                if (matched != null) {
+                    String role = matched.getRole();
+                    String userId = matched.getUser_id();
+                    String fname = matched.getFname();
+                    String lname = matched.getLname();
+
+                    System.out.println("role: " + role);
+
+                    if ("student".equalsIgnoreCase(role)) {
+                        StudentModel matchedStudent = studentMap.get(userId);
+                        if (matchedStudent == null || matchedStudent.getStud_id() == null) {
+                            JOptionPane.showMessageDialog(null,
+                                    "Student with ID " + userId + " is NOT in this class schedule.");
+                            return;
+                        }
+                        System.out.println("student here");
+                        addInTable(userId, fname, lname);
+                        handleMatchedStudent(userId);
+
+                    } else if ("faculty".equalsIgnoreCase(role)) {
+                        FacultyModel faculty = dao.getAssignedFacultyInfo(scheduleID, userId);
+                        if (faculty == null) {
+                            JOptionPane.showMessageDialog(null,
+                                    "Instructor mismatch: not assigned to this class.",
+                                    "Attendance", JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        System.out.println("faculty here");
+                        addInTable(userId, fname, lname);
+                        handleMatchedFaculty(userId);
+                    }
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "No user identified.");
+                }
             }
+        } catch (IOException ex) {
+            Logger.getLogger(MainSerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 }
