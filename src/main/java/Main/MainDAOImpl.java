@@ -472,8 +472,9 @@ public class MainDAOImpl implements MainDAO {
             rs = ps.executeQuery();
 
             if (rs.next()) {
-                matched.setFname(rs.getString("fname"));
-                matched.setLname(rs.getString("lname"));
+                matched.setUser_id(user_id);
+                matched.setFname(de.decrypt(rs.getString("fname")));
+                matched.setLname(de.decrypt(rs.getString("lname")));
                 matched.setRole(rs.getString("role"));
             }
 

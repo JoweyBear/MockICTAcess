@@ -10,15 +10,19 @@ import Student.StudentModel;
 import Utilities.ChartDrawingSupplier;
 import Utilities.StudentCBHandler;
 import com.digitalpersona.uareu.UareUException;
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Window;
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -48,6 +52,9 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.videoio.VideoCapture;
 
 public class MainSerImpl implements MainService {
 
@@ -374,7 +381,7 @@ public class MainSerImpl implements MainService {
             String timeOutRow = frame.studentTable.getValueAt(rowIndex, 4).toString();
 
             if (!timeOutRow.isEmpty()) {
-//                JOptionPane.showMessageDialog(null, "Student already timed out.");
+                JOptionPane.showMessageDialog(null, "Student already timed out.");
                 System.out.println("Student already timed out.");
                 return;
             }
@@ -769,6 +776,8 @@ public class MainSerImpl implements MainService {
     public void typeIDToTimeIn() {
         JComboBox<String> comboBox = new JComboBox();
         comboBox.setEditable(true);
+
+        String cs_id = frame.subject.getText().trim();
         try {
             JTextField userTextField = (JTextField) comboBox.getEditor().getEditorComponent();
             userTextField.addKeyListener(new StudentCBHandler(comboBox));
@@ -781,8 +790,8 @@ public class MainSerImpl implements MainService {
                 }
             });
 
-            JPanel inputPanel = new JPanel();
-            inputPanel.add(comboBox);
+            JPanel inputPanel = new JPanel(new BorderLayout());
+            inputPanel.add(comboBox, BorderLayout.CENTER);
 
             userTextField.addActionListener(e -> {
                 Window window = SwingUtilities.getWindowAncestor(userTextField);
@@ -843,6 +852,8 @@ public class MainSerImpl implements MainService {
                         handleMatchedFaculty(userId);
                     }
 
+                    cameraCapture(userId, cs_id);
+
                 } else {
                     JOptionPane.showMessageDialog(null, "No user identified.");
                 }
@@ -851,4 +862,40 @@ public class MainSerImpl implements MainService {
             Logger.getLogger(MainSerImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    private void cameraCapture(String student_id, String csId) {
+        VideoCapture cam = new VideoCapture(0);
+        if (!cam.isOpened()) {
+            System.out.println("Error initializing the camera");
+        } else {
+            Mat frame = new Mat();
+            while (true) {
+                if (cam.read(frame)) {
+                    System.out.println("Frame Obtained");
+                    System.out.println("Frame captured: " + !frame.empty());
+                    System.out.println("Captured Frame Width "
+                            + frame.width() + " Height " + frame.height());
+                    String basePath = System.getProperty("user.home") + "/Pictures/ManualTimeAndTimeOutStudents";
+                    File folder = new File(basePath);
+                    if (!folder.exists()) {
+                        folder.mkdirs();
+                    }
+                    String pattern = "yyyy-MM-ddHH-mm-ss";
+                    SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+                    String date = sdf.format(new Date());
+                    String filename = csId + "-" + student_id + "_" + date + ".jpg";
+                    Imgcodecs.imwrite(basePath + "/" + filename, frame);
+
+//                    Imgcodecs.imwrite("camera.jpg", frame);
+                    System.out.println("OK");
+                    break;
+                } else {
+                    System.out.println("Failed to read frame");
+
+                }
+            }
+        }
+        cam.release();
+    }
+
 }

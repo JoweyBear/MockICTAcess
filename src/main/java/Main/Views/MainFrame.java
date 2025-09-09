@@ -84,7 +84,7 @@ public class MainFrame extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Student ID", "First Name", "Last Name", "Time In", "Time Out"
+                "ID", "First Name", "Last Name", "Time In", "Time Out"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -249,7 +249,7 @@ public class MainFrame extends javax.swing.JFrame {
                                     .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))))
+                                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 180, Short.MAX_VALUE))))))
                 .addGap(14, 14, 14))
         );
         jPanel3Layout.setVerticalGroup(
@@ -292,7 +292,7 @@ public class MainFrame extends javax.swing.JFrame {
         date.setForeground(new java.awt.Color(255, 255, 255));
         date.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         date.setText("D A T  E");
-        jPanel4.add(date, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 470, 70));
+        jPanel4.add(date, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 460, 70));
 
         jLabel5.setFont(new java.awt.Font("Jost", 1, 40)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));

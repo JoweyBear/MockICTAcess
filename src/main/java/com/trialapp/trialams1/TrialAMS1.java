@@ -9,12 +9,14 @@ import com.formdev.flatlaf.FlatLightLaf;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import javax.swing.UIManager;
+import nu.pattern.OpenCV;
 
 public class TrialAMS1 {
 
     public static void main(String[] args) {
         FlatLaf.registerCustomDefaultsSource("Themes");
         FlatLightLaf.setup();
+        OpenCV.loadLocally();
 //        Dashboard wf = new Dashboard();
         DisplayPanel dp = new DisplayPanel();
         MainFrame wf = new MainFrame(dp);

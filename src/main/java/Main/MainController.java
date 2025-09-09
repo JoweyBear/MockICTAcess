@@ -3,10 +3,12 @@ package Main;
 import Main.Views.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JRootPane;
+import javax.swing.KeyStroke;
 
 public class MainController {
 
@@ -19,31 +21,19 @@ public class MainController {
         this.panel = panel;
         this.frame.buttonListener(new ButtonEvent());
         service = new MainSerImpl(frame, panel);
-        
 
-        this.frame.addKeyListener(new KeyListener() {
-            public void actionPerformed(KeyEvent evt) {
-                System.out.println("Handled by unknown class listener");
-            }
+        JRootPane rootPane = this.frame.getRootPane();
 
+        InputMap inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = rootPane.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke("I"), "timeIn");
+        actionMap.put("timeIn", new AbstractAction() {
             @Override
-            public void keyTyped(KeyEvent e) {
-//                throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            public void actionPerformed(ActionEvent e) {
+                service.typeIDToTimeIn();
+                System.out.println("I clicked");
             }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_I) {
-                    service.typeIDToTimeIn();
-                    System.out.println("O clicked");
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-//                throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-            }
-
         });
     }
 
