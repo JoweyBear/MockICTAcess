@@ -17,14 +17,16 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
     private final JLabel fingerprintLabel;
     private final JProgressBar progressBar;
     private final String userIdToEnroll;
-    private CaptureThread captureThread;
-    private final int requiredFmdToEnroll = 2;
+
+        private final IdentificationThread identificationThread = new IdentificationThread();
     public final Engine engine = UareUGlobal.GetEngine();
-    private final IdentificationThread identificationThread = new IdentificationThread();
-    private final ArrayList<Fmd> fmdList = new ArrayList<>();
+    private final List<Fmd> fmdList = new ArrayList<>();
     private final List<FingerprintModel> enrolledFingerprints = new ArrayList<>();
-    private boolean runThisThread = true;
     private FingerprintModel fpModel;
+    private CaptureThread captureThread;
+
+    private volatile boolean running = true;
+    private final int requiredFmdToEnroll = 4;
 
     public EnrollmentThread(JLabel fingerprintLabel, JProgressBar progressBar, String userIdToEnroll) {
         this.fingerprintLabel = fingerprintLabel;
@@ -39,219 +41,175 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
         }
     }
 
+    public void requestStop() {
+        running = false;
+    }
+
+    public boolean isRunning() {
+        
+        return running;
+    }
+
     public FingerprintModel getEnrollUser() {
         return fpModel;
-    }
-
-    public CaptureThread.CaptureEvent getLastCapture() {
-        return (captureThread != null) ? captureThread.getLastCapture() : null;
-    }
-
-    public void startEnrollment() throws UareUException {
-        Selection.resetReader();
-        int counter = 0;
-        int maxAttempts = requiredFmdToEnroll * 1;
-        int attempts = 0;
-
-        PromptSwing.prompt(PromptSwing.START_CAPTURE);
-
-        while (counter < requiredFmdToEnroll && runThisThread && attempts < maxAttempts) {
-            updateProgress("Capturing fingerprint " + (counter + 1) + " of " + requiredFmdToEnroll + " (2 times each scan)", counter);
-            System.out.println("User ID to Enroll: " + userIdToEnroll);
-            System.out.println("Attempt " + counter);
-
-            Fmd fmdToEnroll = null;
-            System.out.println("About to call engine.CreateEnrollmentFmd. Format: " + Fmd.Format.ANSI_378_2004 + ", Callback: " + this);
-            try {
-                fmdToEnroll = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, this);
-                attempts++;
-
-                if (fmdToEnroll == null || fmdToEnroll.getData() == null || fmdToEnroll.getData().length < 100) {
-                    System.out.println("FMD created by CreateEnrollmentFmd is invalid! Data length: "
-                            + (fmdToEnroll == null ? "null" : fmdToEnroll.getData() == null ? "null" : fmdToEnroll.getData().length));
-                    continue;
-                }
-            } catch (UareUException ex) {
-                attempts++;
-                PromptSwing.prompt(PromptSwing.UNABLE_TO_ENROLL);
-                updateProgress("Unable to enroll. Restarting capture...", counter);
-//                stopEnrollmentThread();
-                continue;
-            }
-
-            fmdList.add(fmdToEnroll);
-            counter++;
-            PromptSwing.prompt(PromptSwing.ANOTHER_CAPTURE);
-        }
-
-        if (attempts >= maxAttempts) {
-            updateProgress("Enrollment cancelled: too many failed attempts.", -1);
-            PromptSwing.prompt(PromptSwing.UNABLE_TO_ENROLL);
-            stopEnrollmentThread();
-            System.out.println("Enrollment Thread Stopped due to max attempts.");
-            return;
-        }
-
-        Fmd finalFmd = fmdList.isEmpty() ? null : fmdList.get(0);
-        if (finalFmd != null && identificationThread.fmdIsAlreadyEnrolled(finalFmd, null)) {
-            PromptSwing.prompt(PromptSwing.ALREADY_ENROLLED);
-            updateProgress("Fingerprint already exists in database. Enrollment cancelled.", -1);
-            stopEnrollmentThread();
-            return;
-        }
-
-        // FMD List Compatibility Check before model creation
-        for (Fmd fmd : fmdList) {
-            if (fmd == null || fmd.getData() == null || fmd.getData().length < 100) {
-                System.out.println("Warning: Null or invalid FMD in fmdList during model creation. Data length: "
-                        + (fmd == null ? "null" : fmd.getData() == null ? "null" : fmd.getData().length));
-                continue;
-            }
-            FingerprintModel model = new FingerprintModel();
-            model.setUser_id(userIdToEnroll);
-            model.setTemplate(fmd.getData());
-            enrolledFingerprints.add(model);
-        }
-        fpModel = enrolledFingerprints.isEmpty() ? null : enrolledFingerprints.get(0);
-
-        fmdList.clear();
-        updateProgress("Enrollment complete.", requiredFmdToEnroll);
-        PromptSwing.prompt(PromptSwing.DONE_CAPTURE);
-        stopEnrollmentThread();
-        System.out.println("Enrollment Thread Stopped");
-    }
-
-    @Override
-    public PreEnrollmentFmd GetFmd(Fmd.Format format) {
-        Engine.PreEnrollmentFmd prefmd = null;
-
-        while (prefmd == null) {
-            CaptureResult captureResult = getCaptureResultFromCaptureThread(fingerprintLabel);
-            if (captureResult == null) {
-                System.out.println("CaptureResult is null!");
-                continue;
-            }
-
-            if (Reader.CaptureQuality.CANCELED == captureResult.quality) {
-                continue;
-            }
-
-            if (Reader.CaptureQuality.GOOD == captureResult.quality) {
-                System.out.println("Fingerprint detected.");
-
-                // Display fingerprint image in label (UI thread safe)
-                if (captureResult.image != null) {
-                    Fid.Fiv[] views = captureResult.image.getViews();
-                    if (views != null && views.length > 0) {
-                        int targetWidth = 120;
-                        int targetHeight = 120;
-
-                        BufferedImage img = Display.getFingerprintBufferedImage(views[0]);
-                        if (img != null && fingerprintLabel != null) {
-                            Image scaledImg = img.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
-                            SwingUtilities.invokeLater(() -> fingerprintLabel.setIcon(new ImageIcon(scaledImg)));
-                        }
-                    }
-                } else {
-                    System.out.println("CaptureResult.image is null! Skipping CreateFmd.");
-                    continue;
-                }
-                try {
-                    System.out.println("About to call engine.CreateFmd. Image: " + captureResult.image + ", Format: " + Fmd.Format.ANSI_378_2004);
-                    Fmd fmdToEnroll = engine.CreateFmd(captureResult.image, Fmd.Format.ANSI_378_2004);
-
-                    // FMD Data Compatibility Check
-                    if (fmdToEnroll == null || fmdToEnroll.getData() == null || fmdToEnroll.getData().length < 100) {
-                        System.out.println("FMD created from scan is invalid! Data length: "
-                                + (fmdToEnroll == null ? "null" : fmdToEnroll.getData() == null ? "null" : fmdToEnroll.getData().length));
-                        continue;
-                    }
-                    System.out.println("fmdToEnroll: " + fmdToEnroll);
-                    System.out.println("fmdToEnroll data length: " + fmdToEnroll.getData().length);
-
-                    prefmd = new Engine.PreEnrollmentFmd();
-                    prefmd.fmd = fmdToEnroll;
-                    prefmd.view_index = 0;
-                    System.out.println("FMD Extracted");
-
-//                    System.out.println("About to check if FMD is already enrolled...");
-//                    if (!identificationThread.fmdIsAlreadyEnrolled(fmdToEnroll, fmdList)) {
-//                        prefmd = new Engine.PreEnrollmentFmd();
-//                        prefmd.fmd = fmdToEnroll;
-//                        prefmd.view_index = 0;
-//                        System.out.println("FMD Extracted");
-//                    } else {
-//                        PromptSwing.prompt(PromptSwing.ALREADY_ENROLLED);
-//                        updateProgress("Fingerprint already exists. Please scan a different one.", -1);
-//                    }
-                } catch (UareUException e) {
-                    updateProgress("Feature extraction failed.", -1);
-                    System.out.println("Feature extraction failed");
-                }
-            } else {
-                System.out.println("Fingerprint quality not good. Try again."); // Optional: detect poor quality input
-            }
-        }
-
-        return prefmd;
-    }
-
-    private CaptureResult getCaptureResultFromCaptureThread(JLabel label) {
-
-        captureThread = new CaptureThread("Enrollment", 3000, label);
-
-        captureThread.start();
-        try {
-            captureThread.join();
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
-
-        PromptSwing.prompt(PromptSwing.CONTINUE_CAPTURE);
-        CaptureThread.CaptureEvent captureEvent = captureThread.getLastCapture();
-        if (captureEvent == null) {
-            System.out.println("CaptureEvent is null!");
-            return null;
-        }
-        if (captureEvent.captureResult == null) {
-            System.out.println("CaptureEvent.captureResult is null!");
-        }
-        return captureEvent.captureResult;
-    }
-
-    public void stopEnrollmentThread() {
-        runThisThread = false;
-        if (captureThread != null) {
-            captureThread.stopThread();
-            try {
-                captureThread.join();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-        updateProgress("Enrollment stopped.", -1);
     }
 
     @Override
     public void run() {
         try {
             Selection.setCaptureInProgress(true);
-            System.out.println("Checking if reader is connected (no logging)...");
             if (Selection.readerIsConnected_noLogging()) {
+                Selection.resetReader();
                 startEnrollment();
             } else {
-                PromptSwing.prompt(PromptSwing.READER_DISCONNECTED);
                 updateProgress("Reader disconnected. Enrollment cancelled.", -1);
-                stopEnrollmentThread();
-                Selection.setCaptureInProgress(false);
+                PromptSwing.prompt(PromptSwing.READER_DISCONNECTED);
             }
         } catch (UareUException ex) {
-            Logger.getLogger(EnrollmentThread.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
+        } finally {
+            stopEnrollmentThread();
+            Selection.setCaptureInProgress(false);
         }
     }
 
-    public boolean isRunning() {
-        return ThreadFlags.running;
+    private void startEnrollment() throws UareUException {
+        int counter = 0;
+        int attempts = 0;
+        int maxAttempts = requiredFmdToEnroll * 4;
+
+        fmdList.clear();
+        enrolledFingerprints.clear();
+        PromptSwing.prompt(PromptSwing.START_CAPTURE);
+
+        while (counter < requiredFmdToEnroll && isRunning() && attempts < maxAttempts) {
+            updateProgress("Capturing fingerprint " + (counter + 1) + " of " + requiredFmdToEnroll, counter);
+            System.out.println("User ID to Enroll: " + userIdToEnroll);
+            System.out.println("Attempt " + attempts);
+
+            try {
+                Fmd fmdToEnroll = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, this);
+                attempts++;
+
+                if (fmdToEnroll == null || fmdToEnroll.getData() == null || fmdToEnroll.getData().length < 100) {
+                    System.out.println("Invalid FMD: null or insufficient data.");
+                    continue;
+                }
+
+                fmdList.add(fmdToEnroll);
+                counter++;
+                PromptSwing.prompt(PromptSwing.ANOTHER_CAPTURE);
+
+            } catch (UareUException ex) {
+                attempts++;
+                updateProgress("Unable to enroll. Restarting capture...", counter);
+                PromptSwing.prompt(PromptSwing.UNABLE_TO_ENROLL);
+                ex.printStackTrace();
+            }
+        }
+
+        if (!isRunning()) {
+            updateProgress("Enrollment cancelled by user.", -1);
+            return;
+        }
+
+        if (attempts >= maxAttempts) {
+            updateProgress("Enrollment cancelled: too many failed attempts.", -1);
+            PromptSwing.prompt(PromptSwing.UNABLE_TO_ENROLL);
+            return;
+        }
+
+        System.out.println("Total valid FMDs collected: " + fmdList.size());
+
+        Fmd finalFmd = engine.CreateEnrollmentFmd(Fmd.Format.ANSI_378_2004, this);
+        if (finalFmd == null || finalFmd.getData() == null || finalFmd.getData().length < 100) {
+            updateProgress("Enrollment failed or template is null.", -1);
+            PromptSwing.prompt(PromptSwing.UNABLE_TO_ENROLL);
+            return;
+        }
+
+        if (identificationThread.fmdIsAlreadyEnrolled(finalFmd, null)) {
+            updateProgress("Fingerprint already exists in database. Enrollment cancelled.", -1);
+            PromptSwing.prompt(PromptSwing.ALREADY_ENROLLED);
+            return;
+        }
+
+        for (Fmd fmd : fmdList) {
+            if (fmd != null && fmd.getData() != null && fmd.getData().length >= 100) {
+                FingerprintModel model = new FingerprintModel();
+                model.setUser_id(userIdToEnroll);
+                model.setTemplate(fmd.getData());
+                enrolledFingerprints.add(model);
+            }
+        }
+
+        fpModel = enrolledFingerprints.isEmpty() ? null : enrolledFingerprints.get(0);
+        updateProgress("Enrollment complete.", requiredFmdToEnroll);
+        PromptSwing.prompt(PromptSwing.DONE_CAPTURE);
+    }
+
+    @Override
+    public PreEnrollmentFmd GetFmd(Fmd.Format format) {
+        while (isRunning()) {
+            CaptureResult captureResult = getCaptureResultFromCaptureThread(fingerprintLabel);
+            if (!isRunning()) {
+                return null;
+            }
+
+            if (captureResult == null || captureResult.image == null) {
+                System.out.println("CaptureResult or image is null.");
+                continue;
+            }
+
+            if (captureResult.quality == Reader.CaptureQuality.CANCELED) {
+                continue;
+            }
+
+            if (captureResult.quality == Reader.CaptureQuality.GOOD) {
+                renderFingerprintImage(captureResult.image);
+
+                try {
+                    Fmd fmd = engine.CreateFmd(captureResult.image, format);
+                    if (fmd != null && fmd.getData() != null && fmd.getData().length >= 100) {
+                        Engine.PreEnrollmentFmd prefmd = new Engine.PreEnrollmentFmd();
+                        prefmd.fmd = fmd;
+                        prefmd.view_index = 0;
+                        return prefmd;
+                    } else {
+                        System.out.println("Invalid FMD from scan.");
+                    }
+                } catch (UareUException e) {
+                    updateProgress("Feature extraction failed.", -1);
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+    private CaptureResult getCaptureResultFromCaptureThread(JLabel label) {
+        captureThread = new CaptureThread("Enrollment", 3000, label);
+        captureThread.start();
+        try {
+            captureThread.join();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+
+        PromptSwing.prompt(PromptSwing.CONTINUE_CAPTURE);
+        CaptureThread.CaptureEvent event = captureThread.getLastCapture();
+        return (event != null) ? event.captureResult : null;
+    }
+
+    private void renderFingerprintImage(Fid image) {
+        Fid.Fiv[] views = image.getViews();
+        if (views != null && views.length > 0) {
+            BufferedImage img = Display.getFingerprintBufferedImage(views[0]);
+            if (img != null && fingerprintLabel != null) {
+                Image scaledImg = img.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                SwingUtilities.invokeLater(() -> fingerprintLabel.setIcon(new ImageIcon(scaledImg)));
+            }
+        }
     }
 
     private void updateProgress(String message, int step) {
@@ -263,5 +221,25 @@ public class EnrollmentThread extends Thread implements Engine.EnrollmentCallbac
                 progressBar.setString(message);
             });
         }
+    }
+
+    public void stopEnrollmentThread() {
+        ThreadFlags.running = false;
+        running = false;
+        if (captureThread != null) {
+            captureThread.stopThread();
+            try {
+                captureThread.join();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        try {
+            Selection.closeReader();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        updateProgress("Enrollment stopped.", -1);
+        System.out.println("Enrollment thread stopped.");
     }
 }

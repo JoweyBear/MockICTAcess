@@ -501,7 +501,10 @@ public class MainSerImpl implements MainService {
             ImageIcon icon = new ImageIcon(fingerprintBytes);
             Image scaled = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
             panel.image.setIcon(new ImageIcon(scaled));
+            panel.image.setText("");
+            panel.image.setIcon(new ImageIcon(scaled));
         } else {
+            panel.image.setIcon(null);
             panel.image.setText("No image available");
         }
 
@@ -564,8 +567,10 @@ public class MainSerImpl implements MainService {
             if (profileBytes != null && profileBytes.length > 0) {
                 ImageIcon icon = new ImageIcon(profileBytes);
                 Image scaled = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                panel.image.setText("");
                 panel.image.setIcon(new ImageIcon(scaled));
             } else {
+                panel.image.setIcon(null);
                 panel.image.setText("No image available");
             }
         }).start();
@@ -671,8 +676,10 @@ public class MainSerImpl implements MainService {
         if (fingerprintBytes != null && fingerprintBytes.length > 0) {
             ImageIcon icon = new ImageIcon(fingerprintBytes);
             Image scaled = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+            panel.image.setText("");
             panel.image.setIcon(new ImageIcon(scaled));
         } else {
+            panel.image.setIcon(null);
             panel.image.setText("No image available");
         }
 
@@ -757,6 +764,7 @@ public class MainSerImpl implements MainService {
             if (profileBytes != null && profileBytes.length > 0) {
                 ImageIcon icon = new ImageIcon(profileBytes);
                 Image scaled = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                panel.image.setText("");
                 panel.image.setIcon(new ImageIcon(scaled));
             } else {
                 panel.image.setText("No image available");

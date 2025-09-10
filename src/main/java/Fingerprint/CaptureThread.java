@@ -151,24 +151,36 @@ public class CaptureThread extends Thread {
     }
 
     public void cancelCaptureBasedOnDelayTime(int delayTimeInMs) {
-        if (delayTimeInMs != 0) {
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.submit(() -> {
-                try {
-                    Thread.sleep(delayTimeInMs);
-                    if (Selection.reader == null) {
-                        System.out.println("cancelCaptureBasedOnDelayTime: Selection.reader is null!");
-                        return;
-                    }
-                    Selection.reader.CancelCapture();
-                    isCaptureCanceled = true;
-                } catch (Exception e) {
-                    System.out.println("cancelCaptureBasedOnDelayTime: Exception during CancelCapture.");
-                    e.printStackTrace();
-                }
-            });
-            executor.shutdown();
+        if (delayTimeInMs <= 0) {
+            return;
         }
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            try {
+                Thread.sleep(delayTimeInMs);
+
+                if (Selection.reader == null) {
+                    System.out.println("CancelCapture skipped: Reader is null.");
+                    return;
+                }
+
+                Reader.Status status = Selection.reader.GetStatus();
+                if (status == null || status.status != Reader.ReaderStatus.READY) {
+                    System.out.println("CancelCapture skipped: Reader not ready or already closed.");
+                    return;
+                }
+
+                Selection.reader.CancelCapture();
+                isCaptureCanceled = true;
+                System.out.println("Capture successfully canceled after delay.");
+            } catch (Exception e) {
+                System.out.println("Exception during delayed CancelCapture:");
+                e.printStackTrace();
+            }
+        });
+
+        executor.shutdown(); // allow graceful shutdown
     }
 
     public CaptureEvent getLastCapture() {

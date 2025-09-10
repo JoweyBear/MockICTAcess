@@ -66,7 +66,7 @@ public class LoginSerImpl implements LoginService {
 
         JDialog dialog = new JDialog(frameFP, "Authenticating", true);
         dialog.setLayout(new BorderLayout());
-        dialog.setSize(350, 350);
+        dialog.setSize(350, 250);
         dialog.setLocationRelativeTo(frameFP);
 
         JLabel messageLabel = new JLabel("Initializing...", SwingConstants.CENTER);

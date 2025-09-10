@@ -888,6 +888,7 @@ public class DashboardDAOImpl implements DashboardDAO {
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, college);
+            ps.setString(2, college);
             rs = ps.executeQuery();
 
             while (rs.next()) {

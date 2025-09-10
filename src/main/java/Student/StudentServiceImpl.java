@@ -4,6 +4,7 @@ import Fingerprint.EnrollmentThread;
 import Fingerprint.FingerprintModel;
 import Fingerprint.PromptSwing;
 import Fingerprint.Selection;
+import Fingerprint.ThreadFlags;
 import Student.Views.*;
 import Utilities.GlobalVar;
 import Utilities.ImageExtractor;
@@ -19,6 +20,8 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,7 +38,6 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-
 
 public class StudentServiceImpl implements StudentService {
 
@@ -133,12 +135,6 @@ public class StudentServiceImpl implements StudentService {
                 student.setCollege(studentCollege);
                 student.setTrack("N/A");
             }
-
-//            byte[] imageBytes = ImageExtractor.extractImageBytes(sAdd.jLabelimage, "jpg", 120, 120);
-//            if (imageBytes != null) {
-//                student.setImage(imageBytes);
-//            }
-
             if (fingerprintTemplateAdd != null) {
                 student.setFingerprint(fingerprintTemplateAdd);
                 byte[] fingerBytes = ImageExtractor.extractImageBytes(sAdd.jLabelfinger, "jpg", 120, 120);
@@ -146,15 +142,23 @@ public class StudentServiceImpl implements StudentService {
             } else {
                 JOptionPane.showMessageDialog(null, "No fingerprint captured.");
             }
-            boolean save = dao.save(student);
-            if (save) {
-                JOptionPane.showMessageDialog(null, "Student added successfully");
-                setTableData();
-                clearAdd();
-            } else {
-                JOptionPane.showMessageDialog(null, "An error occured. Student can't be added.");
-            }
 
+            int choice = JOptionPane.showConfirmDialog(null,
+                    "Please check the information to be saved as ID can't be edited aftersaving.",
+                    "Confirm Save", JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+            if (choice == JOptionPane.YES_OPTION) {
+                boolean save = dao.save(student);
+                if (save) {
+                    JOptionPane.showMessageDialog(null, "Student added successfully");
+                    setTableData();
+                    clearAdd();
+                } else {
+                    JOptionPane.showMessageDialog(null, "An error occured. Student can't be added.");
+                }
+            } else {
+                System.out.println("Cancelled by Admin");
+            }
         }
     }
 
@@ -183,13 +187,17 @@ public class StudentServiceImpl implements StudentService {
         }
 
         if (viewDialog.image != null) {
+            sEdit.jLabelimage.setText("");
             sEdit.jLabelimage.setIcon(viewDialog.image.getIcon());
         } else {
+            sEdit.jLabelimage.setIcon(null);
             sEdit.jLabelimage.setText("No Image.");
         }
         if (viewDialog.fngrprnt != null) {
+            sEdit.jLabelfinger.setText("");
             sEdit.jLabelfinger.setIcon(viewDialog.fngrprnt.getIcon());
         } else {
+            sEdit.jLabelfinger.setIcon(null);
             sEdit.jLabelfinger.setText("No enrolled Fingerprint");
         }
 
@@ -237,7 +245,7 @@ public class StudentServiceImpl implements StudentService {
                         viewDialog.brgy.setText(getCellValue(dataRow, 12));
                         viewDialog.municipal.setText(getCellValue(dataRow, 13));
 
-                        if (student.getImageData()!= null) {
+                        if (student.getImageData() != null) {
                             ImageIcon icon = new ImageIcon(student.getImageData());
                             Image scaledImage = icon.getImage().getScaledInstance(
                                     viewDialog.image.getWidth(),
@@ -301,7 +309,10 @@ public class StudentServiceImpl implements StudentService {
         sAdd.sx.setSelectedIndex(0);
         sAdd.cllg.setSelectedIndex(0);
         sAdd.yr.setSelectedIndex(0);
+        sAdd.bdy.setDate(null);
         sAdd.sctn.setSelectedIndex(0);
+        sAdd.jLabelimage.setIcon(null);
+        sAdd.jLabelfinger.setIcon(null);
         sAdd.jLabelimage.setText("");
         sAdd.jLabelfinger.setText("");
         sAdd.brgy.setText("");
@@ -318,9 +329,12 @@ public class StudentServiceImpl implements StudentService {
         sEdit.nmbr.setText("");
         sEdit.ml.setText("");
         sEdit.sx.setSelectedIndex(0);
+        sEdit.bdy.setDate(null);
         sEdit.cllg.setSelectedIndex(0);
         sEdit.yr.setSelectedIndex(0);
         sEdit.sctn.setSelectedIndex(0);
+        sEdit.jLabelimage.setIcon(null);
+        sEdit.jLabelfinger.setIcon(null);
         sEdit.jLabelimage.setText("");
         sEdit.jLabelfinger.setText("");
         sEdit.brgy.setText("");
@@ -375,7 +389,6 @@ public class StudentServiceImpl implements StudentService {
 //            if (imageBytes != null) {
 //                student.setImage(imageBytes);
 //            }
-
             if (sEdit.jLabelimage != null && sEdit.jLabelimage.getIcon() != null) {
                 byte[] imageBytes = ImageExtractor.extractImageBytes(sEdit.jLabelimage, "jpg", 120, 120);
                 if (imageBytes != null) {
@@ -385,22 +398,30 @@ public class StudentServiceImpl implements StudentService {
                 student.setImage(uploadedImageForEdit);
             }
 
-            if (fingerprintTemplateAdd != null) {
-                student.setFingerprint(fingerprintTemplateAdd);
+            if (fingerprintTemplateEdit != null) {
+                student.setFingerprint(fingerprintTemplateEdit);
                 byte[] fingerBytes = ImageExtractor.extractImageBytes(sEdit.jLabelfinger, "jpg", 120, 120);
                 student.setFingerprintImage(fingerBytes);
             } else {
                 JOptionPane.showMessageDialog(null, "No fingerprint captured.");
             }
-            boolean updated = dao.update(student);
-            if (updated) {
-                setTableData();
-                clearEdit();
-                JOptionPane.showMessageDialog(null, "Student added successfully.");
-            } else {
-                JOptionPane.showMessageDialog(null, "An error occured. Student can't be added.");
-            }
 
+            int choice = JOptionPane.showConfirmDialog(null,
+                    "Please check the information to be updated.",
+                    "Confirm Save", JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+            if (choice == JOptionPane.YES_OPTION) {
+                boolean updated = dao.update(student);
+                if (updated) {
+                    setTableData();
+                    clearEdit();
+                    JOptionPane.showMessageDialog(null, "Student information updated successfully.");
+                } else {
+                    JOptionPane.showMessageDialog(null, "An error occured. Student can't be added.");
+                }
+            } else {
+                System.out.println("Cancelled by Admin");
+            }
         }
     }
 
@@ -437,172 +458,190 @@ public class StudentServiceImpl implements StudentService {
     public void scanFingerAdd() {
         sAdd.scn.setEnabled(false);
 
+        String userIdToEnroll = sAdd.student_id.getText();
+        if (userIdToEnroll == null || userIdToEnroll.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Invalid user ID.");
+            sAdd.scn.setEnabled(true);
+            return;
+        }
+        userIdToEnroll = userIdToEnroll.trim();
+
+        // Setup progress dialog
+        JDialog progressDialog = new JDialog((JFrame) null, "Scan Fingerprint", false);
+        progressDialog.setSize(300, 100);
+        progressDialog.setLocationRelativeTo(null);
+        progressDialog.setLayout(new BorderLayout());
+
+        JProgressBar progressBar = new JProgressBar(0, 4); // Assuming 4 required scans
+        progressBar.setValue(0);
+        progressBar.setString("Starting fingerprint enrollment...");
+        progressBar.setStringPainted(true);
+        progressDialog.add(progressBar, BorderLayout.CENTER);
+        progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+        PromptSwing.promptProgressBar = progressBar;
+
+        // Initialize reader
+        ReaderCollection readers;
         try {
-            String userIdToEnroll = sAdd.student_id.getText();
-            if (userIdToEnroll == null || userIdToEnroll.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Invalid user ID.");
+            readers = UareUGlobal.GetReaderCollection();
+            readers.GetReaders();
+
+            if (readers.size() == 0 || readers.get(0) == null) {
+                JOptionPane.showMessageDialog(null, "No fingerprint reader found.");
                 sAdd.scn.setEnabled(true);
                 return;
             }
-            userIdToEnroll = userIdToEnroll.trim();
 
-            JDialog progressDialog = new JDialog((JFrame) null, "Scan Fingerprint", false); // Not modal
-            progressDialog.setSize(300, 100);
-            progressDialog.setLocationRelativeTo(null);
-            progressDialog.setLayout(new BorderLayout());
+            Selection.reader = readers.get(0);
+        } catch (UareUException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error initializing fingerprint reader: " + e.getMessage());
+            sAdd.scn.setEnabled(true);
+            return;
+        }
 
-            JProgressBar progressBar = new JProgressBar(0, 2);
-            progressBar.setValue(0);
-            progressBar.setString("Starting fingerprint enrollment...");
-            progressBar.setStringPainted(true);
-            progressDialog.add(progressBar, BorderLayout.CENTER);
-            progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        // Reset thread flags before starting
+        ThreadFlags.running = true;
+        EnrollmentThread enrollmentThread = new EnrollmentThread(sAdd.jLabelfinger, progressBar, userIdToEnroll);
 
-            PromptSwing.promptProgressBar = progressBar;
+        // Handle window close to cancel enrollment
+        progressDialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println("Window close requested — stopping enrollment.");
+                enrollmentThread.requestStop();
+                enrollmentThread.stopEnrollmentThread();
+                progressDialog.dispose();
+            }
+        });
 
-            ReaderCollection readers;
+        // Start enrollment thread
+        enrollmentThread.start();
+
+        // Show progress dialog
+        SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
+
+        // Monitor enrollment completion
+        new Thread(() -> {
             try {
-                readers = UareUGlobal.GetReaderCollection();
-                readers.GetReaders();
+                enrollmentThread.join();
+                FingerprintModel model = enrollmentThread.getEnrollUser();
 
-                if (readers.size() == 0) {
-                    JOptionPane.showMessageDialog(null, "No fingerprint reader found.");
-                    sAdd.scn.setEnabled(true);
-                    return;
+                if (model != null && model.getTemplate() != null) {
+                    System.out.println("Fingerprint enrollment done!");
+                    System.out.println("User ID: " + model.getUser_id());
+                    System.out.println("FMD Length: " + model.getTemplate().length);
+                    fingerprintTemplateEdit = model.getTemplate();
+                } else {
+                    System.out.println("Enrollment failed or template is null.");
                 }
-                if (readers.get(0) == null) {
-                    JOptionPane.showMessageDialog(null, "Fingerprint reader object is null.");
-                    sAdd.scn.setEnabled(true);
-                    return;
-                }
-
-                Selection.reader = readers.get(0);
-            } catch (UareUException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error initializing fingerprint reader: " + e.getMessage());
-                sAdd.scn.setEnabled(true);
-                return;
-            }
-
-            EnrollmentThread enrollmentThread = new EnrollmentThread(sAdd.jLabelfinger, progressBar, userIdToEnroll);
-            enrollmentThread.start();
-
-            SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
-
-            new Thread(() -> {
-                try {
-                    enrollmentThread.join();
-                    FingerprintModel model = enrollmentThread.getEnrollUser();
-                    if (model != null && model.getTemplate() != null) {
-                        System.out.println("Fingerprint enrollment done!");
-                        System.out.println("User ID: " + model.getUser_id());
-                        System.out.println("FMD Length: " + model.getTemplate().length);
-                        fingerprintTemplateAdd = model.getTemplate();
-                    } else {
-                        System.out.println("Enrollment failed or template is null.");
-                    }
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            } finally {
                 SwingUtilities.invokeLater(() -> {
                     System.out.println("Disposing progressDialog...");
                     progressDialog.dispose();
                     sAdd.scn.setEnabled(true);
                     sAdd.setEnabled(true);
                 });
-            }).start();
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Invalid user ID.");
-            sAdd.scn.setEnabled(true);
-        }
+            }
+        }).start();
     }
 
     @Override
     public void scanFingerEdit() {
         sEdit.scn.setEnabled(false);
 
+        String userIdToEnroll = sEdit.student_id.getText();
+        if (userIdToEnroll == null || userIdToEnroll.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Invalid user ID.");
+            sEdit.scn.setEnabled(true);
+            return;
+        }
+        userIdToEnroll = userIdToEnroll.trim();
+
+        // Setup progress dialog
+        JDialog progressDialog = new JDialog((JFrame) null, "Scan Fingerprint", false);
+        progressDialog.setSize(300, 100);
+        progressDialog.setLocationRelativeTo(null);
+        progressDialog.setLayout(new BorderLayout());
+
+        JProgressBar progressBar = new JProgressBar(0, 4); // Assuming 4 required scans
+        progressBar.setValue(0);
+        progressBar.setString("Starting fingerprint enrollment...");
+        progressBar.setStringPainted(true);
+        progressDialog.add(progressBar, BorderLayout.CENTER);
+        progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+        PromptSwing.promptProgressBar = progressBar;
+
+        // Initialize reader
+        ReaderCollection readers;
         try {
-            String userIdToEnroll = sEdit.student_id.getText();
-            if (userIdToEnroll == null || userIdToEnroll.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Invalid user ID.");
+            readers = UareUGlobal.GetReaderCollection();
+            readers.GetReaders();
+
+            if (readers.size() == 0 || readers.get(0) == null) {
+                JOptionPane.showMessageDialog(null, "No fingerprint reader found.");
                 sEdit.scn.setEnabled(true);
                 return;
             }
-            userIdToEnroll = userIdToEnroll.trim();
 
-            JDialog progressDialog = new JDialog((JFrame) null, "Scan Fingerprint", false); // Not modal
-            progressDialog.setSize(300, 100);
-            progressDialog.setLocationRelativeTo(null);
-            progressDialog.setLayout(new BorderLayout());
+            Selection.reader = readers.get(0);
+        } catch (UareUException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error initializing fingerprint reader: " + e.getMessage());
+            sEdit.scn.setEnabled(true);
+            return;
+        }
 
-            JProgressBar progressBar = new JProgressBar(0, 2);
-            progressBar.setValue(0);
-            progressBar.setString("Starting fingerprint enrollment...");
-            progressBar.setStringPainted(true);
-            progressDialog.add(progressBar, BorderLayout.CENTER);
-            progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        // Reset thread flags before starting
+        ThreadFlags.running = true;
+        EnrollmentThread enrollmentThread = new EnrollmentThread(sEdit.jLabelfinger, progressBar, userIdToEnroll);
 
-            PromptSwing.promptProgressBar = progressBar;
+        // Handle window close to cancel enrollment
+        progressDialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println("Window close requested — stopping enrollment.");
+                enrollmentThread.requestStop();
+                enrollmentThread.stopEnrollmentThread();
+                progressDialog.dispose();
+            }
+        });
 
-            ReaderCollection readers;
+        // Start enrollment thread
+        enrollmentThread.start();
+
+        // Show progress dialog
+        SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
+
+        // Monitor enrollment completion
+        new Thread(() -> {
             try {
-                readers = UareUGlobal.GetReaderCollection();
-                readers.GetReaders();
+                enrollmentThread.join();
+                FingerprintModel model = enrollmentThread.getEnrollUser();
 
-                if (readers.size() == 0) {
-                    JOptionPane.showMessageDialog(null, "No fingerprint reader found.");
-                    sEdit.scn.setEnabled(true);
-                    return;
+                if (model != null && model.getTemplate() != null) {
+                    System.out.println("Fingerprint enrollment done!");
+                    System.out.println("User ID: " + model.getUser_id());
+                    System.out.println("FMD Length: " + model.getTemplate().length);
+                    fingerprintTemplateEdit = model.getTemplate();
+                } else {
+                    System.out.println("Enrollment failed or template is null.");
                 }
-                if (readers.get(0) == null) {
-                    JOptionPane.showMessageDialog(null, "Fingerprint reader object is null.");
-                    sEdit.scn.setEnabled(true);
-                    return;
-                }
-
-                Selection.reader = readers.get(0);
-            } catch (UareUException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Error initializing fingerprint reader: " + e.getMessage());
-                sEdit.scn.setEnabled(true);
-                return;
-            }
-
-            EnrollmentThread enrollmentThread = new EnrollmentThread(sEdit.jLabelfinger, progressBar, userIdToEnroll);
-            enrollmentThread.start();
-
-            SwingUtilities.invokeLater(() -> progressDialog.setVisible(true));
-
-            new Thread(() -> {
-                try {
-                    enrollmentThread.join();
-                    FingerprintModel model = enrollmentThread.getEnrollUser();
-                    if (model != null && model.getTemplate() != null) {
-                        System.out.println("Fingerprint enrollment done!");
-                        System.out.println("User ID: " + model.getUser_id());
-                        System.out.println("FMD Length: " + model.getTemplate().length);
-                        fingerprintTemplateAdd = model.getTemplate();
-                    } else {
-                        System.out.println("Enrollment failed or template is null.");
-                    }
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            } finally {
                 SwingUtilities.invokeLater(() -> {
                     System.out.println("Disposing progressDialog...");
                     progressDialog.dispose();
                     sEdit.scn.setEnabled(true);
                     sEdit.setEnabled(true);
                 });
-            }).start();
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Invalid user ID.");
-            sEdit.scn.setEnabled(true);
-        }
+            }
+        }).start();
     }
 
     @Override

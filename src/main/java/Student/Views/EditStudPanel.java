@@ -80,6 +80,7 @@ public class EditStudPanel extends javax.swing.JPanel {
 
         student_id.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        jLabelimage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelimage.setText("jLabel3");
         jLabelimage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
@@ -99,6 +100,7 @@ public class EditStudPanel extends javax.swing.JPanel {
 
         nmbr.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        jLabelfinger.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelfinger.setText("jLabel3");
         jLabelfinger.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
@@ -152,12 +154,12 @@ public class EditStudPanel extends javax.swing.JPanel {
                     .addComponent(nmbr)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(scn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(scn, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
                             .addComponent(jLabelfinger, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(36, 36, 36)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabelimage, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(chssmg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(chssmg, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)))
                     .addComponent(ml)
                     .addComponent(brgy)
                     .addComponent(municipal)

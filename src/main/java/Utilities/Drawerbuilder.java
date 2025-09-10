@@ -42,7 +42,7 @@ public class Drawerbuilder extends SimpleDrawerBuilder {
     public SimpleMenuOption getSimpleMenuOption() {
         String menus[][] = {
             {"Dashboard"},
-            {"Manage", "Admin", "Student", "Faculty", "Class Schedules and Rooms"},
+            {"Manage", "Admin", "Student", "Faculty", "<html>Class Schedules <br>and Rooms</html>"},
             {"Reports", "Analytics", "Attendance"},
             {"Logout"}
         };

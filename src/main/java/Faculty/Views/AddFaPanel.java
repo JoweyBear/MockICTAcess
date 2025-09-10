@@ -81,6 +81,7 @@ public class AddFaPanel extends javax.swing.JPanel {
 
         pstn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        jLabelimage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelimage.setText("jLabel3");
         jLabelimage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
@@ -100,6 +101,7 @@ public class AddFaPanel extends javax.swing.JPanel {
 
         nmbr.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
+        jLabelfinger.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelfinger.setText("jLabel3");
         jLabelfinger.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
 
