@@ -22,7 +22,7 @@ public class IdentificationThread extends Thread {
     List<FingerprintModel> fingerprintList;
     int falsePositiveRate = Engine.PROBABILITY_ONE / 100000;
     int candidateCount = 1;
-    int delayTimeInMs = 4000;
+    int delayTimeInMs = 5000;
 
     FingerprintDAO dao = new FingerprintDAOImpl();
     private FingerprintModel identifiedUser;
@@ -63,7 +63,8 @@ public class IdentificationThread extends Thread {
             }
             compareFmdToDatabaseFmds(fmdToIdentify, databaseFmds);
         }
-
+        stopThread();
+        Selection.setCaptureInProgress(false);
         System.out.println("Identification Thread Stopped");
     }
 
@@ -322,7 +323,18 @@ public class IdentificationThread extends Thread {
         runThisThread = false;
         if (captureThread != null) {
             captureThread.stopThread();
+            try{
+                captureThread.join();
+            }catch(InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
         }
+        try{
+            Selection.closeReader();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        System.out.println("Identification Thread stopped");
     }
 
     @Override

@@ -8,16 +8,12 @@ import Fingerprint.IdentificationThread;
 import Fingerprint.PromptSwing;
 import Fingerprint.Selection;
 import Utilities.GlobalVar;
-import com.digitalpersona.uareu.Engine;
-import com.digitalpersona.uareu.Fmd;
 import com.digitalpersona.uareu.ReaderCollection;
 import com.digitalpersona.uareu.UareUException;
 import com.digitalpersona.uareu.UareUGlobal;
 import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.concurrent.*;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -106,6 +102,15 @@ public class LoginSerImpl implements LoginService {
 
         executor.submit(() -> {
             IdentificationThread idThread = new IdentificationThread(progressBar, messageLabel);
+            dialog.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    System.out.println("Window close requested — stopping enrollment.");
+                    idThread.stopThread();
+                    dialog.dispose();
+                }
+            });
+
             idThread.start();
 
             try {
@@ -166,7 +171,7 @@ public class LoginSerImpl implements LoginService {
                 System.out.println("Another capture uis in progress -- cancelling..");
                 Selection.requestCurrentCaptureCancel();
                 Selection.waitForCaptureToFinish();
-               identifyAdmin();
+                identifyAdmin();
             }
         } else {
             System.out.println("Reader is not open..Opeining..");
@@ -174,4 +179,4 @@ public class LoginSerImpl implements LoginService {
             identifyAdmin();
         }
     }
-    }
+}
