@@ -3,5 +3,5 @@ package Analytics;
 import javax.swing.table.DefaultTableModel;
 
 public interface AnalyticsDAO {
-    DefaultTableModel displayOverAllAttendance();
+    DefaultTableModel displayOverAllDificiencies();
 }

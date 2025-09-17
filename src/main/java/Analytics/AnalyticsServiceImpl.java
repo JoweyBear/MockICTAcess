@@ -14,7 +14,7 @@ public class AnalyticsServiceImpl implements AnalyticsService{
     }
     
     private void setOverAllDataTable(){
-        DefaultTableModel model = dao.displayOverAllAttendance();
+        DefaultTableModel model = dao.displayOverAllDificiencies();
         aPanel.jTable1.setModel(model);
         
     }
