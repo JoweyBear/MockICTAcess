@@ -14,13 +14,14 @@ public class RiskTableRenderer {
         // Convert Spark Dataset<Row> to TableModel
         DefaultTableModel tableModel = new DefaultTableModel();
         String[] columns = {
-            "Student ID", "GPA", "Late Count", "Absent Count",
-            "Failed Subjects", "Academic Status", "Degree Program", "Prediction", "Recommendation"
+            "Student ID", "Student Name", "Year", "Section",
+            "Track", "Dropout Possibility", "Possible Reason"
         };
         for (String col : columns) {
             tableModel.addColumn(col);
         }
 
+//        List<Rows> row = highRiskStudents.collectAsList();
         // Collect rows from Spark and populate the table
         for (Row row : highRiskStudents.collectAsList()) {
             Vector<Object> rowData = new Vector<>();

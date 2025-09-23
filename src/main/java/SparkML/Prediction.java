@@ -1,24 +1,28 @@
 package SparkML;
 
+import java.util.List;
+import org.apache.spark.ml.PipelineModel;
+import org.apache.spark.ml.classification.RandomForestClassificationModel;
+import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import java.util.List;
-import org.apache.spark.ml.PipelineModel;
-import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 
-public class DropoutRiskPipeline {
+public class Prediction {
 
     public static void runAnalysis(SparkSession spark) {
         try {
-            // 1. Load historical data for training
-            List<ParamDatasets> historicalRecords = ParamDataLoader.fetchParams();
-            Dataset<Row> rawTrainingData = ParamDataLoader.convertHistoryParams(spark, historicalRecords);
-            Dataset<Row> trainingData = FeatureEngineer.transform(rawTrainingData);
 
-            // 2. Train or load model
+            spark = SparkSession.builder().appName("Analytics").master("local[*]").getOrCreate();
+
+            String dir_pipeline = "C:/Users/rndpo/OneDrive/Desktop/NetBeansProjects/SparkLMTest/spark_dropout_pipeline";
+            String dir_model = "C:/Users/rndpo/OneDrive/Desktop/NetBeansProjects/SparkLMTest/spark_dropout_model";
+
+            PipelineModel pipeline = PipelineModel.load(dir_pipeline);
+            System.out.println("pipeline loaded");
+            RandomForestClassificationModel model = RandomForestClassificationModel.load(dir_model);
+            System.out.println("Classifier model loaded successfully.");
             
-            PipelineModel model = ModelManager.getOrTrainModel(spark, trainingData);
 
             // 3. Load current student data for prediction
             List<ParamDatasets> currentRecords = ParamDataLoader.fetchCurrentParams();
@@ -26,7 +30,8 @@ public class DropoutRiskPipeline {
             Dataset<Row> currentData = FeatureEngineer.transform(rawCurrentData);
 
             // 4. Apply model to current data
-            Dataset<Row> predictions = model.transform(currentData);
+            Dataset<Row> predictions = pipeline.transform(currentData);
+            Dataset<Row> probPrediction = model.transform(predictions);
 
             // Accuracy
             MulticlassClassificationEvaluator accuracyEval = new MulticlassClassificationEvaluator()
@@ -34,7 +39,7 @@ public class DropoutRiskPipeline {
                     .setPredictionCol("prediction")
                     .setMetricName("accuracy");
 
-            double accuracy = accuracyEval.evaluate(predictions);
+            double accuracy = accuracyEval.evaluate(probPrediction);
             System.out.println("✅ Accuracy: " + accuracy);
 
 // Precision
@@ -43,7 +48,7 @@ public class DropoutRiskPipeline {
                     .setPredictionCol("prediction")
                     .setMetricName("weightedPrecision");
 
-            double precision = precisionEval.evaluate(predictions);
+            double precision = precisionEval.evaluate(probPrediction);
             System.out.println("🎯 Precision: " + precision);
 
 // Recall
@@ -52,7 +57,7 @@ public class DropoutRiskPipeline {
                     .setPredictionCol("prediction")
                     .setMetricName("weightedRecall");
 
-            double recall = recallEval.evaluate(predictions);
+            double recall = recallEval.evaluate(probPrediction);
             System.out.println("📈 Recall: " + recall);
 
 // F1 Score
@@ -61,11 +66,11 @@ public class DropoutRiskPipeline {
                     .setPredictionCol("prediction")
                     .setMetricName("f1");
 
-            double f1 = f1Eval.evaluate(predictions);
+            double f1 = f1Eval.evaluate(probPrediction);
             System.out.println("🏆 F1 Score: " + f1);
 
             // 5. Filter high-risk students (prediction == 1.0)
-            Dataset<Row> highRiskStudents = predictions.filter("prediction == 1.0");
+            Dataset<Row> highRiskStudents = probPrediction;
 
 //            // 6. Display results in UI
             RiskTableRenderer.render(highRiskStudents);
