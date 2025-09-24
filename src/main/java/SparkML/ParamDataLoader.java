@@ -1,6 +1,8 @@
 package SparkML;
 
 import Connection.Ticket;
+import Student.StudentModel;
+import Utilities.Encryption;
 import Utilities.GlobalVar;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -122,6 +124,39 @@ public class ParamDataLoader {
 
     public static Dataset<Row> convertCurrentParams(SparkSession spark, List<ParamDatasets> records) {
         return spark.createDataFrame(records, ParamDatasets.class);
+    }
+
+    public static StudentModel getStudentInfo(String student_id) {
+        StudentModel student = new StudentModel();
+        Encryption de = new Encryption();
+
+        String sql = "SELECT s.user_id, s.fname, s.mname, s.lname, si.section, si.year, si.track "
+                + "FROM user s "
+                + "JOIN student_info si ON s.user_id = si.user_id "
+                + "WHERE s.user_id = ? AND s.role = 'student' AND s.college = ?";
+
+        try {
+            Connection conn = Ticket.getConn();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, student_id);
+            ps.setString(2, college);
+
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) {
+                student.setStud_id(student_id);
+                student.setFname(de.decrypt(rs.getString("fname")));
+                student.setMname(de.decrypt(rs.getString("mname")));
+                student.setLname(de.decrypt(rs.getString("lname")));
+                student.setSection(rs.getString("section"));
+                student.setYear(rs.getString("year"));
+                student.setTrack(rs.getString("track"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Failed to fetch student info: " + e.getMessage());
+        }
+
+        return student;
     }
 
 }

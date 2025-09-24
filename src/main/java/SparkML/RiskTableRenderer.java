@@ -1,5 +1,6 @@
 package SparkML;
 
+import Student.StudentModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -7,6 +8,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.Vector;
+import java.util.List;
 
 public class RiskTableRenderer {
 
@@ -15,29 +17,37 @@ public class RiskTableRenderer {
         DefaultTableModel tableModel = new DefaultTableModel();
         String[] columns = {
             "Student ID", "Student Name", "Year", "Section",
-            "Track", "Dropout Possibility", "Possible Reason"
+            "Track", "Dropout Possibility", "Possible Reason", "Recommendation"
         };
         for (String col : columns) {
             tableModel.addColumn(col);
         }
 
-//        List<Rows> row = highRiskStudents.collectAsList();
+        List<Row> rows = highRiskStudents.collectAsList();
         // Collect rows from Spark and populate the table
-        for (Row row : highRiskStudents.collectAsList()) {
+        for (Row row : rows) {
             Vector<Object> rowData = new Vector<>();
-            rowData.add(row.getAs("studentId"));
-            rowData.add(row.getAs("gpa"));
-            rowData.add(row.getAs("lateCounts"));
-            rowData.add(row.getAs("absentCounts"));
-            rowData.add(row.getAs("failedSubjects"));
-            rowData.add(row.getAs("academicStatus"));
-            rowData.add(row.getAs("degreeProgram"));
-            rowData.add(row.getAs("prediction"));
+            String student_id = row.getAs("studentId");
+            StudentModel student = ParamDataLoader.getStudentInfo(student_id);
+            String fname = student.getFname();
+            String mname = student.getMname();
+            String lname = student.getLname();
+            String fullname = fname + " " + mname + " " + lname;
+            rowData.add(fullname);
+            rowData.add(student.getYear());
+            rowData.add(student.getSection());
+            rowData.add(student.getTrack());
+
+            Double rawProb = row.getAs("dropoutProbability");
+            String formatted = String.format("%.2f%%", rawProb * 100);
+            rowData.add(formatted);
+            
+//            rowData.add();
+
 
             // Optional: generate recommendation
 //            String recommendation = RecommendationEngine.generate(row);
 //            rowData.add(recommendation);
-
             tableModel.addRow(rowData);
         }
 
