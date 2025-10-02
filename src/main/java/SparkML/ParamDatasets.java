@@ -3,215 +3,131 @@ package SparkML;
 
 public class ParamDatasets {
 
-    // 🎓 Academic Performance
-    private String studentId;
-    private float gpa;
-    private int failedSubjects;
-    private String academicStatus;
-    private int curricularUnitsPassed;
-    private int curricularUnitsFailed;
+    private String student_id;
+    private double address_school_km;
+    private String father_employed;
+    private String mother_employed;
+    private String degree_program;
+    private int year;
+    private int birth_order;
+    private int degree_holders_count;
+    private String annual_family_income;
+    private String source_of_income;
+    private String fourps_beneficiary;
+    private String vulnerable_group_flag;
+    private String primary_support_for_education;
+    private int no_of_gadgets_owned;
 
-    // 🕒 Attendance Behavior
-    private int lateCounts;
-    private int absentCounts;
-    private String latenessReason;
-    private String absenceReason;
-
-    // 🧠 Psychosocial & Behavioral
-//    private int disciplinaryActions;
-//    private int counselingVisits;
-//    private String stressLevel;
-//    private String peerRelationships;
-
-    // 🏠 Socioeconomic Background
-    private float familyIncome;
-    private String parentEducation;
-    private String transportMode;
-    private String scholarshipStatus;
-
-    // 🧾 Enrollment Info
-    private String degreeProgram;
-    private int yearLevel;
-    private String admissionType;
-
-    // 🎯 Target Label
-    private String dropoutStatus;
-
-    public String getStudentId() {
-        return studentId;
+    public String getStudent_id() {
+        return student_id;
     }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
+    public void setStudent_id(String student_id) {
+        this.student_id = student_id;
     }
 
-    public float getGpa() {
-        return gpa;
+    public double getAddress_school_km() {
+        return address_school_km;
     }
 
-    public void setGpa(float gpa) {
-        this.gpa = gpa;
+    public void setAddress_school_km(double address_school_km) {
+        this.address_school_km = address_school_km;
     }
 
-    public int getFailedSubjects() {
-        return failedSubjects;
+    public String getFather_employed() {
+        return father_employed;
     }
 
-    public void setFailedSubjects(int failedSubjects) {
-        this.failedSubjects = failedSubjects;
+    public void setFather_employed(String father_employed) {
+        this.father_employed = father_employed;
     }
 
-    public String getAcademicStatus() {
-        return academicStatus;
+    public String getMother_employed() {
+        return mother_employed;
     }
 
-    public void setAcademicStatus(String academicStatus) {
-        this.academicStatus = academicStatus;
+    public void setMother_employed(String mother_employed) {
+        this.mother_employed = mother_employed;
     }
 
-    public int getCurricularUnitsPassed() {
-        return curricularUnitsPassed;
+    public String getDegree_program() {
+        return degree_program;
     }
 
-    public void setCurricularUnitsPassed(int curricularUnitsPassed) {
-        this.curricularUnitsPassed = curricularUnitsPassed;
+    public void setDegree_program(String degree_program) {
+        this.degree_program = degree_program;
     }
 
-    public int getCurricularUnitsFailed() {
-        return curricularUnitsFailed;
+    public int getYear() {
+        return year;
     }
 
-    public void setCurricularUnitsFailed(int curricularUnitsFailed) {
-        this.curricularUnitsFailed = curricularUnitsFailed;
+    public void setYear(int year) {
+        this.year = year;
     }
 
-    public int getLateCounts() {
-        return lateCounts;
+    public int getBirth_order() {
+        return birth_order;
     }
 
-    public void setLateCounts(int lateCounts) {
-        this.lateCounts = lateCounts;
+    public void setBirth_order(int birth_order) {
+        this.birth_order = birth_order;
     }
 
-    public int getAbsentCounts() {
-        return absentCounts;
+    public int getDegree_holders_count() {
+        return degree_holders_count;
     }
 
-    public void setAbsentCounts(int absentCounts) {
-        this.absentCounts = absentCounts;
+    public void setDegree_holders_count(int degree_holders_count) {
+        this.degree_holders_count = degree_holders_count;
     }
 
-    public String getLatenessReason() {
-        return latenessReason;
+    public String getAnnual_family_income() {
+        return annual_family_income;
     }
 
-    public void setLatenessReason(String latenessReason) {
-        this.latenessReason = latenessReason;
+    public void setAnnual_family_income(String annual_family_income) {
+        this.annual_family_income = annual_family_income;
     }
 
-    public String getAbsenceReason() {
-        return absenceReason;
+    public String getSource_of_income() {
+        return source_of_income;
     }
 
-    public void setAbsenceReason(String absenceReason) {
-        this.absenceReason = absenceReason;
+    public void setSource_of_income(String source_of_income) {
+        this.source_of_income = source_of_income;
     }
 
-//    public int getDisciplinaryActions() {
-//        return disciplinaryActions;
-//    }
-//
-//    public void setDisciplinaryActions(int disciplinaryActions) {
-//        this.disciplinaryActions = disciplinaryActions;
-//    }
-//
-//    public int getCounselingVisits() {
-//        return counselingVisits;
-//    }
-//
-//    public void setCounselingVisits(int counselingVisits) {
-//        this.counselingVisits = counselingVisits;
-//    }
-//
-//    public String getStressLevel() {
-//        return stressLevel;
-//    }
-//
-//    public void setStressLevel(String stressLevel) {
-//        this.stressLevel = stressLevel;
-//    }
-//
-//    public String getPeerRelationships() {
-//        return peerRelationships;
-//    }
-//
-//    public void setPeerRelationships(String peerRelationships) {
-//        this.peerRelationships = peerRelationships;
-//    }
-
-    public float getFamilyIncome() {
-        return familyIncome;
+    public String getFourps_beneficiary() {
+        return fourps_beneficiary;
     }
 
-    public void setFamilyIncome(float familyIncome) {
-        this.familyIncome = familyIncome;
+    public void setFourps_beneficiary(String fourps_beneficiary) {
+        this.fourps_beneficiary = fourps_beneficiary;
     }
 
-    public String getParentEducation() {
-        return parentEducation;
+    public String getVulnerable_group_flag() {
+        return vulnerable_group_flag;
     }
 
-    public void setParentEducation(String parentEducation) {
-        this.parentEducation = parentEducation;
+    public void setVulnerable_group_flag(String vulnerable_group_flag) {
+        this.vulnerable_group_flag = vulnerable_group_flag;
     }
 
-    public String getTransportMode() {
-        return transportMode;
+    public String getPrimary_support_for_education() {
+        return primary_support_for_education;
     }
 
-    public void setTransportMode(String transportMode) {
-        this.transportMode = transportMode;
+    public void setPrimary_support_for_education(String primary_support_for_education) {
+        this.primary_support_for_education = primary_support_for_education;
     }
 
-    public String getScholarshipStatus() {
-        return scholarshipStatus;
+    public int getNo_of_gadgets_owned() {
+        return no_of_gadgets_owned;
     }
 
-    public void setScholarshipStatus(String scholarshipStatus) {
-        this.scholarshipStatus = scholarshipStatus;
+    public void setNo_of_gadgets_owned(int no_of_gadgets_owned) {
+        this.no_of_gadgets_owned = no_of_gadgets_owned;
     }
-
-    public String getDegreeProgram() {
-        return degreeProgram;
-    }
-
-    public void setDegreeProgram(String degreeProgram) {
-        this.degreeProgram = degreeProgram;
-    }
-
-    public int getYearLevel() {
-        return yearLevel;
-    }
-
-    public void setYearLevel(int yearLevel) {
-        this.yearLevel = yearLevel;
-    }
-
-    public String getAdmissionType() {
-        return admissionType;
-    }
-
-    public void setAdmissionType(String admissionType) {
-        this.admissionType = admissionType;
-    }
-
-    public String getDropoutStatus() {
-        return dropoutStatus;
-    }
-
-    public void setDropoutStatus(String dropoutStatus) {
-        this.dropoutStatus = dropoutStatus;
-    }
-    
     
 }

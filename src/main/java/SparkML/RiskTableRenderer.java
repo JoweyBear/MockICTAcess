@@ -13,7 +13,6 @@ import java.util.List;
 public class RiskTableRenderer {
 
     public static void render(Dataset<Row> highRiskStudents) {
-        // Convert Spark Dataset<Row> to TableModel
         DefaultTableModel tableModel = new DefaultTableModel();
         String[] columns = {
             "Student ID", "Student Name", "Year", "Section",
@@ -42,8 +41,11 @@ public class RiskTableRenderer {
             String formatted = String.format("%.2f%%", rawProb * 100);
             rowData.add(formatted);
             
-//            rowData.add();
-
+            String father = row.getAs("father_employed");
+            boolean isFatherEmployed = father.equalsIgnoreCase("yes");
+            String mother = row.getAs("mother_employed");
+            boolean isMottherEmployed = mother.equalsIgnoreCase("yes");
+            
 
             // Optional: generate recommendation
 //            String recommendation = RecommendationEngine.generate(row);

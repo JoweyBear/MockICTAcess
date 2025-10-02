@@ -25,52 +25,16 @@ public class Prediction {
             
 
             // 3. Load current student data for prediction
-            List<ParamDatasets> currentRecords = ParamDataLoader.fetchCurrentParams();
-            Dataset<Row> rawCurrentData = ParamDataLoader.convertCurrentParams(spark, currentRecords);
-            Dataset<Row> currentData = FeatureEngineer.transform(rawCurrentData);
+            List<ParamDatasets> currentRecords = ParamDataLoader.fetchParams();
+            Dataset<Row> rawCurrentData = ParamDataLoader.convertParams(spark, currentRecords     );
+            Dataset<Row> currentData = FeatureEngineering.applyManualOrderedFeatures(rawCurrentData);
 
             // 4. Apply model to current data
             Dataset<Row> predictions = pipeline.transform(currentData);
             Dataset<Row> probPrediction = model.transform(predictions);
 
-            // Accuracy
-            MulticlassClassificationEvaluator accuracyEval = new MulticlassClassificationEvaluator()
-                    .setLabelCol("label")
-                    .setPredictionCol("prediction")
-                    .setMetricName("accuracy");
-
-            double accuracy = accuracyEval.evaluate(probPrediction);
-            System.out.println("✅ Accuracy: " + accuracy);
-
-// Precision
-            MulticlassClassificationEvaluator precisionEval = new MulticlassClassificationEvaluator()
-                    .setLabelCol("label")
-                    .setPredictionCol("prediction")
-                    .setMetricName("weightedPrecision");
-
-            double precision = precisionEval.evaluate(probPrediction);
-            System.out.println("🎯 Precision: " + precision);
-
-// Recall
-            MulticlassClassificationEvaluator recallEval = new MulticlassClassificationEvaluator()
-                    .setLabelCol("label")
-                    .setPredictionCol("prediction")
-                    .setMetricName("weightedRecall");
-
-            double recall = recallEval.evaluate(probPrediction);
-            System.out.println("📈 Recall: " + recall);
-
-// F1 Score
-            MulticlassClassificationEvaluator f1Eval = new MulticlassClassificationEvaluator()
-                    .setLabelCol("label")
-                    .setPredictionCol("prediction")
-                    .setMetricName("f1");
-
-            double f1 = f1Eval.evaluate(probPrediction);
-            System.out.println("🏆 F1 Score: " + f1);
-
             // 5. Filter high-risk students (prediction == 1.0)
-            Dataset<Row> highRiskStudents = probPrediction;
+            Dataset<Row> highRiskStudents = probPrediction.filter("probPrediction == 1.0");
 
 //            // 6. Display results in UI
             RiskTableRenderer.render(highRiskStudents);

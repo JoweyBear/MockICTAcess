@@ -33,24 +33,18 @@ public class ParamDataLoader {
 
             while (rs.next()) {
                 ParamDatasets data = new ParamDatasets();
-                data.setStudentId(rs.getString("student_id"));
-                data.setGpa(rs.getFloat("gpa"));
-                data.setFailedSubjects(rs.getInt("failed_subjects"));
-                data.setAcademicStatus(rs.getString("academic_status"));
-                data.setCurricularUnitsPassed(rs.getInt("curricular_units_passed"));
-                data.setCurricularUnitsFailed(rs.getInt("curricular_units_failed"));
-                data.setLateCounts(rs.getInt("late_counts"));
-                data.setAbsentCounts(rs.getInt("absent_counts"));
-                data.setLatenessReason(rs.getString("lateness_reason"));
-                data.setAbsenceReason(rs.getString("absence_reason"));
-                data.setFamilyIncome(rs.getFloat("family_income"));
-                data.setParentEducation(rs.getString("parent_education"));
-                data.setTransportMode(rs.getString("transport_mode"));
-                data.setScholarshipStatus(rs.getString("scholarship_status"));
-                data.setDegreeProgram(rs.getString("degree_program"));
-                data.setYearLevel(rs.getInt("year_level"));
-                data.setAdmissionType(rs.getString("admission_type"));
-                data.setDropoutStatus(rs.getString("dropout_status"));
+                data.setStudent_id(rs.getString("student_id"));
+                data.setAddress_school_km(rs.getInt("address_school_km"));
+                data.setFather_employed(rs.getString("father_employed"));
+                data.setMother_employed(rs.getString(rs.getString("mother_employed")));
+                data.setDegree_program(rs.getString("degree_program"));
+                data.setYear(rs.getInt("year"));
+                data.setBirth_order(rs.getInt("birth_order"));
+                data.setDegree_holders_count(rs.getInt("degree_holder"));
+                data.setAnnual_family_income(rs.getString("annual_family_income"));
+                data.setSource_of_income(rs.getString("source_of_income"));
+                data.setFourps_beneficiary(rs.getString("4ps_beneficiary"));
+                data.setVulnerable_group_flag(rs.getString("vulnerable_group_flag"));
 
                 param.add(data);
 
@@ -61,7 +55,7 @@ public class ParamDataLoader {
         return param;
     }
 
-    public static Dataset<Row> convertHistoryParams(SparkSession spark, List<ParamDatasets> records) {
+    public static Dataset<Row> convertParams(SparkSession spark, List<ParamDatasets> records) {
         return spark.createDataFrame(records, ParamDatasets.class);
     }
 
@@ -98,19 +92,19 @@ public class ParamDataLoader {
                 Integer[] att = attendanceMap.getOrDefault(studentId, new Integer[]{0, 0});
 
                 ParamDatasets data = new ParamDatasets();
-                data.setStudentId(studentId);
-                data.setGpa(paramRs.getFloat("gpa"));
-                data.setFailedSubjects(paramRs.getInt("failed_subjects"));
-                data.setAcademicStatus(paramRs.getString("academic_status"));
-                data.setCurricularUnitsPassed(paramRs.getInt("curricular_unit_passed"));
-                data.setCurricularUnitsFailed(paramRs.getInt("curricular_unit_failed"));
-                data.setFamilyIncome(paramRs.getFloat("family_income"));
-                data.setParentEducation(paramRs.getString("parent_education"));
-                data.setTransportMode(paramRs.getString("transport_mode"));
-                data.setScholarshipStatus(paramRs.getString("scholarship_status"));
-                data.setAdmissionType(paramRs.getString("admission_type"));
-                data.setLateCounts(att[0]);
-                data.setAbsentCounts(att[1]);
+//                data.setStudentId(studentId);
+//                data.setGpa(paramRs.getFloat("gpa"));
+//                data.setFailedSubjects(paramRs.getInt("failed_subjects"));
+//                data.setAcademicStatus(paramRs.getString("academic_status"));
+//                data.setCurricularUnitsPassed(paramRs.getInt("curricular_unit_passed"));
+//                data.setCurricularUnitsFailed(paramRs.getInt("curricular_unit_failed"));
+//                data.setFamilyIncome(paramRs.getFloat("family_income"));
+//                data.setParentEducation(paramRs.getString("parent_education"));
+//                data.setTransportMode(paramRs.getString("transport_mode"));
+//                data.setScholarshipStatus(paramRs.getString("scholarship_status"));
+//                data.setAdmissionType(paramRs.getString("admission_type"));
+//                data.setLateCounts(att[0]);
+//                data.setAbsentCounts(att[1]);
 
                 paramList.add(data);
             }
@@ -142,7 +136,7 @@ public class ParamDataLoader {
             ps.setString(2, college);
 
             ResultSet rs = ps.executeQuery();
-            if(rs.next()) {
+            if (rs.next()) {
                 student.setStud_id(student_id);
                 student.setFname(de.decrypt(rs.getString("fname")));
                 student.setMname(de.decrypt(rs.getString("mname")));
@@ -158,5 +152,9 @@ public class ParamDataLoader {
 
         return student;
     }
+    
+//    public static ParamDatasets fetchDatasets(){
+//        
+//    }
 
 }
