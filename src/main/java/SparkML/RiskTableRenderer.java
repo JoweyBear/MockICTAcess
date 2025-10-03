@@ -11,12 +11,14 @@ import java.util.Vector;
 import java.util.List;
 
 public class RiskTableRenderer {
+    
+    
 
     public static void render(Dataset<Row> highRiskStudents) {
         DefaultTableModel tableModel = new DefaultTableModel();
         String[] columns = {
             "Student ID", "Student Name", "Year", "Section",
-            "Track", "Dropout Possibility", "Possible Reason", "Recommendation"
+            "Track", "Dropout Possibility"
         };
         for (String col : columns) {
             tableModel.addColumn(col);
