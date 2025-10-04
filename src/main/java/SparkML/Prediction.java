@@ -37,7 +37,8 @@ public class Prediction {
             Dataset<Row> highRiskStudents = probPrediction.filter("probPrediction == 1.0");
 
 //            // 6. Display results in UI
-            RiskTableRenderer.render(highRiskStudents);
+            DisplayRisk.tableRender(highRiskStudents);
+            DisplayRisk.panelRender(highRiskStudents);
 //
 //            // 7. Export to CSV
 //            CSVExporter.export(highRiskStudents, "exports/high_risk_students.csv");
