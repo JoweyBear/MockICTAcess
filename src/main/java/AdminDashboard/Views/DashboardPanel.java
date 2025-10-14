@@ -3,6 +3,7 @@ package AdminDashboard.Views;
 import Utilities.CSCBHandler;
 import Utilities.FacultyCBHandler;
 import Utilities.RegisterFont;
+import com.formdev.flatlaf.FlatClientProperties;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
@@ -17,7 +18,14 @@ public class DashboardPanel extends javax.swing.JPanel {
     public DashboardPanel() {
         UIManager.put("TextField.background", Color.white);
         initComponents();
-
+        jPanel13.putClientProperty(FlatClientProperties.STYLE, "arc: 10");
+        jPanel15.putClientProperty(FlatClientProperties.STYLE, "arc: 10");
+        jPanel8.putClientProperty(FlatClientProperties.STYLE, "arc: 10");
+        jPanel9.putClientProperty(FlatClientProperties.STYLE, "arc: 10");
+        jPanel12.putClientProperty(FlatClientProperties.STYLE, "arc: 10");
+        jPanel17.putClientProperty(FlatClientProperties.STYLE, "arc: 10");
+        jPanel11.putClientProperty(FlatClientProperties.STYLE, "arc: 10");
+        jPanel10.putClientProperty(FlatClientProperties.STYLE, "arc: 10");
         timeIn.setText("");
         timeOut.setText("");
         absent.setText("");

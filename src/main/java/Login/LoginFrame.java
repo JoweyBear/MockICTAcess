@@ -14,6 +14,7 @@ public class LoginFrame extends javax.swing.JDialog {
     public LoginFrame() {
         initComponents();
         setLocationRelativeTo(null);
+        jPanel1.putClientProperty(FlatClientProperties.STYLE, "arc: 50");
         srnm.putClientProperty("JTextField.placeholderText", "Type Username...");
         psswrd.putClientProperty("JTextField.placeholderText", "Type Password...");
         psswrd.putClientProperty(FlatClientProperties.STYLE, ""
