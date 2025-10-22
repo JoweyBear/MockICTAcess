@@ -176,6 +176,8 @@ public class FeatureEngineering {
             dfWithOrderedFeatures = dfWithOrderedFeatures.withColumn("annual_family_income_ordered", lit(ANNUAL_FAMILY_INCOME_ORDER.getOrDefault("Other", 0.0)).cast(DataTypes.DoubleType));
         }
 
+        dfWithOrderedFeatures = dfWithOrderedFeatures.withColumn("birth_order_no_siblings_interaction", col("birth_order").multiply(col("no_siblings").cast(DataTypes.IntegerType)));
+
         return dfWithOrderedFeatures;
     }
 }

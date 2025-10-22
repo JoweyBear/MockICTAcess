@@ -10,13 +10,13 @@ import org.apache.spark.sql.SparkSession;
 
 public class Prediction {
 
-    public static void runAnalysis(SparkSession spark) {
+    public static void runAnalysis() {
         try {
 
-            spark = SparkSession.builder().appName("Analytics").master("local[*]").getOrCreate();
+            SparkSession spark = SparkSession.builder().appName("Analytics").master("local[*]").getOrCreate();
 
-            String dir_pipeline = "C:/Users/rndpo/OneDrive/Desktop/NetBeansProjects/SparkLMTest/spark_dropout_pipeline";
-            String dir_model = "C:/Users/rndpo/OneDrive/Desktop/NetBeansProjects/SparkLMTest/spark_dropout_model";
+            String dir_pipeline = "C:/Users/rndpo/OneDrive/Desktop/NetBeansProjects/SparkLMTest/random_forest_pipeline";
+            String dir_model = "C:/Users/rndpo/OneDrive/Desktop/NetBeansProjects/SparkLMTest/random_forest_model";
 
             PipelineModel pipeline = PipelineModel.load(dir_pipeline);
             System.out.println("pipeline loaded");
@@ -42,7 +42,6 @@ public class Prediction {
 //
 //            // 7. Export to CSV
 //            CSVExporter.export(highRiskStudents, "exports/high_risk_students.csv");
-//
 //            // 8. Optional: Notify stakeholders
 //            NotificationService.notifyStakeholders(highRiskStudents);
 

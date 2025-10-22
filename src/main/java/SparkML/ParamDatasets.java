@@ -5,10 +5,12 @@ public class ParamDatasets {
 
     private String student_id;
     private double address_school_km;
+    private String gender;
     private String father_employed;
     private String mother_employed;
     private String degree_program;
     private int year;
+    private int no_siblings;
     private int birth_order;
     private int degree_holders_count;
     private String annual_family_income;
@@ -128,6 +130,22 @@ public class ParamDatasets {
 
     public void setNo_of_gadgets_owned(int no_of_gadgets_owned) {
         this.no_of_gadgets_owned = no_of_gadgets_owned;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public int getNo_siblings() {
+        return no_siblings;
+    }
+
+    public void setNo_siblings(int no_siblings) {
+        this.no_siblings = no_siblings;
     }
     
 }

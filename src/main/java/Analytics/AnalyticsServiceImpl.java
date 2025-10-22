@@ -1,5 +1,6 @@
 package Analytics;
 
+import SparkML.Prediction;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import javax.swing.BorderFactory;
@@ -49,7 +50,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                runAnalysis(); // Your long-running method
+                Prediction.runAnalysis();
+//                runAnalysis(); // Your long-running method
                 return null;
             }
 
