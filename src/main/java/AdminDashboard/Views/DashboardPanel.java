@@ -1,7 +1,7 @@
 package AdminDashboard.Views;
 
-import Utilities.CSCBHandler;
-import Utilities.FacultyCBHandler;
+import comboBoxHandlers.CSCBHandler;
+import comboBoxHandlers.FacultyCBHandler;
 import Utilities.RegisterFont;
 import com.formdev.flatlaf.FlatClientProperties;
 import java.awt.Color;

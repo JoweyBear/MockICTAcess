@@ -8,7 +8,7 @@ import Main.Views.*;
 import Login.*;
 import Student.StudentModel;
 import Utilities.ChartDrawingSupplier;
-import Utilities.StudentCBHandler;
+import comboBoxHandlers.StudentCBHandler;
 import com.digitalpersona.uareu.UareUException;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;

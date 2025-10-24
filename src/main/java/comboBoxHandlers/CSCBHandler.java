@@ -1,10 +1,9 @@
-package Utilities;
+package comboBoxHandlers;
 
 import Connection.Ticket;
 import java.awt.EventQueue;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,32 +18,23 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-public class FacultyCBHandler extends KeyAdapter {
+public class CSCBHandler extends KeyAdapter {
 
     private final JComboBox<String> comboBox;
     private final List<String> list = new ArrayList<>();
-    private final Encryption de = new Encryption();
 
-    public FacultyCBHandler(JComboBox<String> combo) {
+    public CSCBHandler(JComboBox<String> combo) {
         this.comboBox = combo;
-        try (
-                Connection conn = Ticket.getConn(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT user_id, fname, mname, lname FROM user WHERE role = 'faculty' AND is_active = 1")) {
+        try (Connection conn = Ticket.getConn(); 
+                Statement stmt = conn.createStatement(); 
+                ResultSet rs = stmt.executeQuery("SELECT cs_id, subject FROM class_schedule")) {
             while (rs.next()) {
-                String id = rs.getString("user_id");
-                String fname = de.decrypt(rs.getString("fname"));
-                String mname = de.decrypt(rs.getString("mname"));
-                String lname = de.decrypt(rs.getString("lname"));
-
-                String middleInitial = (mname != null && !mname.trim().isEmpty())
-                        ? mname.trim().substring(0, 1).toUpperCase() + "."
-                        : "";
-
-                String item = String.format("Faculty ID: %s - %s %s %s", id, fname, middleInitial, lname);
+                String item = String.format("Class Sched. ID: %s - %s", rs.getString("cs_id"), rs.getString("subject"));
                 list.add(item);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(FacultyCBHandler.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(RoomCBHandler.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex);
         }
     }
 

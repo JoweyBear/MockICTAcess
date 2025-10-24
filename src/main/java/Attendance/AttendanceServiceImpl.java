@@ -3,7 +3,7 @@ package Attendance;
 import Attendance.Views.*;
 import Utilities.GlobalVar;
 import Utilities.SearchDefaultModel;
-import Utilities.StudentCBHandler;
+import comboBoxHandlers.StudentCBHandler;
 import Utilities.TableDateFilter;
 //import Utilities.*;
 import java.awt.CardLayout;

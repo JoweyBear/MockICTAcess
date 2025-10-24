@@ -1,6 +1,7 @@
-package Utilities;
+package comboBoxHandlers;
 
 import Connection.Ticket;
+import Utilities.Encryption;
 import java.awt.EventQueue;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

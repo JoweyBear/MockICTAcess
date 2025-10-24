@@ -82,8 +82,9 @@ public class AdminSerImpl implements AdminService {
                 || addPanel.usrnm.getText().trim().equals("")
                 || addPanel.cnfrm.getText().trim().equals("")
                 || addPanel.psswrd.getText().trim().equals("")
-                || addPanel.brgy.getText().trim().equals("")
-                || addPanel.mncplty.getText().trim().equals("")) {
+//                || addPanel.brgy.getText().trim().equals("")
+//                || addPanel.mncplty.getText().trim().equals("")
+                ) {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             AdminModel admin = new AdminModel();
@@ -104,8 +105,8 @@ public class AdminSerImpl implements AdminService {
             admin.setUsername(addPanel.usrnm.getText().trim());
             admin.setPass(addPanel.cnfrm.getText().trim());
             admin.setImage(uploadedImageForAdd);
-            admin.setBarangay(addPanel.brgy.getText().trim());
-            admin.setMunicipal(addPanel.mncplty.getText().trim());
+//            admin.setBarangay(addPanel.brgy.getText().trim());
+//            admin.setMunicipal(addPanel.mncplty.getText().trim());
             admin.setCollge(addPanel.pstn.getText().trim());
 
             if (fingerprintTemplateAdd != null) {
@@ -595,8 +596,8 @@ public class AdminSerImpl implements AdminService {
         addPanel.jLabelimage.setIcon(null);
         addPanel.jLabelfinger.setText("");
         addPanel.jLabelfinger.setIcon(null);
-        addPanel.brgy.setText("");
-        addPanel.mncplty.setText("");
+//        addPanel.brgy.setText("");
+//        addPanel.mncplty.setText("");
     }
 
     @Override
