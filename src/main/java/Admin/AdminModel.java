@@ -15,8 +15,8 @@ public class AdminModel {
     private String sx;
     private String conNum;
     private String email;
-    private String barangay;
-    private String municipal;
+    private String address; // change to address
+//    private String municipal;
     private Date bday;
     private byte[] image;
     private String collge;
@@ -156,21 +156,21 @@ public class AdminModel {
         this.image = image;
     }
 
-    public String getBarangay() {
-        return barangay;
+    public String getAddress() {
+        return address;
     }
 
-    public void setBarangay(String barangay) {
-        this.barangay = barangay;
+    public void setAddress(String barangay) {
+        this.address = barangay;
     }
 
-    public String getMunicipal() {
-        return municipal;
-    }
-
-    public void setMunicipal(String municipal) {
-        this.municipal = municipal;
-    }
+//    public String getMunicipal() {
+//        return municipal;
+//    }
+//
+//    public void setMunicipal(String municipal) {
+//        this.municipal = municipal;
+//    }
 
     public byte[] getImageData() {
         return imageData;

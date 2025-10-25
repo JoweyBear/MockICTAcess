@@ -36,7 +36,6 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-
 public class AdminSerImpl implements AdminService {
 
     AdminDAO dao = new AdminDAOImpl();
@@ -82,8 +81,8 @@ public class AdminSerImpl implements AdminService {
                 || addPanel.usrnm.getText().trim().equals("")
                 || addPanel.cnfrm.getText().trim().equals("")
                 || addPanel.psswrd.getText().trim().equals("")
-//                || addPanel.brgy.getText().trim().equals("")
-//                || addPanel.mncplty.getText().trim().equals("")
+                || addPanel.address.getSelectedItem().equals("") //                || addPanel.brgy.getText().trim().equals("")
+                //                || addPanel.mncplty.getText().trim().equals("")
                 ) {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
@@ -105,6 +104,7 @@ public class AdminSerImpl implements AdminService {
             admin.setUsername(addPanel.usrnm.getText().trim());
             admin.setPass(addPanel.cnfrm.getText().trim());
             admin.setImage(uploadedImageForAdd);
+            admin.setAddress(addPanel.address.getSelectedItem().toString()); //check here
 //            admin.setBarangay(addPanel.brgy.getText().trim());
 //            admin.setMunicipal(addPanel.mncplty.getText().trim());
             admin.setCollge(addPanel.pstn.getText().trim());
@@ -150,8 +150,9 @@ public class AdminSerImpl implements AdminService {
         editPanel.nmbr.setText(viewDialog.cntctNumber.getText().trim());
         editPanel.ml.setText(viewDialog.email.getText().trim());
         editPanel.sx.setSelectedItem(viewDialog.sex.getText());
-        editPanel.brgy.setText(viewDialog.brgy.getText().trim());
-        editPanel.mncplty.setText(viewDialog.municipal.getText().trim());
+        editPanel.address.setSelectedItem(viewDialog.address.getText());
+//        editPanel.brgy.setText(viewDialog.brgy.getText().trim());
+//        editPanel.mncplty.setText(viewDialog.municipal.getText().trim());
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             Date parsedDate = format.parse(viewDialog.bDay.getText());
@@ -191,10 +192,11 @@ public class AdminSerImpl implements AdminService {
                 || editPanel.ml.getText().trim().equals("")
                 || editPanel.sx.getSelectedItem().equals("Sex")
                 || editPanel.usrnm.getText().trim().equals("")
-                //                || editPanel.cnfrm.getText().trim().equals("")
+                || editPanel.address.getSelectedItem().equals("") //                || editPanel.cnfrm.getText().trim().equals("")
                 //                || editPanel.psswrd.getText().trim().equals("")
-                || editPanel.brgy.getText().trim().equals("")
-                || editPanel.mncplty.getText().trim().equals("")) {
+                //                || editPanel.brgy.getText().trim().equals("")
+                //                || editPanel.mncplty.getText().trim().equals("")
+                ) {
             JOptionPane.showMessageDialog(null, "Fields cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
             AdminModel admin = new AdminModel();
@@ -213,9 +215,9 @@ public class AdminSerImpl implements AdminService {
             admin.setBday(editPanel.bdy.getDate());
             admin.setUsername(editPanel.usrnm.getText().trim());
             admin.setPass(editPanel.cnfrm.getText().trim());
-
-            admin.setBarangay(editPanel.brgy.getText().trim());
-            admin.setMunicipal(editPanel.mncplty.getText().trim());
+            admin.setAddress(editPanel.address.getSelectedItem().toString());
+//            admin.setBarangay(editPanel.brgy.getText().trim());
+//            admin.setMunicipal(editPanel.mncplty.getText().trim());
             admin.setCollge(editPanel.pstn.getText().trim());
 
             if (editPanel.jLabelimage != null && editPanel.jLabelimage.getIcon() != null) {
@@ -300,7 +302,7 @@ public class AdminSerImpl implements AdminService {
         progressDialog.setLocationRelativeTo(null);
         progressDialog.setLayout(new BorderLayout());
 
-        JProgressBar progressBar = new JProgressBar(0, 4); 
+        JProgressBar progressBar = new JProgressBar(0, 4);
         progressBar.setValue(0);
         progressBar.setString("Starting fingerprint enrollment...");
         progressBar.setStringPainted(true);
@@ -516,10 +518,10 @@ public class AdminSerImpl implements AdminService {
                         viewDialog.cntctNumber.setText(getCellValue(dataRow, 5));
                         viewDialog.sex.setText(getCellValue(dataRow, 6));
                         viewDialog.bDay.setText(getCellValue(dataRow, 7));
-                        viewDialog.brgy.setText(getCellValue(dataRow, 8));
-                        viewDialog.municipal.setText(getCellValue(dataRow, 9));
-                        viewDialog.email.setText(getCellValue(dataRow, 10));
-                        viewDialog.usrName.setText(getCellValue(dataRow, 11));
+                        viewDialog.address.setText(getCellValue(dataRow, 8));
+//                        viewDialog.municipal.setText(getCellValue(dataRow, 9));
+                        viewDialog.email.setText(getCellValue(dataRow, 9));
+                        viewDialog.usrName.setText(getCellValue(dataRow, 10));
 
                         if (admin.getImageData() != null) {
                             ImageIcon icon = new ImageIcon(admin.getImageData());
@@ -596,6 +598,7 @@ public class AdminSerImpl implements AdminService {
         addPanel.jLabelimage.setIcon(null);
         addPanel.jLabelfinger.setText("");
         addPanel.jLabelfinger.setIcon(null);
+        addPanel.address.setSelectedIndex(-1);
 //        addPanel.brgy.setText("");
 //        addPanel.mncplty.setText("");
     }
@@ -618,8 +621,10 @@ public class AdminSerImpl implements AdminService {
         editPanel.jLabelimage.setIcon(null);
         editPanel.jLabelfinger.setText("");
         editPanel.jLabelfinger.setIcon(null);
-        editPanel.brgy.setText("");
-        editPanel.mncplty.setText("");
+        editPanel.address.setSelectedIndex(-1);
+
+//        editPanel.brgy.setText("");
+//        editPanel.mncplty.setText("");
     }
 
 }

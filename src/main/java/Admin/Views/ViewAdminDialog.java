@@ -20,8 +20,8 @@ public class ViewAdminDialog extends javax.swing.JDialog {
         lName.setText("");
         cntctNumber.setText("");
         email.setText("");
-        brgy.setText("");
-        municipal.setText("");
+        address.setText("");
+//        municipal.setText("");
         sex.setText("");
         bDay.setText("");
         usrName.setText("");
@@ -48,7 +48,6 @@ public class ViewAdminDialog extends javax.swing.JDialog {
         jLabel11 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
-        jLabel21 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
         adminID = new javax.swing.JLabel();
@@ -59,8 +58,7 @@ public class ViewAdminDialog extends javax.swing.JDialog {
         cntctNumber = new javax.swing.JLabel();
         sex = new javax.swing.JLabel();
         email = new javax.swing.JLabel();
-        brgy = new javax.swing.JLabel();
-        municipal = new javax.swing.JLabel();
+        address = new javax.swing.JLabel();
         usrName = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         bDay = new javax.swing.JLabel();
@@ -140,15 +138,10 @@ public class ViewAdminDialog extends javax.swing.JDialog {
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel14.setText("Email:");
 
-        jLabel21.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel21.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel21.setText("Municipality:");
-
         jLabel17.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
         jLabel17.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel17.setText("Barangay:");
+        jLabel17.setText("Address");
 
         jLabel23.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel23.setForeground(new java.awt.Color(255, 255, 255));
@@ -187,13 +180,9 @@ public class ViewAdminDialog extends javax.swing.JDialog {
         email.setForeground(new java.awt.Color(255, 255, 255));
         email.setText("jLabel1");
 
-        brgy.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        brgy.setForeground(new java.awt.Color(255, 255, 255));
-        brgy.setText("jLabel1");
-
-        municipal.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        municipal.setForeground(new java.awt.Color(255, 255, 255));
-        municipal.setText("jLabel1");
+        address.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        address.setForeground(new java.awt.Color(255, 255, 255));
+        address.setText("jLabel1");
 
         usrName.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         usrName.setForeground(new java.awt.Color(255, 255, 255));
@@ -242,13 +231,11 @@ public class ViewAdminDialog extends javax.swing.JDialog {
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(brgy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(municipal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(address, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(usrName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
@@ -294,16 +281,12 @@ public class ViewAdminDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel17)
-                    .addComponent(brgy))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel21)
-                    .addComponent(municipal))
-                .addGap(18, 18, 18)
+                    .addComponent(address))
+                .addGap(41, 41, 41)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(usrName))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         jPanel4.setBackground(new java.awt.Color(226, 219, 204));
@@ -382,9 +365,9 @@ public class ViewAdminDialog extends javax.swing.JDialog {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JLabel address;
     public javax.swing.JLabel adminID;
     public javax.swing.JLabel bDay;
-    public javax.swing.JLabel brgy;
     public javax.swing.JLabel cntctNumber;
     public javax.swing.JLabel college;
     public javax.swing.JButton dt;
@@ -399,7 +382,6 @@ public class ViewAdminDialog extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -410,7 +392,6 @@ public class ViewAdminDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel4;
     public javax.swing.JLabel lName;
     public javax.swing.JLabel mName;
-    public javax.swing.JLabel municipal;
     public javax.swing.JLabel sex;
     public javax.swing.JLabel usrName;
     // End of variables declaration//GEN-END:variables

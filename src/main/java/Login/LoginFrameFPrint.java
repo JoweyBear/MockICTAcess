@@ -21,7 +21,8 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        UIManager.put("Panel.arc", 20);
+        
+//        jPanel1.putClientProperty(FlatClientProperties.STYLE, "arc: 20");
         forPass.setBorderPainted(false);
 
         jLabel2.setFont(RegisterFont.getFont("vouge", 50f));
@@ -49,9 +50,11 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setBackground(new java.awt.Color(65, 90, 119));
         setUndecorated(true);
 
         jPanel1.setBackground(new java.awt.Color(65, 90, 119));
+        jPanel1.setOpaque(false);
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         cncl.setFont(new java.awt.Font("Instruction", 0, 14)); // NOI18N
@@ -83,6 +86,8 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 90, -1, -1));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Grdnt1.png"))); // NOI18N
+        jLabel1.setFocusable(false);
+        jLabel1.setOpaque(true);
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 50, 427, 352));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -93,9 +98,7 @@ public class LoginFrameFPrint extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 456, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 456, Short.MAX_VALUE)
         );
 
         pack();

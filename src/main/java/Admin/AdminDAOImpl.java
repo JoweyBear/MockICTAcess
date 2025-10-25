@@ -93,8 +93,8 @@ public class AdminDAOImpl implements AdminDAO {
         boolean saved = false;
         try {
             String userSql = "INSERT INTO user (user_id, role, fname, mname, lname, contact_num, email, "
-                    + "barangay, municipality, sex, birthdate, image, college) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    + "barangay, sex, birthdate, image, college) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement userPs = conn.prepareStatement(userSql);
             userPs.setString(1, admin.getStaff_id());
             userPs.setString(2, "admin");
@@ -109,12 +109,12 @@ public class AdminDAOImpl implements AdminDAO {
             userPs.setString(7, admin.getEmail());
 //            userPs.setString(8, admin.getBarangay());
 //            userPs.setString(9, admin.getMunicipal());
-            userPs.setString(8, de.encrypt(admin.getBarangay()));
-            userPs.setString(9, de.encrypt(admin.getMunicipal()));
-            userPs.setString(10, admin.getSx());
-            userPs.setDate(11, new java.sql.Date(admin.getBday().getTime()));
-            userPs.setBytes(12, admin.getImage());
-            userPs.setString(13, admin.getCollge());
+            userPs.setString(8, de.encrypt(admin.getAddress()));
+//            userPs.setString(9, de.encrypt(admin.getMunicipal()));
+            userPs.setString(9, admin.getSx());
+            userPs.setDate(10, new java.sql.Date(admin.getBday().getTime()));
+            userPs.setBytes(11, admin.getImage());
+            userPs.setString(12, admin.getCollge());
             userPs.execute();
 
             String orgPass = admin.getPass();
@@ -144,7 +144,7 @@ public class AdminDAOImpl implements AdminDAO {
     public boolean update(AdminModel admin) {
         boolean update = false;
         try {
-            String userSql = "UPDATE user SET fname = ?, mname = ?, lname = ?, contact_num = ?, email = ?, barangay = ?, municipality = ?, sex = ?, birthdate = ?, image = ?, college = ? WHERE user_id = ?";
+            String userSql = "UPDATE user SET fname = ?, mname = ?, lname = ?, contact_num = ?, email = ?, barangay = ?, sex = ?, birthdate = ?, image = ?, college = ? WHERE user_id = ?";
             PreparedStatement userPs = conn.prepareStatement(userSql);
 //            userPs.setString(1, admin.getStFname());
 //            userPs.setString(2, admin.getStMname());
@@ -155,15 +155,15 @@ public class AdminDAOImpl implements AdminDAO {
 //            userPs.setString(4, admin.getConNum());
             userPs.setString(4, de.encrypt(admin.getConNum()));
             userPs.setString(5, admin.getEmail());
-            userPs.setString(6, de.encrypt(admin.getBarangay()));
-            userPs.setString(7, de.encrypt(admin.getMunicipal()));
+            userPs.setString(6, de.encrypt(admin.getAddress()));
+//            userPs.setString(7, de.encrypt(admin.getMunicipal()));
 //            userPs.setString(6, admin.getBarangay());
 //            userPs.setString(7, admin.getMunicipal());
-            userPs.setString(8, admin.getSx());
-            userPs.setDate(9, new java.sql.Date(admin.getBday().getTime()));
-            userPs.setBytes(10, admin.getImage());
-            userPs.setString(11, admin.getCollge());
-            userPs.setString(12, admin.getStaff_id());
+            userPs.setString(7, admin.getSx());
+            userPs.setDate(8, new java.sql.Date(admin.getBday().getTime()));
+            userPs.setBytes(9, admin.getImage());
+            userPs.setString(10, admin.getCollge());
+            userPs.setString(11, admin.getStaff_id());
             userPs.executeUpdate();
 
             PreparedStatement authPs;

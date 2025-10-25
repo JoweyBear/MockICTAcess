@@ -267,6 +267,7 @@ public class AddAdPanel extends javax.swing.JPanel {
         jLabelfinger.setText("");
         jLabelimage.setIcon(null);
         jLabelfinger.setIcon(null);
+        address.setSelectedIndex(-1);
 //        brgy.setText("");
 //        mncplty.setText("s");
     }//GEN-LAST:event_clrActionPerformed

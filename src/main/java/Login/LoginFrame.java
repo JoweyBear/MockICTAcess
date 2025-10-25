@@ -22,7 +22,7 @@ public class LoginFrame extends javax.swing.JDialog {
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        UIManager.put("Panel.arc", 20);
+//        jPanel1.putClientProperty(FlatClientProperties.STYLE, "arc: 20");
 
         jLabel2.setFont(RegisterFont.getFont("vouge", 50f));
         cncl.setFont(RegisterFont.getFont("nstr", 14f));
